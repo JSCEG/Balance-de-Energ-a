@@ -1,0 +1,101 @@
+{
+  "columnas": [
+    {
+      "columna": 1,
+      "depth": 0,
+      "nombreGrupo": "Origen Primario",
+      "posicionVertical": "medio",
+      "tipoFiltro": "Energía Primaria",
+      "fuenteNodos": {
+        "tipo": "lista",
+        "nodos": ["Producción", "Importación", "Variación de Inventarios"]
+      }
+    },
+    {
+      "columna": 2,
+      "depth": 1,
+      "nombreGrupo": "Energéticos Primarios",
+      "posicionVertical": "medio",
+      "tipoFiltro": "Energía Primaria",
+      "fuenteNodos": {
+        "tipo": "dinamico"
+      }
+    },
+    {
+      "columna": 3,
+      "depth": 2,
+      "nombreGrupo": "Salidas Primarias",
+      "posicionVertical": "abajo",
+      "tipoFiltro": "Energía Primaria",
+      "fuenteNodos": {
+        "tipo": "lista",
+        "nodos": ["Exportación", "Consumo Propio del Sector", "Energía No Aprovechada", "Pérdidas técnicas por transporte, transmisión y distribución"]
+      }
+    },
+    {
+      "columna": 4,
+      "depth": 3,
+      "nombreGrupo": "Transformación",
+      "posicionVertical": "arriba",
+      "tipoFiltro": "Mixto",
+      "fuenteNodos": {
+        "tipo": "lista",
+        "nodos": ["Refinerías y Despuntadoras", "Plantas de Gas y Fraccionadoras", "Coquizadoras y Hornos"]
+      }
+    },
+    {
+      "columna": 5,
+      "depth": 4,
+      "nombreGrupo": "Energéticos Secundarios",
+      "posicionVertical": "medio",
+      "tipoFiltro": "Energía Secundaria",
+      "fuenteNodos": {
+        "tipo": "dinamico"
+      }
+    },
+    {
+      "columna": 6,
+      "depth": 5,
+      "nombreGrupo": "Transformación Eléctrica",
+      "posicionVertical": "medio",
+      "tipoFiltro": "Mixto",
+      "fuenteNodos": {
+        "tipo": "lista",
+        "nodos": ["Centrales Eléctricas"]
+      }
+    },
+    {
+      "columna": 7,
+      "depth": 6,
+      "nombreGrupo": "Origen Secundario",
+      "posicionVertical": "arriba",
+      "tipoFiltro": "Energía Secundaria",
+      "fuenteNodos": {
+        "tipo": "lista",
+        "nodos": ["Importación", "Variación de Inventarios"]
+      }
+    },
+    {
+      "columna": 8,
+      "depth": 7,
+      "nombreGrupo": "Oferta Final (Hijos)",
+      "posicionVertical": "medio",
+      "tipoFiltro": "Energía Secundaria",
+      "fuenteNodos": {
+        "tipo": "hijosDe",
+        "padre": "Oferta Interna Bruta"
+      }
+    },
+    {
+      "columna": 9,
+      "depth": 8,
+      "nombreGrupo": "Consumo Final",
+      "posicionVertical": "medio",
+      "tipoFiltro": "Mixto",
+      "fuenteNodos": {
+        "tipo": "lista",
+        "nodos": ["Industrial", "Transporte", "Agropecuario", "Comercial y público", "Residencial", "Petroquímica Pemex", "Otras ramas económicas"]
+      }
+    }
+  ]
+}

@@ -201,7 +201,8 @@
             <p>Fuente de datos: Secretaría de Energía (SENER).</p>
         </footer>
     </div>
-
+    <script src="datos.js"></script>
+    <script src="sankey_config.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const chartDom = document.getElementById('sankey');
@@ -215,44 +216,110 @@
             let allNodes = new Map();
 
             function processSankeyData(data, year) {
+                const config = window.sankeyConfig;
                 const nodes = new Map();
                 const links = [];
-
-                data.Datos.forEach(padre => {
-                    if (!nodes.has(padre["Nodo Padre"])) {
-                        nodes.set(padre["Nodo Padre"], {
-                            name: padre["Nodo Padre"],
-                            itemStyle: { color: padre.color },
-                            description: padre.descripcion || ''
+                // 1. Construir nodos por columnas
+                config.columnas.forEach((col, colIdx) => {
+                    let nodosCol = [];
+                    if (col.nodos && col.nodos.length > 0) {
+                        // Usa los nodos definidos en la config
+                        nodosCol = col.nodos.filter(n => n.visible !== false);
+                    } else if (col.mostrar === "Hijo" && col.filtroTipo) {
+                        // Autollenar hijos filtrados por tipo
+                        data.Datos.forEach(padre => {
+                            padre["Nodos Hijo"].forEach(hijo => {
+                                if (hijo.tipo === col.filtroTipo) {
+                                    nodosCol.push({ nombre: hijo["Nodo Hijo"], tipo: "Hijo", visible: true, padre: padre["Nodo Padre"] });
+                                }
+                            });
+                        });
+                    } else if (col.mostrar === "Padre" && col.filtroTipo) {
+                        // Autollenar padres filtrados por tipo
+                        data.Datos.forEach(padre => {
+                            if (padre.tipo === col.filtroTipo) {
+                                nodosCol.push({ nombre: padre["Nodo Padre"], tipo: "Padre", visible: true });
+                            }
                         });
                     }
-
-                    padre["Nodos Hijo"].forEach(hijo => {
-                        const value = hijo[year] || 0;
-                        if (value > 0) { // Solo incluir flujos con valor positivo
-                            if (!nodes.has(hijo["Nodo Hijo"])) {
-                                nodes.set(hijo["Nodo Hijo"], {
-                                    name: hijo["Nodo Hijo"],
-                                    itemStyle: { color: hijo.color },
-                                    description: hijo.descripcion || ''
-                                });
-                            }
-                            links.push({
-                                source: padre["Nodo Padre"],
-                                target: hijo["Nodo Hijo"],
-                                value: value,
-                                lineStyle: {
-                                    color: 'source'
+                    nodosCol.forEach(nodo => {
+                        if (!nodes.has(nodo.nombre)) {
+                            let nodeData = null;
+                            if (nodo.tipo === "Padre") {
+                                nodeData = data.Datos.find(d => d["Nodo Padre"] === nodo.nombre);
+                            } else if (nodo.tipo === "Hijo") {
+                                for (const padre of data.Datos) {
+                                    const hijo = padre["Nodos Hijo"].find(h => h["Nodo Hijo"] === nodo.nombre);
+                                    if (hijo) {
+                                        nodeData = hijo;
+                                        break;
+                                    }
                                 }
+                            }
+                            nodes.set(nodo.nombre, {
+                                name: nodo.nombre,
+                                itemStyle: { color: nodeData && nodeData.color ? nodeData.color : undefined },
+                                description: nodeData && nodeData.descripcion ? nodeData.descripcion : '',
+                                tipo: nodo.tipo,
+                                padre: nodo.padre || null,
+                                columna: colIdx,
+                                posicion: nodo.posicion !== undefined ? nodo.posicion : null
                             });
                         }
                     });
                 });
 
+                // 2. Enlaces
+                if (config.enlaces && config.enlaces.length > 0) {
+                    // Enlaces explícitos
+                    config.enlaces.forEach(e => {
+                        // Buscar valor en los datos
+                        let value = 0;
+                        if (nodes.has(e.source) && nodes.has(e.target)) {
+                            // Buscar valor en los datos originales
+                            for (const padre of data.Datos) {
+                                if (padre["Nodo Padre"] === e.source) {
+                                    const hijo = padre["Nodos Hijo"].find(h => h["Nodo Hijo"] === e.target);
+                                    if (hijo) {
+                                        // Tomar el valor del año
+                                        value = hijo[year] || 0;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (value > 0) {
+                                links.push({ source: e.source, target: e.target, value });
+                            }
+                        }
+                    });
+                } else {
+                    // Enlaces automáticos por flujo de datos
+                    data.Datos.forEach(padre => {
+                        if (nodes.has(padre["Nodo Padre"])) {
+                            padre["Nodos Hijo"].forEach(hijo => {
+                                if (nodes.has(hijo["Nodo Hijo"])) {
+                                    const value = hijo[year] || 0;
+                                    if (value > 0) {
+                                        links.push({ source: padre["Nodo Padre"], target: hijo["Nodo Hijo"], value });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // 3. Ordenar nodos por columna y posición
+                let finalNodes = Array.from(nodes.values());
+                finalNodes.sort((a, b) => {
+                    if (a.columna !== b.columna) return a.columna - b.columna;
+                    if (a.posicion !== null && b.posicion !== null) return a.posicion - b.posicion;
+                    return 0;
+                });
+
                 // Guardar todos los nodos para referencia en el tooltip y búsqueda
-                allNodes = new Map(); // Limpiar antes de procesar nuevos datos
-                nodes.forEach(node => allNodes.set(node.name, node));
-                return { nodes: Array.from(nodes.values()), links };
+                allNodes = new Map();
+                finalNodes.forEach(node => allNodes.set(node.name, node));
+                return { nodes: finalNodes, links };
             }
 
             function updateChart(year) {
@@ -370,39 +437,31 @@
                 });
             }
 
-            fetch('datos_energia_completo.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error al cargar el archivo JSON: ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    energyData = data;
-                    energyData = data;
-                    const firstNode = data.Datos[0]["Nodos Hijo"][0];
-                    // Get all years and sort them descending
-                    const years = Object.keys(firstNode)
-                        .filter(key => !isNaN(key) && key.length === 4)
-                        .sort((a, b) => b - a);
 
-                    const latestYear = years[0]; // Get the most recent year
+            // Usar datos.js directamente
+            energyData = window.energyData;
+            if (!energyData) {
+                sankeyChart.showLoading({ text: 'No se pudieron cargar los datos.', color: '#c23531', textColor: '#000', maskColor: 'rgba(255, 255, 255, 0.8)', zlevel: 0 });
+                return;
+            }
+            const firstNode = energyData.Datos[0]["Nodos Hijo"][0];
+            // Get all years and sort them descending
+            const years = Object.keys(firstNode)
+                .filter(key => !isNaN(key) && key.length === 4)
+                .sort((a, b) => b - a);
 
-                    years.forEach(year => { // Iterate over the full sorted list
-                        const option = document.createElement('option');
-                        option.value = year;
-                        option.textContent = year;
-                        yearSelector.appendChild(option);
-                    });
+            const latestYear = years[0]; // Get the most recent year
 
-                    yearSelector.value = latestYear; // Set the default
-                    updateChart(latestYear);
-                    populateDatalist();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    sankeyChart.showLoading({ text: 'No se pudieron cargar los datos.', color: '#c23531', textColor: '#000', maskColor: 'rgba(255, 255, 255, 0.8)', zlevel: 0 });
-                });
+            years.forEach(year => { // Iterate over the full sorted list
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelector.appendChild(option);
+            });
+
+            yearSelector.value = latestYear; // Set the default
+            updateChart(latestYear);
+            populateDatalist();
 
             yearSelector.addEventListener('change', (e) => {
                 updateChart(e.target.value);
