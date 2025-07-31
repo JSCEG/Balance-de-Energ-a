@@ -77,6 +77,21 @@ window.sankeyConfig = {
                 { nombre: "Refinerías y Despuntadoras", tipo: "Padre", visible: true, posicion: 3, depth: 3 },
 
             ]
+        },
+        {
+            // Columna 4: Entradas a Transformaciones Centrales Eléctricas
+            nombre: "Transformaciones a Centrales Eléctricas",
+            mostrar: "Padre",
+            filtroTipo: "Energía Primaria",
+            alineacionVertical: "abajo",
+            nodos: [
+                // Un solo espaciador grande para empujar los nodos hacia abajo
+                // Nodos reales posicionados después del espaciador
+                { nombre: "SPACER_BIG_1", tipo: "Padre", visible: true, posicion: 1, depth: 4, esEspaciador: true, valorEspaciador: 10000 },
+                { nombre: "Centrales Eléctricas", tipo: "Padre", visible: true, posicion: 2, depth: 4 },
+
+
+            ]
         }
     ],
     enlaces: [
