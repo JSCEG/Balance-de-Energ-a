@@ -348,12 +348,17 @@
                         trigger: 'item',
                         triggerOn: 'mousemove',
                         formatter: function (params) {
+                            // Usar toLocaleString para formatear los números con separadores de miles.
+                            const numberFormat = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+
                             if (params.dataType === 'edge') {
-                                return `<b>${params.data.source} → ${params.data.target}</b><br/>Valor: ${params.data.value.toFixed(2)} PJ`;
+                                const formattedValue = params.data.value.toLocaleString('es-MX', numberFormat);
+                                return `<b>${params.data.source} → ${params.data.target}</b><br/>Valor: ${formattedValue} PJ`;
                             }
                             if (params.dataType === 'node') {
                                 const nodeData = allNodes.get(params.name);
-                                let tooltipText = `<b>${params.name}</b>`;
+                                const formattedValue = params.value.toLocaleString('es-MX', numberFormat);
+                                let tooltipText = `<b>${params.name}</b><br/>Total: ${formattedValue} PJ`;
                                 if (nodeData && nodeData.description) {
                                     tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeData.description}</i>`;
                                 }
