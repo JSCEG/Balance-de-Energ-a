@@ -49,7 +49,7 @@ window.sankeyConfig = {
         },
         {
             // Columna 3: Salidas de Energía Primaria
-            nombre: "Transformaciones",
+            nombre: "Salidas de Energía Primaria",
             mostrar: "Padre",
             filtroTipo: "Energía Primaria",
             alineacionVertical: "abajo",
@@ -61,6 +61,21 @@ window.sankeyConfig = {
                 { nombre: "Energía No Aprovechada", tipo: "Padre", visible: true, posicion: 2, depth: 2 },
                 { nombre: "Consumo Propio del Sector", tipo: "Padre", visible: true, posicion: 3, depth: 2 },
                 { nombre: "Pérdidas técnicas por transporte, transmisión y distribución", tipo: "Padre", visible: true, posicion: 4, depth: 2 },
+            ]
+        },
+        {
+            // Columna 4: Entradas a Transformaciones
+            nombre: "Transformaciones",
+            mostrar: "Padre",
+            filtroTipo: "Energía Primaria",
+            alineacionVertical: "abajo",
+            nodos: [
+                // Un solo espaciador grande para empujar los nodos hacia abajo
+                // Nodos reales posicionados después del espaciador
+                { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
+                { nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
+                { nombre: "Refinerías y Despuntadoras", tipo: "Padre", visible: true, posicion: 3, depth: 3 },
+
             ]
         }
     ],
