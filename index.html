@@ -256,7 +256,7 @@
                                     }
                                 }
                             }
-                            nodes.set(nodo.nombre, {
+                            const nodeConfig = {
                                 name: nodo.nombre,
                                 itemStyle: { color: nodeData && nodeData.color ? nodeData.color : undefined },
                                 description: nodeData && nodeData.descripcion ? nodeData.descripcion : '',
@@ -264,8 +264,32 @@
                                 padre: nodo.padre || null,
                                 columna: colIdx,
                                 posicion: nodo.posicion !== undefined ? nodo.posicion : null,
-                                depth: nodo.depth !== undefined ? nodo.depth : colIdx // <-- agrega esto
-                            });
+                                depth: nodo.depth !== undefined ? nodo.depth : colIdx,
+                                esEspaciador: nodo.esEspaciador || false
+                            };
+                            
+                            // Configurar nodos espaciadores
+                            if (nodo.esEspaciador) {
+                                nodeConfig.itemStyle = { 
+                                    color: 'transparent',
+                                    borderColor: 'transparent'
+                                };
+                                nodeConfig.label = { show: false };
+                                // Usar el valor del espaciador si está definido, sino usar valor mínimo
+                                nodeConfig.value = nodo.valorEspaciador || 0.1;
+                            }
+                            
+                            // Agregar posición fija si está definida
+                            if (nodo.x !== undefined) nodeConfig.x = nodo.x;
+                            if (nodo.y !== undefined) nodeConfig.y = nodo.y;
+                            if (nodo.fixedPos !== undefined) nodeConfig.fixedPos = nodo.fixedPos;
+                            
+                            // Para alineación vertical "abajo", forzar coordenadas Y altas
+                            if (col.alineacionVertical === "abajo" && nodo.y === undefined) {
+                                nodeConfig.y = 400 + (nodo.posicion || 0) * 50; // Posición base + offset
+                            }
+                            
+                            nodes.set(nodo.nombre, nodeConfig);
                         }
                     });
                 });
@@ -321,15 +345,44 @@
 
                 // 3. Ordenar nodos por columna y posición
                 let finalNodes = Array.from(nodes.values());
+                
+                // Aplicar alineación vertical por columna
+                config.columnas.forEach((col, colIdx) => {
+                    if (col.alineacionVertical === "abajo") {
+                        // Para nodos que deben ir abajo, asignar posiciones altas
+                        finalNodes.forEach(node => {
+                            if (node.columna === colIdx && node.posicion !== null) {
+                                node.posicion = node.posicion + 1000; // Forzar al final
+                            }
+                        });
+                    }
+                });
+                
                 finalNodes.sort((a, b) => {
+                    // Primero por columna/depth
                     if (a.columna !== b.columna) return a.columna - b.columna;
-                    if (a.posicion !== null && b.posicion !== null) return a.posicion - b.posicion;
-                    return 0;
+                    
+                    // Luego por posición si está definida
+                    if (a.posicion !== null && b.posicion !== null) {
+                        return a.posicion - b.posicion;
+                    }
+                    
+                    // Si solo uno tiene posición, ese va primero
+                    if (a.posicion !== null && b.posicion === null) return -1;
+                    if (a.posicion === null && b.posicion !== null) return 1;
+                    
+                    // Finalmente por nombre alfabético
+                    return a.name.localeCompare(b.name);
                 });
 
-                // Guardar todos los nodos para referencia en el tooltip y búsqueda
+                // Guardar todos los nodos para referencia en el tooltip y búsqueda (sin espaciadores)
                 allNodes = new Map();
-                finalNodes.forEach(node => allNodes.set(node.name, node));
+                finalNodes.forEach(node => {
+                    if (!node.esEspaciador) {
+                        allNodes.set(node.name, node);
+                    }
+                });
+                
                 return { nodes: finalNodes, links };
             }
 
@@ -359,6 +412,11 @@
                         trigger: 'item',
                         triggerOn: 'mousemove',
                         formatter: function (params) {
+                            // Ignorar nodos espaciadores
+                            if (params.name && (params.name.startsWith('SPACER_') || params.name === 'SPACER_BIG')) {
+                                return '';
+                            }
+                            
                             // Usar toLocaleString para formatear los números con separadores de miles.
                             const numberFormat = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
 
@@ -396,16 +454,19 @@
                                 opacity: 0.3
                             }
                         },
-                        nodeAlign: 'justify',
+                        // Usar configuración del config
+                        nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
+                        nodeGap: window.sankeyConfig.layoutConfig.nodeGap,
+                        nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
                         draggable: true,
-                        layoutIterations: 0, // Se establece en 0 para respetar el orden manual de los nodos
+                        layoutIterations: window.sankeyConfig.layoutConfig.layoutIterations,
                         label: {
                             fontSize: 12,
                             color: '#333'
                         },
                         lineStyle: {
                             color: 'gradient',
-                            curveness: 0.5,
+                            curveness: window.sankeyConfig.layoutConfig.curveness,
                             opacity: 0.6
                         },
                         itemStyle: {
@@ -415,6 +476,22 @@
                     }]
                 };
                 sankeyChart.setOption(option, true);
+                
+                // Forzar posicionamiento después del render inicial
+                setTimeout(() => {
+                    const updatedNodes = nodes.map(node => {
+                        if (node.y !== undefined) {
+                            return { ...node, y: node.y };
+                        }
+                        return node;
+                    });
+                    
+                    sankeyChart.setOption({
+                        series: [{
+                            data: updatedNodes
+                        }]
+                    }, false);
+                }, 100);
             }
 
             function populateDatalist() {
@@ -426,6 +503,18 @@
                         nodeNames.add(hijo["Nodo Hijo"]);
                     });
                 });
+                
+                // Agregar nodos de configuración (sin espaciadores)
+                window.sankeyConfig.columnas.forEach(col => {
+                    if (col.nodos) {
+                        col.nodos.forEach(nodo => {
+                            if (!nodo.esEspaciador && nodo.visible !== false) {
+                                nodeNames.add(nodo.nombre);
+                            }
+                        });
+                    }
+                });
+                
                 nodeDatalist.innerHTML = '';
                 Array.from(nodeNames).sort().forEach(name => {
                     const option = document.createElement('option');
