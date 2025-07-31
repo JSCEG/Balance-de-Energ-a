@@ -47,10 +47,10 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Puedes agregar más nodos padre aquí si lo deseas
-                { nombre: "Exportación", tipo: "Padre", visible: true, posicion: 0 },
-                { nombre: "Energía No Aprovechada", tipo: "Padre", visible: true, posicion: 1 },
-                { nombre: "Consumo Propio del Sector", tipo: "Padre", visible: true, posicion: 2 },
-                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución", tipo: "Padre", visible: true, posicion: 3 },
+                { nombre: "Exportación", tipo: "Padre", visible: true, posicion: 0, depth: 2 }, // columna 3 = depth 2
+                { nombre: "Energía No Aprovechada", tipo: "Padre", visible: true, posicion: 1, depth: 2 },
+                { nombre: "Consumo Propio del Sector", tipo: "Padre", visible: true, posicion: 2, depth: 2 },
+                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución", tipo: "Padre", visible: true, posicion: 3, depth: 2 },
             ]
         }
     ],

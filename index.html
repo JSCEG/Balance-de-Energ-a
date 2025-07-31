@@ -263,7 +263,8 @@
                                 tipo: nodo.tipo,
                                 padre: nodo.padre || null,
                                 columna: colIdx,
-                                posicion: nodo.posicion !== undefined ? nodo.posicion : null
+                                posicion: nodo.posicion !== undefined ? nodo.posicion : null,
+                                depth: nodo.depth !== undefined ? nodo.depth : colIdx // <-- agrega esto
                             });
                         }
                     });
