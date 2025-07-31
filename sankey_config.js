@@ -9,9 +9,9 @@ window.sankeyConfig = {
             filtroTipo: "Energía Primaria", // Solo hijos cuyo tipo sea "Energía Primaria"
             nodos: [
                 // Puedes agregar más nodos padre aquí si lo deseas
-                { nombre: "Producción", tipo: "Padre", visible: true, posicion: 0 },
-                { nombre: "Importación", tipo: "Padre", visible: true, posicion: 1 },
-                { nombre: "Variación de Inventarios", tipo: "Padre", visible: true, posicion: 2 },
+                { nombre: "Producción", tipo: "Padre", visible: true, posicion: 2 },
+                { nombre: "Importación", tipo: "Padre", visible: true, posicion: 0 },
+                { nombre: "Variación de Inventarios", tipo: "Padre", visible: true, posicion: 1 },
             ]
         },
         {
