@@ -287,9 +287,15 @@
                                     }
                                 }
                             }
-                            if (value > 0) {
-                                links.push({ source: e.source, target: e.target, value });
+
+                            if (value !== 0) {
+                                links.push({
+                                    source: padre["Nodo Padre"],
+                                    target: hijo["Nodo Hijo"],
+                                    value: Math.abs(value) // <-- valor absoluto
+                                });
                             }
+
                         }
                     });
                 } else {
@@ -299,8 +305,12 @@
                             padre["Nodos Hijo"].forEach(hijo => {
                                 if (nodes.has(hijo["Nodo Hijo"])) {
                                     const value = hijo[year] || 0;
-                                    if (value > 0) {
-                                        links.push({ source: padre["Nodo Padre"], target: hijo["Nodo Hijo"], value });
+                                    if (value !== 0) {
+                                        links.push({
+                                            source: padre["Nodo Padre"],
+                                            target: hijo["Nodo Hijo"],
+                                            value: Math.abs(value) // <-- valor absoluto
+                                        });
                                     }
                                 }
                             });

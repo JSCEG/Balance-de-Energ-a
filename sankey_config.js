@@ -7,6 +7,7 @@ window.sankeyConfig = {
             nombre: "Origen",
             mostrar: "Padre",
             filtroTipo: "Energía Primaria", // Solo hijos cuyo tipo sea "Energía Primaria"
+            alineacionVertical: "abajo",
             nodos: [
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Producción", tipo: "Padre", visible: true, posicion: 2 },
@@ -36,6 +37,20 @@ window.sankeyConfig = {
                 { nombre: "Leña", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 10 },
                 { nombre: "Biogás", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 11 }
                 // ...
+            ]
+        },
+        {
+            // Columna 3: Salidas de Eenrgía Primaria
+            nombre: "Transformaciones",
+            mostrar: "Padre",
+            filtroTipo: "Energía Primaria", // Solo hijos cuyo tipo sea "Energía Primaria"
+            alineacionVertical: "abajo",
+            nodos: [
+                // Puedes agregar más nodos padre aquí si lo deseas
+                { nombre: "Exportación", tipo: "Padre", visible: true, posicion: 0 },
+                { nombre: "Energía No Aprovechada", tipo: "Padre", visible: true, posicion: 1 },
+                { nombre: "Consumo Propio del Sector", tipo: "Padre", visible: true, posicion: 2 },
+                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución", tipo: "Padre", visible: true, posicion: 3 },
             ]
         }
     ],
