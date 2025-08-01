@@ -1,10 +1,11 @@
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Elegante</title>
-    
+    <title>Histórico del Balance Nacional de Energía México - Sankey</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -431,6 +432,7 @@
             <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
             <p><strong style="color: var(--primary-color);">Descripción:</strong> <span id="node-details-description"></span></p>
             <div id="node-details-values"></div>
+            <button id="open-details-new-tab" class="btn" style="margin-top: 1rem;">Abrir en Nueva Pestaña</button>
         </div>
 
         <footer>
@@ -571,8 +573,11 @@
             updateChart(years[0]);
             populateDatalist();
 
-            yearSelector.addEventListener('change', (e) => updateChart(e.target.value));
-            searchInput.addEventListener('input', handleSearch);
+            yearSelector.addEventListener('change', (e) => {
+                updateChart(e.target.value);
+                searchInput.value = ''; // Clear search input
+                document.getElementById('node-details-container').style.display = 'none'; // Hide details table
+            });
 
             document.getElementById('exportar').onclick = function () {
                 // Guardar el renderizador actual
@@ -710,7 +715,7 @@
                 console.log('Click en Sankey:', params);
                 if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
                     const nodeInfo = allNodes.get(params.name);
-                    console.log('Node Info:', nodeInfo);
+                    
                     if (nodeInfo && nodeInfo.tipo && (nodeInfo.tipo === 'Energía Primaria' || nodeInfo.tipo === 'Energía Secundaria')) { // Check if it's an energetic child node
                         console.log('Displaying node details for:', nodeInfo.name);
                         document.getElementById('node-details-name').textContent = nodeInfo.name;
