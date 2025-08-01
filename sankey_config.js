@@ -63,9 +63,10 @@ window.sankeyConfig = {
                 { nombre: "Consumo Propio del Sector EP", tipo: "Padre", visible: true, posicion: 3, depth: 2, flow: 'sink' },
                 { nombre: "Pérdidas técnicas por transporte, transmisión y distribución EP", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' },
                 { nombre: "Variación de Inventarios EP (-)", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' }, // Default para manejar valores +/- 
-                { nombre: "Diferencia Estadística EP (-)", tipo: "Padre", visible: true, posicion: 5, depth: 2, flow: 'sink' }, // Default para manejar valores +/- 
+                // { nombre: "Diferencia Estadística EP (-)", tipo: "Padre", visible: true, posicion: 5, depth: 2, flow: 'sink' }, // N/A toso los años de EP en 0 pero queda la configuración lista 
             ]
         },
+        //Refinerías y Despuntadoras
         {
             // Columna 4: Entradas a Transformaciones
             nombre: "Transformaciones",
@@ -98,6 +99,7 @@ window.sankeyConfig = {
             ]
         },
         // Energéticos Secundarios
+
         {
             // Columna 5: Hijos de Oferta Interna Bruta EP, solo los de tipo Energía Secundaria
             nombre: "Energía Secundaria",
