@@ -82,7 +82,7 @@ window.sankeyConfig = {
             // Columna 4: Entradas a Transformaciones Centrales Eléctricas
             nombre: "Transformaciones a Centrales Eléctricas",
             mostrar: "Padre",
-            filtroTipo: "Energía Primaria",
+            filtroTipo: "Todos",
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
@@ -92,7 +92,29 @@ window.sankeyConfig = {
 
 
             ]
-        }
+        },
+        // Energéticos Secundarios
+        {
+            // Columna: Hijos de Oferta Interna Bruta, solo los de tipo Energía Secundaria
+            nombre: "Energía Secundaria",
+            mostrar: "Hijo",
+            filtroTipo: "Energía Secundaria",
+            padre: "Oferta Interna Bruta", // Solo hijos cuyo tipo sea "Energía Secundaria"
+            nodos: [
+                // Puedes ajustar el orden y agregar más según tu catálogo
+                { nombre: "Coque de carbón", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 0, depth: 5 },
+                { nombre: "Coque de petróleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 1, depth: 5 },
+                //  { nombre: "Gas licuado de petróleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 2, depth: 5 },
+                // { nombre: "Gasolinas y naftas", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 3, depth: 5 },
+                { nombre: "Querosenos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 4, depth: 5 },
+                //{ nombre: "Diesel", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 5, depth: 5 },
+                //{ nombre: "Combustóleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 6, depth: 5 },
+                //{ nombre: "Otros energéticos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 7, depth: 5 },
+                { nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 8, depth: 5 },
+                { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta", posicion: 9, depth: 5 }
+                // // ...
+            ]
+        },
     ],
     enlaces: [
         // Si quieres forzar enlaces explícitos, agrégalos aquí:
