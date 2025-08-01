@@ -440,6 +440,7 @@
                 <p><strong>Entrada Total:</strong> <span id="node-details-inflow"></span></p>
                 <p><strong>Salida Total:</strong> <span id="node-details-outflow"></span></p>
                 <p><strong>Balance Neto:</strong> <span id="node-details-balance"></span></p>
+                <p><span id="node-details-efficiency"></span></p>
             </div>
             <div id="node-details-values"></div>
             <button id="open-details-new-tab" class="btn" style="margin-top: 1rem;">Abrir en Nueva Pestaña</button>
@@ -485,12 +486,15 @@
                             const lossPercentage = (node.inflow - node.outflow) / node.inflow;
                             node.itemStyle = node.itemStyle || {}; // Asegurar que itemStyle exista
 
-                            if (lossPercentage >= 0.5) { // 50% o más de pérdida
+                            if (lossPercentage >= 0.5) { // Crítico
                                 node.itemStyle.borderColor = '#e53e3e'; // Rojo
                                 node.itemStyle.borderWidth = 2.5;
-                            } else if (lossPercentage >= 0.25) { // Entre 25% y 50% de pérdida
+                            } else if (lossPercentage >= 0.25) { // Alerta
                                 node.itemStyle.borderColor = '#dd6b20'; // Naranja
                                 node.itemStyle.borderWidth = 2.5;
+                            } else { // Eficiente
+                                node.itemStyle.borderColor = '#38a169'; // Verde
+                                node.itemStyle.borderWidth = 2;
                             }
                         }
                     }
@@ -751,34 +755,33 @@
                         document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
 
                         // Actualizar los campos de resumen existentes
-                        // Lógica para el indicador de eficiencia/pérdida
-                        const showAlerts = document.getElementById('alert-switch').checked;
-                        const efficiencyContainer = document.createElement('div');
-                        if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0) { // Solo para nodos de transformación
-                            const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
-                            const efficiency = 1 - lossPercentage;
-                            let color = '#38a169'; // Verde para buena eficiencia
-                            let message = `Eficiencia: ${(efficiency * 100).toFixed(2)}%`;
-
-                            if (lossPercentage >= 0.5) {
-                                color = '#e53e3e'; // Rojo
-                                message += ` | <strong style="color:${color};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
-                            } else if (lossPercentage >= 0.25) {
-                                color = '#dd6b20'; // Naranja
-                                message += ` | <strong style="color:${color};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
-                            }
-
-                            efficiencyContainer.innerHTML = `<p style="border: 2px solid ${color}; padding: 10px; border-radius: 8px;">${message}</p>`;
-                        }
-
-                        // Actualizar los campos de resumen existentes
+                        // Restaurar los totales y manejar la eficiencia
                         document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
                         document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
                         document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
+                        
+                        const efficiencySpan = document.getElementById('node-details-efficiency');
+                        efficiencySpan.innerHTML = ''; // Limpiar
+
+                        const showAlerts = document.getElementById('alert-switch').checked;
+                        if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0) {
+                            const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
+                            const efficiency = 1 - lossPercentage;
+                            let message = '';
+
+                            if (lossPercentage >= 0.5) {
+                                message = `🚨 <strong style="color:#e53e3e;">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica: >50%)</strong>`;
+                            } else if (lossPercentage >= 0.25) {
+                                message = `⚠️ <strong style="color:#dd6b20;">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta: 25%-50%)</strong>`;
+                            } else {
+                                message = `✅ <strong style="color:#38a169;">Eficiencia: ${(efficiency * 100).toFixed(2)}%</strong>`;
+                            }
+                            efficiencySpan.innerHTML = message;
+                        }
 
                         const valuesContainer = document.getElementById('node-details-values');
                         valuesContainer.innerHTML = ''; // Limpiar contenido anterior
-                        valuesContainer.appendChild(efficiencyContainer); // Añadir el indicador de eficiencia
+
                         const clickedNodeName = params.name;
                         const selectedYear = yearSelector.value;
 
@@ -813,45 +816,28 @@
                             detailsHtml += '<h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p>';
                         }
                         detailsHtml += '</div>';
-
                         detailsHtml += '</div>'; // Cierre del flex container
 
-                        // Contenedor para la tabla de nodos padre
+                        // Tabla de Nodos Padre
                         const parentNodesContainer = document.createElement('div');
-
-                        // Lógica existente para la tabla de nodos padre
-                        const table = document.createElement('table');
-                        table.style.width = '100%';
-                        table.style.borderCollapse = 'collapse';
-                        table.innerHTML = `
-                            <thead style="margin-top: 1.5rem;">
-                                <tr style="background-color: #f2f2f2;">
-                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Nodo Padre</th>
-                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Valor (PJ)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        `;
-                        const tbody = table.querySelector('tbody');
+                        const parentTable = document.createElement('table');
+                        parentTable.innerHTML = `<thead><tr><th>Nodo Padre</th><th>Valor (PJ)</th></tr></thead><tbody></tbody>`;
+                        const tbody = parentTable.querySelector('tbody');
                         let parentRows = 0;
+
                         window.energyData.Datos.forEach(parentData => {
                             const parentName = parentData["Nodo Padre"];
                             const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
-
-                            if (childEnergetic) {
-                                const valueForYear = childEnergetic[selectedYear];
-                                if (valueForYear !== undefined && valueForYear !== null) {
-                                    const row = tbody.insertRow();
-                                    row.innerHTML = `<td>${parentName}</td><td>${formatNumber(valueForYear)}</td>`;
-                                    parentRows++;
-                                }
+                            if (childEnergetic && childEnergetic[selectedYear] !== undefined && childEnergetic[selectedYear] !== null) {
+                                const row = tbody.insertRow();
+                                row.innerHTML = `<td>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td>`;
+                                parentRows++;
                             }
                         });
 
                         if (parentRows > 0) {
                             parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación en Nodos Padre</h4>';
-                            parentNodesContainer.appendChild(table);
+                            parentNodesContainer.appendChild(parentTable);
                         }
 
                         valuesContainer.innerHTML = detailsHtml + parentNodesContainer.innerHTML;
