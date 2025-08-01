@@ -315,7 +315,9 @@
                             }
 
                             if (value !== 0) {
+
                                 if (value < 0 && !nonReversedParents.has(padre["Nodo Padre"])) {
+
                                     links.push({
                                         source: hijo["Nodo Hijo"],
                                         target: padre["Nodo Padre"],
@@ -340,7 +342,9 @@
                                 if (nodes.has(hijo["Nodo Hijo"])) {
                                     const value = hijo[year] || 0;
                                     if (value !== 0) {
+
                                         if (value < 0 && !nonReversedParents.has(padre["Nodo Padre"])) {
+
                                             links.push({
                                                 source: hijo["Nodo Hijo"],
                                                 target: padre["Nodo Padre"],
