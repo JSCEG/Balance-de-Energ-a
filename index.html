@@ -430,7 +430,13 @@
         <div id="node-details-container" class="card" style="display: none;">
             <h2>Detalles del Energético: <span id="node-details-name"></span></h2>
             <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
-            <p><strong style="color: var(--primary-color);">Descripción:</strong> <span id="node-details-description"></span></p>
+            <p><strong style="color: var(--primary-color);">Descripción:</strong> <span
+                    id="node-details-description"></span></p>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+                <p><strong>Entrada Total:</strong> <span id="node-details-inflow"></span></p>
+                <p><strong>Salida Total:</strong> <span id="node-details-outflow"></span></p>
+                <p><strong>Balance Neto:</strong> <span id="node-details-balance"></span></p>
+            </div>
             <div id="node-details-values"></div>
             <button id="open-details-new-tab" class="btn" style="margin-top: 1rem;">Abrir en Nueva Pestaña</button>
         </div>
@@ -715,12 +721,17 @@
                 console.log('Click en Sankey:', params);
                 if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
                     const nodeInfo = allNodes.get(params.name);
-                    
-                    if (nodeInfo && nodeInfo.tipo && (nodeInfo.tipo === 'Energía Primaria' || nodeInfo.tipo === 'Energía Secundaria')) { // Check if it's an energetic child node
+
+                    if (nodeInfo) { // Removed type check, now shows for all nodes
                         console.log('Displaying node details for:', nodeInfo.name);
                         document.getElementById('node-details-name').textContent = nodeInfo.name;
-                        document.getElementById('node-details-type').textContent = nodeInfo.tipo;
+                        document.getElementById('node-details-type').textContent = nodeInfo.tipo || 'N/A'; // Display N/A if type is not defined
                         document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
+
+                        // Populate new summary fields
+                        document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow) + ' PJ';
+                        document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow) + ' PJ';
+                        document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow) + ' PJ';
 
                         const valuesContainer = document.getElementById('node-details-values');
                         const clickedNodeName = params.name;
@@ -777,6 +788,7 @@
 
             window.addEventListener('resize', () => sankeyChart.resize());
         });
+
     </script>
 
 </body>
