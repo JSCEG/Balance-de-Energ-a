@@ -219,6 +219,7 @@
                 const config = window.sankeyConfig;
                 const nodes = new Map();
                 const links = [];
+                const nonReversedParents = new Set(["Exportación","Energía No Aprovechada","Consumo Propio del Sector","Pérdidas técnicas por transporte, transmisión y distribución"]);
                 // 1. Construir nodos por columnas
                 config.columnas.forEach((col, colIdx) => {
                     let nodosCol = [];
@@ -314,11 +315,19 @@
                             }
 
                             if (value !== 0) {
-                                links.push({
-                                    source: padre["Nodo Padre"],
-                                    target: hijo["Nodo Hijo"],
-                                    value: Math.abs(value) // <-- valor absoluto
-                                });
+                                if (value < 0 && !nonReversedParents.has(padre["Nodo Padre"])) {
+                                    links.push({
+                                        source: hijo["Nodo Hijo"],
+                                        target: padre["Nodo Padre"],
+                                        value: Math.abs(value)
+                                    });
+                                } else {
+                                    links.push({
+                                        source: padre["Nodo Padre"],
+                                        target: hijo["Nodo Hijo"],
+                                        value: Math.abs(value)
+                                    });
+                                }
                             }
 
                         }
@@ -331,11 +340,19 @@
                                 if (nodes.has(hijo["Nodo Hijo"])) {
                                     const value = hijo[year] || 0;
                                     if (value !== 0) {
-                                        links.push({
-                                            source: padre["Nodo Padre"],
-                                            target: hijo["Nodo Hijo"],
-                                            value: Math.abs(value) // <-- valor absoluto
-                                        });
+                                        if (value < 0 && !nonReversedParents.has(padre["Nodo Padre"])) {
+                                            links.push({
+                                                source: hijo["Nodo Hijo"],
+                                                target: padre["Nodo Padre"],
+                                                value: Math.abs(value)
+                                            });
+                                        } else {
+                                            links.push({
+                                                source: padre["Nodo Padre"],
+                                                target: hijo["Nodo Hijo"],
+                                                value: Math.abs(value)
+                                            });
+                                        }
                                     }
                                 }
                             });
@@ -541,7 +558,6 @@
                     name: searchTerm
                 });
             }
-
 
             // Usar datos.js directamente
             energyData = window.energyData;
