@@ -19,7 +19,7 @@ window.sankeyConfig = {
             nodos: [
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Importación EP", tipo: "Padre", visible: true, posicion: 0, y: 100, flow: 'source' },
-                { nombre: "Variación de Inventarios EP (+)", tipo: "Padre", visible: true, posicion: 1, y: 200, flow: 'default' }, // Default para manejar valores +/- 
+                { nombre: "Variación de Inventarios EP (+)", tipo: "Padre", visible: true, posicion: 1, }, // Default para manejar valores +/- 
                 { nombre: "Producción", tipo: "Padre", visible: true, posicion: 2, y: 300, flow: 'source' },
             ]
         },

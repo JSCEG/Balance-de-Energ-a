@@ -77,6 +77,25 @@ window.dataProcessor = {
             }
         });
 
+        // 3. Calcular el valor neto de cada nodo (entrada - salida) y adjuntar inflow/outflow
+        const nodeInflow = new Map();
+        const nodeOutflow = new Map();
+
+        links.forEach(link => {
+            nodeInflow.set(link.target, (nodeInflow.get(link.target) || 0) + link.value);
+            nodeOutflow.set(link.source, (nodeOutflow.get(link.source) || 0) + link.value);
+        });
+
+        Array.from(nodes.values()).forEach(node => {
+            if (!node.esEspaciador) {
+                const inflow = nodeInflow.get(node.name) || 0;
+                const outflow = nodeOutflow.get(node.name) || 0;
+                node.value = Math.abs(inflow - outflow); // Valor neto absoluto para el tamaño del nodo
+                node.inflow = inflow; // Almacenar inflow para el tooltip
+                node.outflow = outflow; // Almacenar outflow para el tooltip
+            }
+        });
+
         return { nodes: Array.from(nodes.values()), links };
     },
 

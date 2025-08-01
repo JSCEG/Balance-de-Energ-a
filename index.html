@@ -247,10 +247,17 @@
                         formatter: function (params) {
                             if (params.name && params.name.startsWith('SPACER')) return '';
                             if (params.dataType === 'edge') {
-                                return `${params.data.source} → ${params.data.target}: ${params.data.value.toLocaleString()} PJ`;
+                                return `${params.data.source} → ${params.data.target}: ${params.value.toFixed(2)} PJ`;
                             }
                             const nodeInfo = allNodes.get(params.name);
-                            let tooltipText = `<b>${params.name}</b><br/>Total: ${params.value.toLocaleString()} PJ`;
+                            let tooltipText = `<b>${params.name}</b><br/>`;
+                            if (nodeInfo) {
+                                tooltipText += `Entrada: ${nodeInfo.inflow.toFixed(2)} PJ<br/>`;
+                                tooltipText += `Salida: ${nodeInfo.outflow.toFixed(2)} PJ<br/>`;
+                                tooltipText += `Balance: ${(nodeInfo.inflow - nodeInfo.outflow).toFixed(2)} PJ`;
+                            } else {
+                                tooltipText += `Total: ${params.value.toFixed(2)} PJ`;
+                            }
                             if (nodeInfo && nodeInfo.description) {
                                 tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeInfo.description}</i>`;
                             }
