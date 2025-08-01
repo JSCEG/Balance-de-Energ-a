@@ -458,13 +458,16 @@
 
             let energyData = window.energyData;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
+            let currentLinks = []; // Para guardar los enlaces actuales
 
             const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
 
             function updateChart(year) {
                 if (!energyData) return;
 
-                const { nodes, links } = window.dataProcessor.processSankeyData(energyData, year, window.sankeyConfig);
+                const processedData = window.dataProcessor.processSankeyData(energyData, year, window.sankeyConfig);
+                const { nodes } = processedData;
+                currentLinks = processedData.links; // Guardar los enlaces
 
                 // Guardar nodos para tooltip y búsqueda
                 allNodes.clear();
@@ -474,7 +477,7 @@
                     }
                 });
 
-                if (links.length === 0) {
+                if (currentLinks.length === 0) {
                     sankeyChart.clear();
                     sankeyChart.showLoading({ text: `No hay datos de flujo para el año ${year}.` });
                     return;
@@ -527,7 +530,7 @@
                     series: [{
                         type: 'sankey',
                         data: nodes,
-                        links: links,
+                        links: currentLinks,
                         emphasis: { focus: 'adjacency' },
                         nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
                         nodeGap: window.sankeyConfig.layoutConfig.nodeGap,
@@ -728,21 +731,48 @@
                         document.getElementById('node-details-type').textContent = nodeInfo.tipo || 'N/A'; // Display N/A if type is not defined
                         document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
 
-                        // Populate new summary fields
-                        document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow) + ' PJ';
-                        document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow) + ' PJ';
-                        document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow) + ' PJ';
+                        // Actualizar los campos de resumen existentes
+                        document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
+                        document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
+                        document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
 
                         const valuesContainer = document.getElementById('node-details-values');
                         const clickedNodeName = params.name;
                         const selectedYear = yearSelector.value;
 
-                        valuesContainer.innerHTML = `<h3>Balance ${selectedYear} ${clickedNodeName}:</h3>`;
+                        // Filtrar flujos de entrada y salida
+                        const inflows = currentLinks.filter(link => link.target === clickedNodeName);
+                        const outflows = currentLinks.filter(link => link.source === clickedNodeName);
+
+                        let detailsHtml = '';
+
+                        // Tabla de Flujos de Entrada
+                        if (inflows.length > 0) {
+                            detailsHtml += '<h4>Flujos de Entrada</h4><table><thead><tr><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
+                            inflows.forEach(link => {
+                                detailsHtml += `<tr><td>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
+                            });
+                            detailsHtml += '</tbody></table>';
+                        }
+
+                        // Tabla de Flujos de Salida
+                        if (outflows.length > 0) {
+                            detailsHtml += '<h4 style="margin-top: 1.5rem;">Flujos de Salida</h4><table><thead><tr><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
+                            outflows.forEach(link => {
+                                detailsHtml += `<tr><td>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
+                            });
+                            detailsHtml += '</tbody></table>';
+                        }
+
+                        // Contenedor para la tabla de nodos padre
+                        const parentNodesContainer = document.createElement('div');
+
+                        // Lógica existente para la tabla de nodos padre
                         const table = document.createElement('table');
                         table.style.width = '100%';
                         table.style.borderCollapse = 'collapse';
                         table.innerHTML = `
-                            <thead>
+                            <thead style="margin-top: 1.5rem;">
                                 <tr style="background-color: #f2f2f2;">
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Nodo Padre</th>
                                     <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Valor (PJ)</th>
@@ -752,28 +782,27 @@
                             </tbody>
                         `;
                         const tbody = table.querySelector('tbody');
-
+                        let parentRows = 0;
                         window.energyData.Datos.forEach(parentData => {
                             const parentName = parentData["Nodo Padre"];
                             const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
 
                             if (childEnergetic) {
                                 const valueForYear = childEnergetic[selectedYear];
-                                // Solo añadir la fila si el valor existe y no es undefined/null
                                 if (valueForYear !== undefined && valueForYear !== null) {
                                     const row = tbody.insertRow();
-                                    const parentCell = row.insertCell();
-                                    const valueCell = row.insertCell();
-                                    parentCell.style.border = '1px solid #ddd';
-                                    parentCell.style.padding = '8px';
-                                    valueCell.style.border = '1px solid #ddd';
-                                    valueCell.style.padding = '8px';
-                                    parentCell.textContent = parentName;
-                                    valueCell.textContent = formatNumber(valueForYear);
+                                    row.innerHTML = `<td>${parentName}</td><td>${formatNumber(valueForYear)}</td>`;
+                                    parentRows++;
                                 }
                             }
                         });
-                        valuesContainer.appendChild(table);
+
+                        if (parentRows > 0) {
+                            parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación en Nodos Padre</h4>';
+                            parentNodesContainer.appendChild(table);
+                        }
+
+                        valuesContainer.innerHTML = detailsHtml + parentNodesContainer.innerHTML;
 
                         document.getElementById('node-details-container').style.display = 'block';
                     } else {
