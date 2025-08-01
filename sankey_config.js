@@ -18,9 +18,9 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Puedes agregar más nodos padre aquí si lo deseas
-                { nombre: "Importación", tipo: "Padre", visible: true, posicion: 0, y: 100 },
-                { nombre: "Variación de Inventarios", tipo: "Padre", visible: true, posicion: 1, y: 200 },
-                { nombre: "Producción", tipo: "Padre", visible: true, posicion: 2, y: 300 },
+                { nombre: "Importación", tipo: "Padre", visible: true, posicion: 0, y: 100, flow: 'source' },
+                { nombre: "Variación de Inventarios", tipo: "Padre", visible: true, posicion: 1, y: 200, flow: 'default' }, // Default para manejar valores +/- 
+                { nombre: "Producción", tipo: "Padre", visible: true, posicion: 2, y: 300, flow: 'source' },
             ]
         },
         {
@@ -57,10 +57,10 @@ window.sankeyConfig = {
                 // Un solo espaciador grande para empujar los nodos hacia abajo
                 { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 10000 },
                 // Nodos reales posicionados después del espaciador
-                { nombre: "Exportación", tipo: "Padre", visible: true, posicion: 1, depth: 2 },
-                { nombre: "Energía No Aprovechada", tipo: "Padre", visible: true, posicion: 2, depth: 2 },
-                { nombre: "Consumo Propio del Sector", tipo: "Padre", visible: true, posicion: 3, depth: 2 },
-                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución", tipo: "Padre", visible: true, posicion: 4, depth: 2 },
+                { nombre: "Exportación", tipo: "Padre", visible: true, posicion: 1, depth: 2, flow: 'sink' },
+                { nombre: "Energía No Aprovechada", tipo: "Padre", visible: true, posicion: 2, depth: 2, flow: 'sink' },
+                { nombre: "Consumo Propio del Sector", tipo: "Padre", visible: true, posicion: 3, depth: 2, flow: 'sink' },
+                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' },
             ]
         },
         {

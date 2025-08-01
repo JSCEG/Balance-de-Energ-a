@@ -203,6 +203,7 @@
     </div>
     <script src="datos.js"></script>
     <script src="sankey_config.js"></script>
+    <script src="data_processor.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const chartDom = document.getElementById('sankey');
@@ -210,209 +211,26 @@
             const yearSelector = document.getElementById('year-selector');
             const searchInput = document.getElementById('search-input');
             const nodeDatalist = document.getElementById('node-list');
-            const resetButton = document.getElementById('reset-view');
 
-            let energyData = null;
-            let allNodes = new Map();
-
-            function processSankeyData(data, year) {
-                const config = window.sankeyConfig;
-                const nodes = new Map();
-                const links = [];
-                // 1. Construir nodos por columnas
-                config.columnas.forEach((col, colIdx) => {
-                    let nodosCol = [];
-                    if (col.nodos && col.nodos.length > 0) {
-                        // Usa los nodos definidos en la config
-                        nodosCol = col.nodos.filter(n => n.visible !== false);
-                    } else if (col.mostrar === "Hijo" && col.filtroTipo) {
-                        // Autollenar hijos filtrados por tipo
-                        data.Datos.forEach(padre => {
-                            padre["Nodos Hijo"].forEach(hijo => {
-                                if (hijo.tipo === col.filtroTipo) {
-                                    nodosCol.push({ nombre: hijo["Nodo Hijo"], tipo: "Hijo", visible: true, padre: padre["Nodo Padre"] });
-                                }
-                            });
-                        });
-                    } else if (col.mostrar === "Padre" && col.filtroTipo) {
-                        // Autollenar padres filtrados por tipo
-                        data.Datos.forEach(padre => {
-                            if (padre.tipo === col.filtroTipo) {
-                                nodosCol.push({ nombre: padre["Nodo Padre"], tipo: "Padre", visible: true });
-                            }
-                        });
-                    }
-                    nodosCol.forEach(nodo => {
-                        if (!nodes.has(nodo.nombre)) {
-                            let nodeData = null;
-                            if (nodo.tipo === "Padre") {
-                                nodeData = data.Datos.find(d => d["Nodo Padre"] === nodo.nombre);
-                            } else if (nodo.tipo === "Hijo") {
-                                for (const padre of data.Datos) {
-                                    const hijo = padre["Nodos Hijo"].find(h => h["Nodo Hijo"] === nodo.nombre);
-                                    if (hijo) {
-                                        nodeData = hijo;
-                                        break;
-                                    }
-                                }
-                            }
-                            const nodeConfig = {
-                                name: nodo.nombre,
-                                itemStyle: { color: nodeData && nodeData.color ? nodeData.color : undefined },
-                                description: nodeData && nodeData.descripcion ? nodeData.descripcion : '',
-                                tipo: nodo.tipo,
-                                padre: nodo.padre || null,
-                                columna: colIdx,
-                                posicion: nodo.posicion !== undefined ? nodo.posicion : null,
-                                depth: nodo.depth !== undefined ? nodo.depth : colIdx,
-                                esEspaciador: nodo.esEspaciador || false
-                            };
-                            
-                            // Configurar nodos espaciadores
-                            if (nodo.esEspaciador) {
-                                nodeConfig.itemStyle = { 
-                                    color: 'transparent',
-                                    borderColor: 'transparent'
-                                };
-                                nodeConfig.label = { show: false };
-                                // Usar el valor del espaciador si está definido, sino usar valor mínimo
-                                nodeConfig.value = nodo.valorEspaciador || 0.1;
-                            }
-                            
-                            // Agregar posición fija si está definida
-                            if (nodo.x !== undefined) nodeConfig.x = nodo.x;
-                            if (nodo.y !== undefined) nodeConfig.y = nodo.y;
-                            if (nodo.fixedPos !== undefined) nodeConfig.fixedPos = nodo.fixedPos;
-                            
-                            // Para alineación vertical "abajo", forzar coordenadas Y altas
-                            if (col.alineacionVertical === "abajo" && nodo.y === undefined) {
-                                nodeConfig.y = 400 + (nodo.posicion || 0) * 50; // Posición base + offset
-                            }
-                            
-                            nodes.set(nodo.nombre, nodeConfig);
-                        }
-                    });
-                });
-
-                // 2. Enlaces
-                if (config.enlaces && config.enlaces.length > 0) {
-                    // Enlaces explícitos
-                    config.enlaces.forEach(e => {
-                        // Buscar valor en los datos
-                        let value = 0;
-                        if (nodes.has(e.source) && nodes.has(e.target)) {
-                            // Buscar valor en los datos originales
-                            for (const padre of data.Datos) {
-                                if (padre["Nodo Padre"] === e.source) {
-                                    const hijo = padre["Nodos Hijo"].find(h => h["Nodo Hijo"] === e.target);
-                                    if (hijo) {
-                                        // Tomar el valor del año
-                                        value = hijo[year] || 0;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (value !== 0) {
-                                if (value < 0) {
-                                    links.push({
-                                        source: hijo["Nodo Hijo"],
-                                        target: padre["Nodo Padre"],
-                                        value: Math.abs(value)
-                                    });
-                                } else {
-                                    links.push({
-                                        source: padre["Nodo Padre"],
-                                        target: hijo["Nodo Hijo"],
-
-                                        value: Math.abs(value) // <-- valor absoluto
-
-                                    });
-                                }
-                            }
-
-                        }
-                    });
-                } else {
-                    // Enlaces automáticos por flujo de datos
-                    data.Datos.forEach(padre => {
-                        if (nodes.has(padre["Nodo Padre"])) {
-                            padre["Nodos Hijo"].forEach(hijo => {
-                                if (nodes.has(hijo["Nodo Hijo"])) {
-                                    const value = hijo[year] || 0;
-                                    if (value !== 0) {
-                                        if (value < 0) {
-                                            links.push({
-                                                source: hijo["Nodo Hijo"],
-                                                target: padre["Nodo Padre"],
-                                                value: Math.abs(value)
-                                            });
-                                        } else {
-                                            links.push({
-                                                source: padre["Nodo Padre"],
-                                                target: hijo["Nodo Hijo"],
-                                                value: Math.abs(value) // <-- valor absoluto
-
-                                            });
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-
-                // 3. Ordenar nodos por columna y posición
-                let finalNodes = Array.from(nodes.values());
-                
-                // Aplicar alineación vertical por columna
-                config.columnas.forEach((col, colIdx) => {
-                    if (col.alineacionVertical === "abajo") {
-                        // Para nodos que deben ir abajo, asignar posiciones altas
-                        finalNodes.forEach(node => {
-                            if (node.columna === colIdx && node.posicion !== null) {
-                                node.posicion = node.posicion + 1000; // Forzar al final
-                            }
-                        });
-                    }
-                });
-                
-                finalNodes.sort((a, b) => {
-                    // Primero por columna/depth
-                    if (a.columna !== b.columna) return a.columna - b.columna;
-                    
-                    // Luego por posición si está definida
-                    if (a.posicion !== null && b.posicion !== null) {
-                        return a.posicion - b.posicion;
-                    }
-                    
-                    // Si solo uno tiene posición, ese va primero
-                    if (a.posicion !== null && b.posicion === null) return -1;
-                    if (a.posicion === null && b.posicion !== null) return 1;
-                    
-                    // Finalmente por nombre alfabético
-                    return a.name.localeCompare(b.name);
-                });
-
-                // Guardar todos los nodos para referencia en el tooltip y búsqueda (sin espaciadores)
-                allNodes = new Map();
-                finalNodes.forEach(node => {
-                    if (!node.esEspaciador) {
-                        allNodes.set(node.name, node);
-                    }
-                });
-                
-                return { nodes: finalNodes, links };
-            }
+            let energyData = window.energyData;
+            let allNodes = new Map(); // Para guardar la info completa de los nodos
 
             function updateChart(year) {
                 if (!energyData) return;
 
-                const { nodes, links } = processSankeyData(energyData, year);
+                const { nodes, links } = window.dataProcessor.processSankeyData(energyData, year, window.sankeyConfig);
+
+                // Guardar nodos para tooltip y búsqueda
+                allNodes.clear();
+                nodes.forEach(node => {
+                    if (!node.esEspaciador) {
+                        allNodes.set(node.name, node);
+                    }
+                });
 
                 if (links.length === 0) {
                     sankeyChart.clear();
-                    sankeyChart.showLoading({ text: `No hay datos de flujo para el año ${year}.`, color: '#c23531', textColor: '#000', maskColor: 'rgba(255, 255, 255, 0.8)', zlevel: 0 });
+                    sankeyChart.showLoading({ text: `No hay datos de flujo para el año ${year}.`});
                     return;
                 }
                 sankeyChart.hideLoading();
@@ -421,40 +239,22 @@
                     title: {
                         text: `Flujo de Energía en México - ${year}`,
                         subtext: 'Valores en Petajoules (PJ)',
-                        left: 'center',
-                        textStyle: {
-                            fontSize: 20,
-                            fontWeight: 'bold'
-                        }
+                        left: 'center'
                     },
                     tooltip: {
                         trigger: 'item',
                         triggerOn: 'mousemove',
                         formatter: function (params) {
-                            // Ignorar nodos espaciadores
-                            if (params.name && (params.name.startsWith('SPACER_') || params.name === 'SPACER_BIG')) {
-                                return '';
-                            }
-                            
-                            // Usar toLocaleString para formatear los números con separadores de miles.
-                            const numberFormat = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-
+                            if (params.name && params.name.startsWith('SPACER')) return '';
                             if (params.dataType === 'edge') {
-                                const formattedValue = params.data.value.toLocaleString('es-MX', numberFormat);
-                                return `<b>${params.data.source} → ${params.data.target}</b><br/>Valor: ${formattedValue} PJ`;
+                                return `${params.data.source} → ${params.data.target}: ${params.data.value.toLocaleString()} PJ`;
                             }
-                            if (params.dataType === 'node') {
-                                const nodeData = allNodes.get(params.name);
-                                const formattedValue = params.value.toLocaleString('es-MX', numberFormat);
-                                let tooltipText = `<b>${params.name}</b><br/>Total: ${formattedValue} PJ`;
-                                if (nodeData && nodeData.description) {
-                                    tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeData.description}</i>`;
-                                }
-                                return tooltipText;
+                            const nodeInfo = allNodes.get(params.name);
+                            let tooltipText = `<b>${params.name}</b><br/>Total: ${params.value.toLocaleString()} PJ`;
+                            if (nodeInfo && nodeInfo.description) {
+                                tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeInfo.description}</i>`;
                             }
-                        },
-                        textStyle: {
-                            fontSize: 14
+                            return tooltipText;
                         },
                         extraCssText: 'max-width:400px; white-space: normal;'
                     },
@@ -462,78 +262,25 @@
                         type: 'sankey',
                         data: nodes,
                         links: links,
-                        emphasis: {
-                            focus: 'adjacency'
-                        },
-                        blur: {
-                            lineStyle: {
-                                opacity: 0.1
-                            },
-                            itemStyle: {
-                                opacity: 0.3
-                            }
-                        },
-                        // Usar configuración del config
+                        emphasis: { focus: 'adjacency' },
                         nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
                         nodeGap: window.sankeyConfig.layoutConfig.nodeGap,
                         nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
-                        draggable: true,
                         layoutIterations: window.sankeyConfig.layoutConfig.layoutIterations,
-                        label: {
-                            fontSize: 12,
-                            color: '#333'
-                        },
                         lineStyle: {
-                            color: 'gradient',
-                            curveness: window.sankeyConfig.layoutConfig.curveness,
-                            opacity: 0.6
-                        },
-                        itemStyle: {
-                            borderWidth: 1,
-                            borderColor: '#aaa'
+                            curveness: window.sankeyConfig.layoutConfig.curveness
                         }
                     }]
                 };
                 sankeyChart.setOption(option, true);
-                
-                // Forzar posicionamiento después del render inicial
-                setTimeout(() => {
-                    const updatedNodes = nodes.map(node => {
-                        if (node.y !== undefined) {
-                            return { ...node, y: node.y };
-                        }
-                        return node;
-                    });
-                    
-                    sankeyChart.setOption({
-                        series: [{
-                            data: updatedNodes
-                        }]
-                    }, false);
-                }, 100);
             }
 
             function populateDatalist() {
-                if (!energyData) return;
                 const nodeNames = new Set();
                 energyData.Datos.forEach(padre => {
                     nodeNames.add(padre["Nodo Padre"]);
-                    padre["Nodos Hijo"].forEach(hijo => {
-                        nodeNames.add(hijo["Nodo Hijo"]);
-                    });
+                    padre["Nodos Hijo"].forEach(hijo => nodeNames.add(hijo["Nodo Hijo"]));
                 });
-                
-                // Agregar nodos de configuración (sin espaciadores)
-                window.sankeyConfig.columnas.forEach(col => {
-                    if (col.nodos) {
-                        col.nodos.forEach(nodo => {
-                            if (!nodo.esEspaciador && nodo.visible !== false) {
-                                nodeNames.add(nodo.nombre);
-                            }
-                        });
-                    }
-                });
-                
                 nodeDatalist.innerHTML = '';
                 Array.from(nodeNames).sort().forEach(name => {
                     const option = document.createElement('option');
@@ -544,88 +291,48 @@
 
             function handleSearch() {
                 const searchTerm = searchInput.value;
-                if (!searchTerm) {
-                    // Si no hay búsqueda, quitar el énfasis
-                    sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                    return;
-                }
-
-                // Poner todos los nodos y enlaces en estado "blur"
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-
-                // Enfatizar el nodo y sus adyacentes
-                sankeyChart.dispatchAction({
-                    type: 'highlight',
-                    seriesIndex: 0,
-                    name: searchTerm
-                });
+                if (searchTerm) {
+                    sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, name: searchTerm });
+                }
             }
 
-
-            // Usar datos.js directamente
-            energyData = window.energyData;
-            if (!energyData) {
-                sankeyChart.showLoading({ text: 'No se pudieron cargar los datos.', color: '#c23531', textColor: '#000', maskColor: 'rgba(255, 255, 255, 0.8)', zlevel: 0 });
-                return;
-            }
-            const firstNode = energyData.Datos[0]["Nodos Hijo"][0];
-            // Get all years and sort them descending
-            const years = Object.keys(firstNode)
+            // --- Inicialización ---
+            const years = Object.keys(energyData.Datos[0]["Nodos Hijo"][0])
                 .filter(key => !isNaN(key) && key.length === 4)
                 .sort((a, b) => b - a);
 
-            const latestYear = years[0]; // Get the most recent year
-
-            years.forEach(year => { // Iterate over the full sorted list
+            years.forEach(year => {
                 const option = document.createElement('option');
                 option.value = year;
                 option.textContent = year;
                 yearSelector.appendChild(option);
             });
 
-            yearSelector.value = latestYear; // Set the default
-            updateChart(latestYear);
+            yearSelector.value = years[0];
+            updateChart(years[0]);
             populateDatalist();
 
-            yearSelector.addEventListener('change', (e) => {
-                updateChart(e.target.value);
-                searchInput.value = ''; // Limpiar búsqueda al cambiar de año
-                handleSearch(); // Quitar resaltado
-            });
-
+            yearSelector.addEventListener('change', (e) => updateChart(e.target.value));
             searchInput.addEventListener('input', handleSearch);
 
-            window.addEventListener('resize', () => {
-                sankeyChart.resize();
-            });
-
             document.getElementById('descargar-png').onclick = function () {
-                const year = yearSelector.value;
-                const url = sankeyChart.getDataURL({
-                    type: 'png',
-                    pixelRatio: 3,
-                    backgroundColor: '#fff',
-                    excludeComponents: []
-                });
+                const url = sankeyChart.getDataURL({ type: 'png', pixelRatio: 3, backgroundColor: '#fff' });
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `sankey_energia_mexico_${year}.png`;
+                a.download = `sankey_energia_mexico_${yearSelector.value}.png`;
                 a.click();
             };
 
             document.getElementById('descargar-svg').onclick = function () {
-                const year = yearSelector.value;
-                const url = sankeyChart.getDataURL({
-                    type: 'svg',
-                    pixelRatio: 1,
-                    backgroundColor: '#fff',
-                    excludeComponents: []
-                });
+                const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `sankey_energia_mexico_${year}.svg`;
+                a.download = `sankey_energia_mexico_${yearSelector.value}.svg`;
                 a.click();
             };
+
+            window.addEventListener('resize', () => sankeyChart.resize());
         });
     </script>
 
