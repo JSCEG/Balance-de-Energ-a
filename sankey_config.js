@@ -19,7 +19,7 @@ window.sankeyConfig = {
             nodos: [
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Importación EP", tipo: "Padre", visible: true, posicion: 0, y: 100, flow: 'source' },
-                { nombre: "Variación de Inventarios EP", tipo: "Padre", visible: true, posicion: 1, y: 200, flow: 'default' }, // Default para manejar valores +/- 
+                { nombre: "Variación de Inventarios EP (+)", tipo: "Padre", visible: true, posicion: 1, y: 200, flow: 'default' }, // Default para manejar valores +/- 
                 { nombre: "Producción", tipo: "Padre", visible: true, posicion: 2, y: 300, flow: 'source' },
             ]
         },
@@ -61,6 +61,7 @@ window.sankeyConfig = {
                 { nombre: "Energía No Aprovechada EP", tipo: "Padre", visible: true, posicion: 2, depth: 2, flow: 'sink' },
                 { nombre: "Consumo Propio del Sector EP", tipo: "Padre", visible: true, posicion: 3, depth: 2, flow: 'sink' },
                 { nombre: "Pérdidas técnicas por transporte, transmisión y distribución EP", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' },
+                { nombre: "Variación de Inventarios EP (-)", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' }, // Default para manejar valores +/- 
             ]
         },
         {
@@ -72,8 +73,8 @@ window.sankeyConfig = {
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
                 // Nodos reales posicionados después del espaciador
-                { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
-                { nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
+                // { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
+                //{ nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
                 //{ nombre: "Refinerías y Despuntadoras", tipo: "Padre", visible: true, posicion: 3, depth: 3 }
 
             ]
