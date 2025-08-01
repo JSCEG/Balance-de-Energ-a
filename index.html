@@ -314,11 +314,19 @@
                             }
 
                             if (value !== 0) {
-                                links.push({
-                                    source: padre["Nodo Padre"],
-                                    target: hijo["Nodo Hijo"],
-                                    value: Math.abs(value) // <-- valor absoluto
-                                });
+                                if (value < 0) {
+                                    links.push({
+                                        source: hijo["Nodo Hijo"],
+                                        target: padre["Nodo Padre"],
+                                        value: Math.abs(value)
+                                    });
+                                } else {
+                                    links.push({
+                                        source: padre["Nodo Padre"],
+                                        target: hijo["Nodo Hijo"],
+                                        value: Math.abs(value) // <-- valor absoluto
+                                    });
+                                }
                             }
 
                         }
@@ -331,11 +339,19 @@
                                 if (nodes.has(hijo["Nodo Hijo"])) {
                                     const value = hijo[year] || 0;
                                     if (value !== 0) {
-                                        links.push({
-                                            source: padre["Nodo Padre"],
-                                            target: hijo["Nodo Hijo"],
-                                            value: Math.abs(value) // <-- valor absoluto
-                                        });
+                                        if (value < 0) {
+                                            links.push({
+                                                source: hijo["Nodo Hijo"],
+                                                target: padre["Nodo Padre"],
+                                                value: Math.abs(value)
+                                            });
+                                        } else {
+                                            links.push({
+                                                source: padre["Nodo Padre"],
+                                                target: hijo["Nodo Hijo"],
+                                                value: Math.abs(value) // <-- valor absoluto
+                                            });
+                                        }
                                     }
                                 }
                             });
