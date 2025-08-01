@@ -324,7 +324,9 @@
                                     links.push({
                                         source: padre["Nodo Padre"],
                                         target: hijo["Nodo Hijo"],
-                                        value: Math.abs(value)
+
+                                        value: Math.abs(value) // <-- valor absoluto
+
                                     });
                                 }
                             }
@@ -349,7 +351,8 @@
                                             links.push({
                                                 source: padre["Nodo Padre"],
                                                 target: hijo["Nodo Hijo"],
-                                                value: Math.abs(value)
+                                                value: Math.abs(value) // <-- valor absoluto
+
                                             });
                                         }
                                     }
