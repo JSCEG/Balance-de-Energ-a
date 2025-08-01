@@ -7,7 +7,7 @@ window.sankeyConfig = {
         nodeGap: 15, // Menos espacio = más compacto
         nodeWidth: 15, // Nodos más delgados
         layoutIterations: 0, // 0 = respeta tu orden manual completamente
-        curveness: 0.6 // Líneas menos curvas
+        curveness: 0.8 // Líneas menos curvas
     },
     columnas: [
         {
@@ -74,6 +74,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
+                { nombre: "SPACER_BIG_3", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1000 },
                 // Nodos reales posicionados después del espaciador
                 { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
                 { nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
@@ -89,6 +90,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Secundaria", // Solo hijos cuyo tipo sea "Energía Primaria"
             alineacionVertical: "abajo",
             nodos: [
+                { nombre: "SPACER_BIG_4", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1000 },
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Importación ES", tipo: "Padre", visible: true, posicion: 0, flow: 'source' },
                 { nombre: "Variación de Inventarios ES (+)", tipo: "Padre", visible: true, posicion: 1, flow: 'source' }, // Default para manejar valores +/-         
@@ -96,47 +98,32 @@ window.sankeyConfig = {
             ]
         },
         // Energéticos Secundarios
-        // {
-        //     // Columna 5: Hijos de Oferta Interna Bruta EP, solo los de tipo Energía Secundaria
-        //     nombre: "Energía Secundaria",
-        //     mostrar: "Hijo",
-        //     filtroTipo: "Energía Secundaria",
-        //     padre: "Oferta Interna Bruta EP", // Solo hijos cuyo tipo sea "Energía Secundaria"
-        //     nodos: [
-        //         // Puedes ajustar el orden y agregar más según tu catálogo
-        //         // { nombre: "Coque de carbón", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 0, depth: 5 },
-        //         // { nombre: "Coque de petróleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 1, depth: 5 },
-        //         //  { nombre: "Gas licuado de petróleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 2, depth: 5 },
-        //         // { nombre: "Gasolinas y naftas", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 3, depth: 5 },
-        //         //  { nombre: "Querosenos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 4, depth: 5 },
-        //         //{ nombre: "Diesel", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 5, depth: 5 },
-        //         //{ nombre: "Combustóleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 6, depth: 5 },
-        //         //{ nombre: "Otros energéticos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 7, depth: 5 },
-        //         //{ nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
-        //         // { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9, depth: 5 }
-        //         // // ...
-        //     ]
-        // },
         {
-            // Columna 6: Salidas de Energía Secundaria
-            nombre: "Salidas de Energía Secundaria",
-            mostrar: "Padre",
+            // Columna 5: Hijos de Oferta Interna Bruta EP, solo los de tipo Energía Secundaria
+            nombre: "Energía Secundaria",
+            mostrar: "Hijo",
             filtroTipo: "Energía Secundaria",
-            alineacionVertical: "abajo",
+            padre: "Oferta Interna Bruta EP", // Solo hijos cuyo tipo sea "Energía Secundaria"
             nodos: [
-                // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 10000 },
-                // Nodos reales posicionados después del espaciador
-                { nombre: "Exportación ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' },
-                { nombre: "Energía No Aprovechada ES", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
-                { nombre: "Consumo Propio del Sector ES", tipo: "Padre", visible: true, posicion: 3, flow: 'sink' },
-                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución ES", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' },
-                { nombre: "Variación de Inventarios ES (-)", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' }, // Default para manejar valores +/- 
-                { nombre: "Diferencia Estadística ES (-)", tipo: "Padre", visible: true, posicion: 5, flow: 'sink' }, // Default para manejar valores +/- 
+                { nombre: "SPACER_BIG_5", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 2000 },
+                // Puedes ajustar el orden y agregar más según tu catálogo
+                { nombre: "Coque de carbón", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 0, depth: 5 },
+                { nombre: "Coque de petróleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 1, depth: 5 },
+                { nombre: "Gas licuado de petróleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 2, depth: 5 },
+                { nombre: "Gasolinas y naftas", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 3, depth: 5 },
+                { nombre: "Querosenos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 4, depth: 5 },
+                { nombre: "Diesel", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 5, depth: 5 },
+                { nombre: "Combustóleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 6, depth: 5 },
+                { nombre: "Otros energéticos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 7, depth: 5 },
+                { nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
+                // { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9, depth: 5 }
+                { nombre: "SPACER_BIG_5B", tipo: "Padre", visible: true, posicion: 9, esEspaciador: true, valorEspaciador: 2000 },
+                // // ...
             ]
         },
+
         {
-            // Columna 7: Entradas a Transformaciones Centrales Eléctricas
+            // Columna : Entradas a Transformaciones Centrales Eléctricas
             nombre: "Transformaciones a Centrales Eléctricas",
             mostrar: "Padre",
             filtroTipo: "Todos",
@@ -148,6 +135,59 @@ window.sankeyConfig = {
                 { nombre: "Centrales Eléctricas", tipo: "Padre", visible: true, posicion: 2, },
 
 
+            ]
+        },
+        // Energía Eléctrica
+        {
+            // Columna 7: Energía Secundaria
+            nombre: "Energía Secundaria",
+            mostrar: "Hijo",
+            filtroTipo: "Energía Secundaria",
+            padre: "Oferta Interna Bruta EP", // Solo hijos cuyo tipo sea "Energía Secundaria"
+            nodos: [
+                { nombre: "SPACER_BIG_E", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 8000 },
+                // Puedes ajustar el orden y agregar más según tu catálogo
+
+                //{ nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
+                { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9, }
+                // // ...
+            ]
+        },
+        {
+            // Columna 6: Salidas de Energía Secundaria
+            nombre: "Salidas de Energía Secundaria",
+            mostrar: "Padre",
+            filtroTipo: "Energía Secundaria",
+            alineacionVertical: "abajo",
+            nodos: [
+                // Un solo espaciador grande para empujar los nodos hacia abajo
+                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 12000 },
+                // Nodos reales posicionados después del espaciador
+                { nombre: "Exportación ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' },
+                { nombre: "Energía No Aprovechada ES", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
+                { nombre: "Consumo Propio del Sector ES", tipo: "Padre", visible: true, posicion: 3, flow: 'sink' },
+                { nombre: "Pérdidas técnicas por transporte, transmisión y distribución ES", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' },
+                { nombre: "Variación de Inventarios ES (-)", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' }, // Default para manejar valores +/- 
+                { nombre: "Diferencia Estadística ES (-)", tipo: "Padre", visible: true, posicion: 5, flow: 'sink' }, // Default para manejar valores +/- 
+            ]
+        },
+        {
+            // Columna 4: Padres principales
+            nombre: "Sectores de Consumo",
+            mostrar: "Padre",
+            filtroTipo: "Energía Secundaria", // Solo hijos cuyo tipo sea "Energía Primaria"
+            alineacionVertical: "abajo",
+            nodos: [
+                //{ nombre: "SPACER_BIG_4", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1000 },
+                // Puedes agregar más nodos padre aquí si lo deseas
+                { nombre: "Industrial", tipo: "Padre", visible: true, posicion: 0, flow: 'source' },
+                { nombre: "Transporte", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' }, // Default para manejar valores +/-         
+                { nombre: "Agropecuario", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
+                { nombre: "Comercial", tipo: "Padre", visible: true, posicion: 3, flow: 'sink' },
+                { nombre: "Público", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' },
+                { nombre: "Residencial", tipo: "Padre", visible: true, posicion: 5, flow: 'sink' },
+                { nombre: "Petroquímica PEMEX", tipo: "Padre", visible: true, posicion: 6, flow: 'sink' },
+                { nombre: "Otras ramas económicas", tipo: "Padre", visible: true, posicion: 7, flow: 'sink' },
             ]
         },
     ],
