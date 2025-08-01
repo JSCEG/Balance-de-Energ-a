@@ -744,25 +744,35 @@
                         const inflows = currentLinks.filter(link => link.target === clickedNodeName);
                         const outflows = currentLinks.filter(link => link.source === clickedNodeName);
 
-                        let detailsHtml = '';
+                        let detailsHtml = '<div style="display: flex; flex-wrap: wrap; gap: 2rem;">';
 
-                        // Tabla de Flujos de Entrada
+                        // Columna de Entradas
+                        detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                         if (inflows.length > 0) {
                             detailsHtml += '<h4>Flujos de Entrada</h4><table><thead><tr><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
                             inflows.forEach(link => {
                                 detailsHtml += `<tr><td>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
-                            detailsHtml += '</tbody></table>';
+                            detailsHtml += `</tbody><tfoot><tr><td style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr></tfoot></table>`;
+                        } else {
+                            detailsHtml += '<h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p>';
                         }
+                        detailsHtml += '</div>';
 
-                        // Tabla de Flujos de Salida
+                        // Columna de Salidas
+                        detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                         if (outflows.length > 0) {
-                            detailsHtml += '<h4 style="margin-top: 1.5rem;">Flujos de Salida</h4><table><thead><tr><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
+                            detailsHtml += '<h4>Flujos de Salida</h4><table><thead><tr><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
                             outflows.forEach(link => {
                                 detailsHtml += `<tr><td>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
-                            detailsHtml += '</tbody></table>';
+                            detailsHtml += `</tbody><tfoot><tr><td style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr></tfoot></table>`;
+                        } else {
+                            detailsHtml += '<h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p>';
                         }
+                        detailsHtml += '</div>';
+
+                        detailsHtml += '</div>'; // Cierre del flex container
 
                         // Contenedor para la tabla de nodos padre
                         const parentNodesContainer = document.createElement('div');
