@@ -420,6 +420,10 @@
                     <button id="exportar" class="btn">Exportar Gráfico</button>
                     <button id="reset-view" class="btn">Restablecer Vista</button>
                 </div>
+                <div class="control-group" style="flex-direction: row; align-items: center; margin-top: 1rem;">
+                    <label for="alert-switch" style="margin-right: 10px;">Mostrar Alertas de Pérdida:</label>
+                    <input type="checkbox" id="alert-switch" checked>
+                </div>
             </div>
         </div>
 
@@ -469,11 +473,26 @@
                 const { nodes } = processedData;
                 currentLinks = processedData.links; // Guardar los enlaces
 
-                // Guardar nodos para tooltip y búsqueda
+                // Guardar nodos para tooltip y búsqueda, y aplicar indicadores visuales
                 allNodes.clear();
                 nodes.forEach(node => {
                     if (!node.esEspaciador) {
                         allNodes.set(node.name, node);
+
+                        // Lógica de indicadores visuales por pérdida de energía
+                        const showAlerts = document.getElementById('alert-switch').checked;
+                        if (showAlerts && node.inflow > 0 && node.outflow > 0) { // Solo para nodos de transformación
+                            const lossPercentage = (node.inflow - node.outflow) / node.inflow;
+                            node.itemStyle = node.itemStyle || {}; // Asegurar que itemStyle exista
+
+                            if (lossPercentage >= 0.5) { // 50% o más de pérdida
+                                node.itemStyle.borderColor = '#e53e3e'; // Rojo
+                                node.itemStyle.borderWidth = 2.5;
+                            } else if (lossPercentage >= 0.25) { // Entre 25% y 50% de pérdida
+                                node.itemStyle.borderColor = '#dd6b20'; // Naranja
+                                node.itemStyle.borderWidth = 2.5;
+                            }
+                        }
                     }
                 });
 
@@ -732,11 +751,34 @@
                         document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
 
                         // Actualizar los campos de resumen existentes
+                        // Lógica para el indicador de eficiencia/pérdida
+                        const showAlerts = document.getElementById('alert-switch').checked;
+                        const efficiencyContainer = document.createElement('div');
+                        if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0) { // Solo para nodos de transformación
+                            const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
+                            const efficiency = 1 - lossPercentage;
+                            let color = '#38a169'; // Verde para buena eficiencia
+                            let message = `Eficiencia: ${(efficiency * 100).toFixed(2)}%`;
+
+                            if (lossPercentage >= 0.5) {
+                                color = '#e53e3e'; // Rojo
+                                message += ` | <strong style="color:${color};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
+                            } else if (lossPercentage >= 0.25) {
+                                color = '#dd6b20'; // Naranja
+                                message += ` | <strong style="color:${color};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
+                            }
+
+                            efficiencyContainer.innerHTML = `<p style="border: 2px solid ${color}; padding: 10px; border-radius: 8px;">${message}</p>`;
+                        }
+
+                        // Actualizar los campos de resumen existentes
                         document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
                         document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
                         document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
 
                         const valuesContainer = document.getElementById('node-details-values');
+                        valuesContainer.innerHTML = ''; // Limpiar contenido anterior
+                        valuesContainer.appendChild(efficiencyContainer); // Añadir el indicador de eficiencia
                         const clickedNodeName = params.name;
                         const selectedYear = yearSelector.value;
 
@@ -823,6 +865,10 @@
                     console.log('Clicked on edge or spacer node.');
                     document.getElementById('node-details-container').style.display = 'none';
                 }
+            });
+
+            document.getElementById('alert-switch').addEventListener('change', () => {
+                updateChart(yearSelector.value);
             });
 
             window.addEventListener('resize', () => sankeyChart.resize());
