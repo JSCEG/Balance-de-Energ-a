@@ -22,10 +22,11 @@ window.dataProcessor = {
                 if (!nodes.has(nodo.nombre)) {
                     let nodeData = this.findNodeData(data, nodo.nombre, nodo.tipo);
                     const nodeConfig = {
+                        ...(nodeData || {}), // Copy all properties from nodeData
                         name: nodo.nombre,
                         itemStyle: { color: (nodeData && nodeData.color && nodeData.color !== '') ? nodeData.color : '#888' },
                         description: nodeData ? nodeData.descripcion : '',
-                        tipo: nodo.tipo,
+                        tipo: nodeData ? nodeData.tipo : nodo.tipo,
                         padre: nodo.padre || null,
                         columna: colIdx,
                         depth: nodo.depth !== undefined ? nodo.depth : colIdx,

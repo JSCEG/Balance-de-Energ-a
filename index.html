@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Elegante</title>
-    <link rel="stylesheet" href="styles.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -204,6 +204,24 @@
             .control-group label {
                 margin-bottom: 0;
             }
+        }
+
+        #node-details-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        #node-details-container th,
+        #node-details-container td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #node-details-container th {
+            background-color: #f2f2f2;
+            font-weight: bold;
         }
 
         /* Estilos para el nuevo diseño */
@@ -408,6 +426,13 @@
             <div id="sankey"></div>
         </div>
 
+        <div id="node-details-container" class="card" style="display: none;">
+            <h2>Detalles del Energético: <span id="node-details-name"></span></h2>
+            <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
+            <p><strong style="color: var(--primary-color);">Descripción:</strong> <span id="node-details-description"></span></p>
+            <div id="node-details-values"></div>
+        </div>
+
         <footer>
             <p>Fuente de datos: Secretaría de Energía (SENER).</p>
         </footer>
@@ -425,6 +450,8 @@
 
             let energyData = window.energyData;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
+
+            const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
 
             function updateChart(year) {
                 if (!energyData) return;
@@ -457,7 +484,6 @@
                         triggerOn: 'mousemove',
                         formatter: function (params) {
                             if (params.name && params.name.startsWith('SPACER')) return '';
-                            const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
 
                             if (params.dataType === 'edge') {
                                 return `${params.data.source} → ${params.data.target}: ${formatNumber(params.value)}`;
@@ -679,6 +705,70 @@
                     document.body.removeChild(modal);
                 };
             };
+
+            sankeyChart.on('click', function (params) {
+                console.log('Click en Sankey:', params);
+                if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
+                    const nodeInfo = allNodes.get(params.name);
+                    console.log('Node Info:', nodeInfo);
+                    if (nodeInfo && nodeInfo.tipo && (nodeInfo.tipo === 'Energía Primaria' || nodeInfo.tipo === 'Energía Secundaria')) { // Check if it's an energetic child node
+                        console.log('Displaying node details for:', nodeInfo.name);
+                        document.getElementById('node-details-name').textContent = nodeInfo.name;
+                        document.getElementById('node-details-type').textContent = nodeInfo.tipo;
+                        document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
+
+                        const valuesContainer = document.getElementById('node-details-values');
+                        const clickedNodeName = params.name;
+                        const selectedYear = yearSelector.value;
+
+                        valuesContainer.innerHTML = `<h3>Balance ${selectedYear} ${clickedNodeName}:</h3>`;
+                        const table = document.createElement('table');
+                        table.style.width = '100%';
+                        table.style.borderCollapse = 'collapse';
+                        table.innerHTML = `
+                            <thead>
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Nodo Padre</th>
+                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Valor (PJ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        `;
+                        const tbody = table.querySelector('tbody');
+
+                        window.energyData.Datos.forEach(parentData => {
+                            const parentName = parentData["Nodo Padre"];
+                            const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
+
+                            if (childEnergetic) {
+                                const valueForYear = childEnergetic[selectedYear];
+                                // Solo añadir la fila si el valor existe y no es undefined/null
+                                if (valueForYear !== undefined && valueForYear !== null) {
+                                    const row = tbody.insertRow();
+                                    const parentCell = row.insertCell();
+                                    const valueCell = row.insertCell();
+                                    parentCell.style.border = '1px solid #ddd';
+                                    parentCell.style.padding = '8px';
+                                    valueCell.style.border = '1px solid #ddd';
+                                    valueCell.style.padding = '8px';
+                                    parentCell.textContent = parentName;
+                                    valueCell.textContent = formatNumber(valueForYear);
+                                }
+                            }
+                        });
+                        valuesContainer.appendChild(table);
+
+                        document.getElementById('node-details-container').style.display = 'block';
+                    } else {
+                        console.log('Not an energetic child node or spacer.');
+                        document.getElementById('node-details-container').style.display = 'none';
+                    }
+                } else {
+                    console.log('Clicked on edge or spacer node.');
+                    document.getElementById('node-details-container').style.display = 'none';
+                }
+            });
 
             window.addEventListener('resize', () => sankeyChart.resize());
         });
