@@ -246,18 +246,32 @@
                         triggerOn: 'mousemove',
                         formatter: function (params) {
                             if (params.name && params.name.startsWith('SPACER')) return '';
+                            const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
+
                             if (params.dataType === 'edge') {
-                                return `${params.data.source} → ${params.data.target}: ${params.value.toFixed(2)} PJ`;
+                                return `${params.data.source} → ${params.data.target}: ${formatNumber(params.value)}`;
                             }
+
                             const nodeInfo = allNodes.get(params.name);
                             let tooltipText = `<b>${params.name}</b><br/>`;
+
                             if (nodeInfo) {
-                                tooltipText += `Entrada: ${nodeInfo.inflow.toFixed(2)} PJ<br/>`;
-                                tooltipText += `Salida: ${nodeInfo.outflow.toFixed(2)} PJ<br/>`;
-                                tooltipText += `Balance: ${(nodeInfo.inflow - nodeInfo.outflow).toFixed(2)} PJ`;
+                                const nodeColor = nodeInfo.itemStyle && nodeInfo.itemStyle.color ? nodeInfo.itemStyle.color : '#888';
+                                const balance = nodeInfo.inflow - nodeInfo.outflow;
+
+                                if (nodeInfo.flow === 'source') {
+                                    tooltipText += `Salida: ${formatNumber(nodeInfo.outflow)}`;
+                                } else if (nodeInfo.flow === 'sink') {
+                                    tooltipText += `Entrada: ${formatNumber(nodeInfo.inflow)}`;
+                                } else { // Default or intermediate node
+                                    tooltipText += `Entrada: ${formatNumber(nodeInfo.inflow)}<br/>`;
+                                    tooltipText += `Salida: ${formatNumber(nodeInfo.outflow)}<br/>`;
+                                    tooltipText += `<span style="color:${nodeColor}; font-weight:bold;">Balance: ${formatNumber(balance)}</span>`;
+                                }
                             } else {
-                                tooltipText += `Total: ${params.value.toFixed(2)} PJ`;
+                                tooltipText += `Total: ${formatNumber(params.value)}`;
                             }
+
                             if (nodeInfo && nodeInfo.description) {
                                 tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeInfo.description}</i>`;
                             }

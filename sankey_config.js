@@ -62,6 +62,7 @@ window.sankeyConfig = {
                 { nombre: "Consumo Propio del Sector EP", tipo: "Padre", visible: true, posicion: 3, depth: 2, flow: 'sink' },
                 { nombre: "Pérdidas técnicas por transporte, transmisión y distribución EP", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' },
                 { nombre: "Variación de Inventarios EP (-)", tipo: "Padre", visible: true, posicion: 4, depth: 2, flow: 'sink' }, // Default para manejar valores +/- 
+                { nombre: "Diferencia Estadística", tipo: "Padre", visible: true, posicion: 5, depth: 2, flow: 'sink' }, // Default para manejar valores +/- 
             ]
         },
         {
@@ -73,27 +74,27 @@ window.sankeyConfig = {
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
                 // Nodos reales posicionados después del espaciador
-                // { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
-                //{ nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
-                //{ nombre: "Refinerías y Despuntadoras", tipo: "Padre", visible: true, posicion: 3, depth: 3 }
+                { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
+                { nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
+                { nombre: "Refinerías y Despuntadoras", tipo: "Padre", visible: true, posicion: 3, depth: 3 }
 
             ]
         },
-        // {
-        //     // Columna 4: Entradas a Transformaciones Centrales Eléctricas
-        //     nombre: "Transformaciones a Centrales Eléctricas",
-        //     mostrar: "Padre",
-        //     filtroTipo: "Todos",
-        //     alineacionVertical: "abajo",
-        //     nodos: [
-        //         // Un solo espaciador grande para empujar los nodos hacia abajo
-        //         // Nodos reales posicionados después del espaciador
-        //         { nombre: "SPACER_BIG_1", tipo: "Padre", visible: true, posicion: 1, depth: 4, esEspaciador: true, valorEspaciador: 10000 },
-        //         { nombre: "Centrales Eléctricas", tipo: "Padre", visible: true, posicion: 2, depth: 4 },
+        {
+            // Columna 4: Entradas a Transformaciones Centrales Eléctricas
+            nombre: "Transformaciones a Centrales Eléctricas",
+            mostrar: "Padre",
+            filtroTipo: "Todos",
+            alineacionVertical: "abajo",
+            nodos: [
+                // Un solo espaciador grande para empujar los nodos hacia abajo
+                // Nodos reales posicionados después del espaciador
+                { nombre: "SPACER_BIG_1", tipo: "Padre", visible: true, posicion: 1, depth: 4, esEspaciador: true, valorEspaciador: 10000 },
+                { nombre: "Centrales Eléctricas", tipo: "Padre", visible: true, posicion: 2, depth: 4 },
 
 
-        //     ]
-        // },
+            ]
+        },
         // Energéticos Secundarios
         // {
         //     // Columna: Hijos de Oferta Interna Bruta EP, solo los de tipo Energía Secundaria
