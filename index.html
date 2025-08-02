@@ -194,7 +194,7 @@
         }
 
         .card:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: translateY(-8px);
             box-shadow: var(--glass-shadow-hover);
             background: var(--glass-bg-strong);
         }
@@ -259,7 +259,7 @@
             box-shadow: 0 0 0 4px rgba(106, 28, 50, 0.15), 0 8px 25px rgba(0, 0, 0, 0.15);
             outline: none;
             background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-2px) scale(1.02);
+            transform: translateY(-2px);
         }
 
         .control-group select:hover,
@@ -339,13 +339,13 @@
         }
 
         .btn:hover {
-            transform: translateY(-2px) scale(1.05);
+            transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(106, 28, 50, 0.4);
             background: linear-gradient(135deg, #8b2635 0%, var(--primary-color) 100%);
         }
 
         .btn:active {
-            transform: translateY(0) scale(1.02);
+            transform: translateY(0);
         }
 
         #chart-container {
@@ -580,7 +580,7 @@
         }
 
         .toggle-switch:hover .toggle-slider {
-            transform: scale(1.05);
+            transform: scale(1);
         }
 
         .toggle-switch input:checked+.toggle-slider:hover {
@@ -746,11 +746,11 @@
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => {
                 card.addEventListener('mouseenter', function (e) {
-                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                    this.style.transform = 'translateY(-8px)';
                 });
 
                 card.addEventListener('mouseleave', function (e) {
-                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.transform = 'translateY(0)';
                 });
             });
         }
