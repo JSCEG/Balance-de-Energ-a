@@ -174,7 +174,7 @@ window.sankeyConfig = {
             ]
         },
         {
-            // Columna 4: Padres principales
+            // Columna 5: Padres principales
             nombre: "Sectores de Consumo",
             mostrar: "Padre",
             filtroTipo: "Energía Secundaria", // Solo hijos cuyo tipo sea "Energía Primaria"
@@ -182,7 +182,7 @@ window.sankeyConfig = {
             nodos: [
                 //{ nombre: "SPACER_BIG_4", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1000 },
                 // Puedes agregar más nodos padre aquí si lo deseas
-                { nombre: "Industrial", tipo: "Padre", visible: true, posicion: 0, flow: 'source' },
+                { nombre: "Industrial", tipo: "Padre", visible: true, posicion: 0, flow: 'snik' },
                 { nombre: "Transporte", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' }, // Default para manejar valores +/-         
                 { nombre: "Agropecuario", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
                 { nombre: "Comercial", tipo: "Padre", visible: true, posicion: 3, flow: 'sink' },

@@ -55,15 +55,14 @@ window.dataProcessor = {
                         const value = hijo[year] || 0;
                         if (value !== 0) {
                             let source, target;
-                            const hijoConfig = nodes.get(hijo["Nodo Hijo"]); // Obtener la configuración del nodo hijo
 
-                            // Determinar la dirección del enlace según la propiedad 'flow' del nodo hijo
-                            // o si el valor es negativo (para Variación de Inventarios)
-                            if (value < 0 || (hijoConfig && hijoConfig.flow === 'sink')) {
+                            // La dirección del flujo la determina el NODO PADRE
+                            if (value < 0 || (padreNode && padreNode.flow === 'sink')) {
+                                // Si el padre es un sink (consumidor), el flujo va del hijo hacia el padre
                                 source = hijo["Nodo Hijo"];
                                 target = padre["Nodo Padre"];
                             } else {
-                                // Comportamiento por defecto: padre -> hijo
+                                // Comportamiento por defecto: el padre es una fuente, el flujo va del padre al hijo
                                 source = padre["Nodo Padre"];
                                 target = hijo["Nodo Hijo"];
                             }
@@ -89,11 +88,19 @@ window.dataProcessor = {
 
         Array.from(nodes.values()).forEach(node => {
             if (!node.esEspaciador) {
-                const inflow = nodeInflow.get(node.name) || 0;
-                const outflow = nodeOutflow.get(node.name) || 0;
-                node.value = Math.abs(inflow - outflow); // Valor neto absoluto para el tamaño del nodo
-                node.inflow = inflow; // Almacenar inflow para el tooltip
-                node.outflow = outflow; // Almacenar outflow para el tooltip
+                let inflow = nodeInflow.get(node.name) || 0;
+                let outflow = nodeOutflow.get(node.name) || 0;
+
+                // Forzar comportamiento de source/sink
+                if (node.flow === 'sink') {
+                    outflow = 0; // Un sink no tiene salidas
+                } else if (node.flow === 'source') {
+                    inflow = 0; // Un source no tiene entradas
+                }
+
+                node.value = Math.max(inflow, outflow); // El valor del nodo es el mayor de los flujos
+                node.inflow = inflow;
+                node.outflow = outflow;
             }
         });
 
