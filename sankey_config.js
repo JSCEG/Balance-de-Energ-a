@@ -84,7 +84,7 @@ window.sankeyConfig = {
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'left', // 'left' respeta mejor las posiciones Y manuales
-        nodeGap: 15, // Menos espacio = más compacto
+        nodeGap: 25, // Más espacio para evitar empalmes verticales
         nodeWidth: 15, // Nodos más delgados
         layoutIterations: 0, // 0 = respeta tu orden manual completamente
         curveness: 0.8 // Líneas menos curvas
@@ -136,7 +136,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 10000 },
+                { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 20000 },
                 // Nodos reales posicionados después del espaciador
                 { nombre: "Exportación EP", tipo: "Padre", visible: true, posicion: 1, depth: 2, flow: 'sink' },
                 { nombre: "Energía No Aprovechada EP", tipo: "Padre", visible: true, posicion: 2, depth: 2, flow: 'sink' },
@@ -243,7 +243,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 12000 },
+                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 20000 },
                 // Nodos reales posicionados después del espaciador
                 { nombre: "Exportación ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' },
                 { nombre: "Energía No Aprovechada ES", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
