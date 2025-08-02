@@ -798,7 +798,8 @@
                             detailsHtml += '<h4>Flujos de Entrada</h4><table id="inflow-table">';
                             detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
                             inflows.forEach((link, index) => {
-                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
+                                const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
+                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
@@ -817,7 +818,8 @@
                             detailsHtml += '<h4>Flujos de Salida</h4><table id="outflow-table">';
                             detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
                             outflows.forEach((link, index) => {
-                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
+                                const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
+                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
@@ -842,8 +844,9 @@
                             const parentName = parentData["Nodo Padre"];
                             const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
                             if (childEnergetic && childEnergetic[selectedYear] !== undefined && childEnergetic[selectedYear] !== null) {
+                                const parentColor = window.sankeyConfig.energeticColors[parentName] || '#888';
                                 const row = tbody.insertRow();
-                                row.innerHTML = `<td>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td>`;
+                                row.innerHTML = `<td><span style="display:inline-block; width:15px; height:15px; background-color:${parentColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td>`;
                                 parentRows++;
                             }
                         });
