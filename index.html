@@ -852,14 +852,15 @@
                             parentNodesContainer.appendChild(parentTable);
                         }
 
-                        valuesContainer.innerHTML = detailsHtml + parentNodesContainer.innerHTML;
+                        valuesContainer.innerHTML = detailsHtml;
                         valuesContainer.insertAdjacentHTML('beforeend', '<div id="selected-balance-container" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px dashed #ccc;"></div>');
+                        valuesContainer.insertAdjacentHTML('beforeend', parentNodesContainer.innerHTML);
 
                         // --- Lógica para subtotales interactivos ---
                         const inflowTable = document.getElementById('inflow-table');
                         const outflowTable = document.getElementById('outflow-table');
 
-                        function updateAllSubtotals() {
+                        function updateAllSubtotals(nodeInfo) {
                             let inflowSelectedSum = 0;
                             inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
 
@@ -913,10 +914,10 @@
 
                             selectAll.addEventListener('change', function() {
                                 table.querySelectorAll('.flow-check').forEach(cb => cb.checked = this.checked);
-                                updateAllSubtotals();
+                                updateAllSubtotals(nodeInfo);
                             });
 
-                            checkboxes.forEach(cb => cb.addEventListener('change', updateAllSubtotals));
+                            checkboxes.forEach(cb => cb.addEventListener('change', () => updateAllSubtotals(nodeInfo)));
                         }
 
                         setupTableInteractivity(inflowTable);
