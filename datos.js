@@ -3845,7 +3845,7 @@ window.energyData = {
       "color": "#A9A9A9"
     },
     {
-      "Nodo Padre": "Energía No Aprovechada ES",
+      "Nodo Padre": "Energía No Aprovechada ES",//(*Está vacía)
       "Nodos Hijo": [
         {
           "Nodo Hijo": "Coque de carbón",

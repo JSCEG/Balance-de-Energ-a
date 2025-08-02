@@ -565,13 +565,15 @@
                     }]
                 };
                 sankeyChart.setOption(option, true);
+                populateDatalist(nodes);
             }
 
-            function populateDatalist() {
+            function populateDatalist(nodes) {
                 const nodeNames = new Set();
-                energyData.Datos.forEach(padre => {
-                    nodeNames.add(padre["Nodo Padre"]);
-                    padre["Nodos Hijo"].forEach(hijo => nodeNames.add(hijo["Nodo Hijo"]));
+                nodes.forEach(node => {
+                    if (!node.esEspaciador) { // Excluir nodos espaciadores
+                        nodeNames.add(node.name);
+                    }
                 });
                 nodeDatalist.innerHTML = '';
                 Array.from(nodeNames).sort().forEach(name => {
@@ -603,7 +605,6 @@
 
             yearSelector.value = years[0];
             updateChart(years[0]);
-            populateDatalist();
 
             yearSelector.addEventListener('change', (e) => {
                 updateChart(e.target.value);
@@ -759,7 +760,7 @@
                         document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
                         document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
                         document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
-                        
+
                         const efficiencySpan = document.getElementById('node-details-efficiency');
                         efficiencySpan.innerHTML = ''; // Limpiar
 
@@ -912,7 +913,7 @@
                             const selectAll = table.querySelector('.select-all');
                             const checkboxes = table.querySelectorAll('.flow-check, .cross-sum');
 
-                            selectAll.addEventListener('change', function() {
+                            selectAll.addEventListener('change', function () {
                                 table.querySelectorAll('.flow-check').forEach(cb => cb.checked = this.checked);
                                 updateAllSubtotals(nodeInfo);
                             });
@@ -937,6 +938,8 @@
             document.getElementById('alert-switch').addEventListener('change', () => {
                 updateChart(yearSelector.value);
             });
+
+            searchInput.addEventListener('input', handleSearch);
 
             window.addEventListener('resize', () => sankeyChart.resize());
         });
