@@ -794,11 +794,15 @@
                         // Columna de Entradas
                         detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                         if (inflows.length > 0) {
-                            detailsHtml += '<h4>Flujos de Entrada</h4><table><thead><tr><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
-                            inflows.forEach(link => {
-                                detailsHtml += `<tr><td>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
+                            detailsHtml += '<h4>Flujos de Entrada</h4><table id="inflow-table">';
+                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
+                            inflows.forEach((link, index) => {
+                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
-                            detailsHtml += `</tbody><tfoot><tr><td style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr></tfoot></table>`;
+                            detailsHtml += `</tbody><tfoot>
+                                <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
+                                <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                            </tfoot></table>`;
                         } else {
                             detailsHtml += '<h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p>';
                         }
@@ -807,11 +811,15 @@
                         // Columna de Salidas
                         detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                         if (outflows.length > 0) {
-                            detailsHtml += '<h4>Flujos de Salida</h4><table><thead><tr><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
-                            outflows.forEach(link => {
-                                detailsHtml += `<tr><td>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
+                            detailsHtml += '<h4>Flujos de Salida</h4><table id="outflow-table">';
+                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
+                            outflows.forEach((link, index) => {
+                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
-                            detailsHtml += `</tbody><tfoot><tr><td style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr></tfoot></table>`;
+                            detailsHtml += `</tbody><tfoot>
+                                <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
+                                <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                            </tfoot></table>`;
                         } else {
                             detailsHtml += '<h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p>';
                         }
@@ -841,6 +849,40 @@
                         }
 
                         valuesContainer.innerHTML = detailsHtml + parentNodesContainer.innerHTML;
+
+                        // --- Lógica para subtotales interactivos ---
+                        function setupSubtotal(tableId) {
+                            const table = document.getElementById(tableId);
+                            if (!table) return;
+
+                            const checkboxes = table.querySelectorAll('.flow-check');
+                            const subtotalCell = table.querySelector('.subtotal');
+                            const selectAllCheckbox = table.querySelector('.select-all');
+
+                            function updateSubtotal() {
+                                let subtotal = 0;
+                                checkboxes.forEach(cb => {
+                                    if (cb.checked) {
+                                        subtotal += parseFloat(cb.dataset.value);
+                                    }
+                                });
+                                subtotalCell.textContent = formatNumber(subtotal);
+                            }
+
+                            checkboxes.forEach(cb => {
+                                cb.addEventListener('change', updateSubtotal);
+                            });
+
+                            selectAllCheckbox.addEventListener('change', function() {
+                                checkboxes.forEach(cb => {
+                                    cb.checked = this.checked;
+                                });
+                                updateSubtotal();
+                            });
+                        }
+
+                        setupSubtotal('inflow-table');
+                        setupSubtotal('outflow-table');
 
                         document.getElementById('node-details-container').style.display = 'block';
                     } else {
