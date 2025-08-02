@@ -1,6 +1,47 @@
 // Configuración flexible para el Sankey
 // Puedes modificar columnas, nodos, filtros, posiciones y enlaces
 window.sankeyConfig = {
+    energeticColors: {
+        "Carbón mineral": "#36454F",
+        "Petróleo crudo": "#772F1A",
+        "Condensados": "#58508D",
+        "Gas natural": "#15616D",
+        "Energía Nuclear": "#8C564B",
+        "Energía Hidráulica": "#00A1DB",
+        "Geoenergía": "#E377C2",
+        "Energía solar": "#FFD700",
+        "Energía eólica": "#2ca02c",
+        "Bagazo de caña": "#A07E5F",
+        "Leña": "#6B4226",
+        "Biogás": "#BC987E",
+        "Coque de carbón": "#000000",
+        "Coque de petróleo": "#231F20",
+        "Gas licuado de petróleo": "#F4A261",
+        "Gasolinas y naftas": "#FF7F0E",
+        "Querosenos": "#FFBF00",
+        "Diesel": "#D62728",
+        "Combustóleo": "#A22C29",
+        "Otros energéticos": "#BDB76B",
+        "Gas natural seco": "#2A9D8F",
+        "Energía eléctrica": "#FCEE0C",
+        "Producción": "#4CAF50",
+        "Importación EP": "#2196F3",
+        "Importación ES": "#03A9F4",
+        "Variación de Inventarios EP (+)": "#FFC107",
+        "Variación de Inventarios ES (+)": "#FFD54F",
+        "Exportación EP": "#F44336",
+        "Exportación ES": "#E57373",
+        "Energía No Aprovechada EP": "#9C27B0",
+        "Energía No Aprovechada ES": "#BA68C8",
+        "Consumo Propio del Sector EP": "#607D8B",
+        "Consumo Propio del Sector ES": "#90A4AE",
+        "Diferencia Estadística EP (+)": "#795548",
+        "Diferencia Estadística ES (+)": "#A1887F",
+        "Pérdidas técnicas por transporte, transmisión y distribución EP": "#FF9800",
+        "Pérdidas técnicas por transporte, transmisión y distribución ES": "#FFB74D",
+        "Oferta Interna Bruta EP": "#59A14F",
+        "Oferta Interna Bruta ES": "#4E79A7"
+    },
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'left', // 'left' respeta mejor las posiciones Y manuales

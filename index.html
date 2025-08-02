@@ -751,7 +751,7 @@
 
                     if (nodeInfo) { // Removed type check, now shows for all nodes
                         console.log('Displaying node details for:', nodeInfo.name);
-                        document.getElementById('node-details-name').textContent = nodeInfo.name;
+                        document.getElementById('node-details-name').innerHTML = `<span style="display:inline-block; width:15px; height:15px; background-color:${nodeInfo.itemStyle.color}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${nodeInfo.name}`;
                         document.getElementById('node-details-type').textContent = nodeInfo.tipo || 'N/A'; // Display N/A if type is not defined
                         document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
 
