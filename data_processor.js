@@ -69,7 +69,8 @@ window.dataProcessor = {
                             links.push({
                                 source: source,
                                 target: target,
-                                value: Math.abs(value)
+                                value: Math.abs(value),
+                                lineStyle: { color: config.energeticColors[hijo["Nodo Hijo"]] || '#888' } // Asignar color del energético
                             });
                         }
                     }
