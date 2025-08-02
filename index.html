@@ -8,22 +8,30 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
     <style>
         :root {
-            --background-color: #f0f2f5;
-            --card-background: #ffffff;
-            --text-color: #333333;
-            --primary-color: #00529B;
+            --color-guinda: #6a1c32;
+            --color-gris-oscuro: #333333;
+            --color-blanco: #FFFFFF;
+            --color-gris-claro: #f2f2f2;
+            --color-bordes: #cccccc;
+            --color-verde-acento: #136235;
+            --color-azul-enlaces: #007bff;
+
+            --background-color: var(--color-gris-claro);
+            --card-background: var(--color-blanco);
+            --text-color: var(--color-gris-oscuro);
+            --primary-color: var(--color-guinda);
             --shadow-color: rgba(0, 0, 0, 0.1);
             --border-radius: 12px;
         }
 
         body {
-            font-family: 'Roboto', Arial, sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400; /* Peso regular para el texto base */
             background-color: var(--background-color);
             color: var(--text-color);
             margin: 0;
@@ -44,8 +52,8 @@
 
         header {
             text-align: center;
-            background: linear-gradient(135deg, #00529B 0%, #003d7a 100%);
-            color: white;
+            background: var(--primary-color);
+            color: var(--color-blanco);
             padding: 2rem 1rem;
             margin-bottom: 2rem;
             border-radius: var(--border-radius);
@@ -53,16 +61,18 @@
         }
 
         header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700; /* Peso bold para títulos principales */
             font-size: 2.2rem;
-            font-weight: 700;
-            color: white;
+            color: var(--color-blanco);
             margin-bottom: 1rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400; /* Peso regular */
             font-size: 1rem;
-            font-weight: 300;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -289,7 +299,7 @@
         }
 
         .nav-link {
-            color: white;
+            color: var(--color-blanco);
             text-decoration: none;
             padding: 0.75rem 1.5rem;
             border-radius: var(--border-radius);
@@ -328,7 +338,7 @@
 
         .glass-button {
             background: var(--primary-color);
-            color: white;
+            color: var(--color-blanco);
             border: none;
             padding: 0.75rem 1.5rem;
             border-radius: var(--border-radius);
@@ -345,7 +355,7 @@
         }
 
         .glass-button:hover {
-            background: #003d7a;
+            background: var(--color-guinda);
             transform: translateY(-2px);
         }
 
