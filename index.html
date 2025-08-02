@@ -802,6 +802,7 @@
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                                <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Salidas'</label></td></tr>
                             </tfoot></table>`;
                         } else {
@@ -820,6 +821,7 @@
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                                <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Entradas'</label></td></tr>
                             </tfoot></table>`;
                         } else {
@@ -851,6 +853,7 @@
                         }
 
                         valuesContainer.innerHTML = detailsHtml + parentNodesContainer.innerHTML;
+                        valuesContainer.insertAdjacentHTML('beforeend', '<div id="selected-balance-container" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px dashed #ccc;"></div>');
 
                         // --- Lógica para subtotales interactivos ---
                         const inflowTable = document.getElementById('inflow-table');
@@ -869,8 +872,38 @@
                             const finalInflowSubtotal = (sumOutflowToInflow ? outflowSelectedSum : 0) + inflowSelectedSum;
                             const finalOutflowSubtotal = (sumInflowToOutflow ? inflowSelectedSum : 0) + outflowSelectedSum;
 
+                            const totalInflowValue = parseFloat(nodeInfo.inflow);
+                            const totalOutflowValue = parseFloat(nodeInfo.outflow);
+
                             inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
                             outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
+
+                            inflowTable.querySelector('.unselected-total').textContent = formatNumber(totalInflowValue - inflowSelectedSum);
+                            outflowTable.querySelector('.unselected-total').textContent = formatNumber(totalOutflowValue - outflowSelectedSum);
+
+                            // --- Lógica para el Balance Seleccionado ---
+                            const selectedBalanceContainer = document.getElementById('selected-balance-container');
+                            const selectedBalance = finalInflowSubtotal - finalOutflowSubtotal;
+                            let balanceHtml = `<h4>Análisis de la Selección</h4>
+                                <p><strong>Entrada Seleccionada:</strong> ${formatNumber(finalInflowSubtotal)}</p>
+                                <p><strong>Salida Seleccionada:</strong> ${formatNumber(finalOutflowSubtotal)}</p>
+                                <p><strong>Balance Seleccionado:</strong> ${formatNumber(selectedBalance)}</p>`;
+
+                            if (finalInflowSubtotal > 0) {
+                                const lossPercentage = (finalInflowSubtotal - finalOutflowSubtotal) / finalInflowSubtotal;
+                                const efficiency = 1 - lossPercentage;
+                                let message = '';
+
+                                if (lossPercentage >= 0.5) {
+                                    message = `🚨 <strong style="color:#e53e3e;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
+                                } else if (lossPercentage >= 0.25) {
+                                    message = `⚠️ <strong style="color:#dd6b20;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
+                                } else {
+                                    message = `✅ <strong style="color:#38a169;">Eficiencia en Selección: ${(efficiency * 100).toFixed(2)}%</strong>`;
+                                }
+                                balanceHtml += `<p>${message}</p>`;
+                            }
+                            selectedBalanceContainer.innerHTML = balanceHtml;
                         }
 
                         function setupTableInteractivity(table) {
