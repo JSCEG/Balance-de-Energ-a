@@ -123,7 +123,7 @@ window.sankeyConfig = {
                 // // ...
             ]
         },
-
+        //Un comentrio de Cambio de nombre de columna
         {
             // Columna : Entradas a Transformaciones Centrales Eléctricas
             nombre: "Transformaciones a Centrales Eléctricas",
