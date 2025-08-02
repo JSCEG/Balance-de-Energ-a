@@ -802,6 +802,7 @@
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                                <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Salidas'</label></td></tr>
                             </tfoot></table>`;
                         } else {
                             detailsHtml += '<h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p>';
@@ -819,6 +820,7 @@
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                                <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Entradas'</label></td></tr>
                             </tfoot></table>`;
                         } else {
                             detailsHtml += '<h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p>';
@@ -851,38 +853,41 @@
                         valuesContainer.innerHTML = detailsHtml + parentNodesContainer.innerHTML;
 
                         // --- Lógica para subtotales interactivos ---
-                        function setupSubtotal(tableId) {
-                            const table = document.getElementById(tableId);
-                            if (!table) return;
+                        const inflowTable = document.getElementById('inflow-table');
+                        const outflowTable = document.getElementById('outflow-table');
 
-                            const checkboxes = table.querySelectorAll('.flow-check');
-                            const subtotalCell = table.querySelector('.subtotal');
-                            const selectAllCheckbox = table.querySelector('.select-all');
+                        function updateAllSubtotals() {
+                            let inflowSelectedSum = 0;
+                            inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
 
-                            function updateSubtotal() {
-                                let subtotal = 0;
-                                checkboxes.forEach(cb => {
-                                    if (cb.checked) {
-                                        subtotal += parseFloat(cb.dataset.value);
-                                    }
-                                });
-                                subtotalCell.textContent = formatNumber(subtotal);
-                            }
+                            let outflowSelectedSum = 0;
+                            outflowTable.querySelectorAll('.flow-check:checked').forEach(cb => outflowSelectedSum += parseFloat(cb.dataset.value));
 
-                            checkboxes.forEach(cb => {
-                                cb.addEventListener('change', updateSubtotal);
-                            });
+                            const sumInflowToOutflow = inflowTable.querySelector('.cross-sum').checked;
+                            const sumOutflowToInflow = outflowTable.querySelector('.cross-sum').checked;
 
-                            selectAllCheckbox.addEventListener('change', function() {
-                                checkboxes.forEach(cb => {
-                                    cb.checked = this.checked;
-                                });
-                                updateSubtotal();
-                            });
+                            const finalInflowSubtotal = (sumOutflowToInflow ? outflowSelectedSum : 0) + inflowSelectedSum;
+                            const finalOutflowSubtotal = (sumInflowToOutflow ? inflowSelectedSum : 0) + outflowSelectedSum;
+
+                            inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
+                            outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
                         }
 
-                        setupSubtotal('inflow-table');
-                        setupSubtotal('outflow-table');
+                        function setupTableInteractivity(table) {
+                            if (!table) return;
+                            const selectAll = table.querySelector('.select-all');
+                            const checkboxes = table.querySelectorAll('.flow-check, .cross-sum');
+
+                            selectAll.addEventListener('change', function() {
+                                table.querySelectorAll('.flow-check').forEach(cb => cb.checked = this.checked);
+                                updateAllSubtotals();
+                            });
+
+                            checkboxes.forEach(cb => cb.addEventListener('change', updateAllSubtotals));
+                        }
+
+                        setupTableInteractivity(inflowTable);
+                        setupTableInteractivity(outflowTable);
 
                         document.getElementById('node-details-container').style.display = 'block';
                     } else {
