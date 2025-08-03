@@ -155,13 +155,36 @@
         header h1 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             color: #ffffff;
-            margin-bottom: 1rem;
+            margin: 0;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
             position: relative;
             z-index: 2;
             letter-spacing: 1px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .header-logo {
+            height: 80px;
+            max-width: 250px;
+            object-fit: contain;
+        }
+
+        .sener-logo {
+            background-color: white;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .header-text {
+            flex-grow: 1;
         }
 
         header p {
@@ -438,6 +461,21 @@
         }
 
         @media (max-width: 767px) {
+            .header-content {
+                justify-content: center;
+                /* Centra el contenido del header en móvil */
+            }
+
+            .sener-logo {
+                display: none;
+                /* Oculta el logo de SENER en móvil */
+            }
+
+            .header-text {
+                text-align: center;
+                /* Centra el texto del título */
+            }
+
             .container {
                 padding: 1rem;
             }
@@ -472,41 +510,75 @@
             }
         }
 
-        /* Estilos para tablas con glassmorphism */
+        /* Estilos para tablas con glassmorphism de alta gama */
         #node-details-container table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--border-radius-small);
             overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
         #node-details-container th,
         #node-details-container td {
-            border: none;
-            padding: 1rem;
+            padding: 1rem 1.5rem;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
         }
 
         #node-details-container th {
-            background: rgba(106, 28, 50, 0.2);
-            font-weight: 600;
+            background: linear-gradient(135deg, #d32f2f 0%, #b92b27 100%);
+            font-weight: 700;
+            font-size: 0.9rem;
             color: var(--color-blanco);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #node-details-container tr:last-child th,
+        #node-details-container tr:last-child td {
+            border-bottom: none;
         }
 
         #node-details-container td {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        #node-details-container tr:nth-child(even) td {
             background: rgba(255, 255, 255, 0.05);
-            color: var(--color-gris-oscuro);
         }
 
         #node-details-container tr:hover td {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(106, 28, 50, 0.15);
+            color: var(--color-guinda);
+            font-weight: 600;
+        }
+
+        /* Redondear esquinas de la tabla */
+        #node-details-container th:first-child {
+            border-top-left-radius: var(--border-radius-small);
+        }
+
+        #node-details-container th:last-child {
+            border-top-right-radius: var(--border-radius-small);
+        }
+
+        #node-details-container tr:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius-small);
+        }
+
+        #node-details-container tr:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius-small);
         }
 
         /* Toggle Switch Personalizado */
@@ -593,6 +665,49 @@
             box-shadow: 0 0 25px rgba(106, 28, 50, 0.4);
         }
 
+        .card-inset {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius-small);
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-inset h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(106, 28, 50, 0.2);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .criteria-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .criteria-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
         /* Elementos flotantes decorativos */
         .floating-elements {
             position: fixed;
@@ -665,8 +780,14 @@
 
     <div class="container">
         <header>
-            <h1>Balance Nacional de Energía México</h1>
-            <p>Sankey de Datos Energéticos</p>
+            <div class="header-content">
+                <img src="img/logo_gob.png" alt="Logo Gobierno de México" class="header-logo">
+                <div class="header-text">
+                    <h1>Balance Nacional de Energía México</h1>
+                    <p>Sankey de Datos Energéticos</p>
+                </div>
+                <img src="img/logo_sener.png" alt="Logo Secretaría de Energía" class="header-logo sener-logo">
+            </div>
         </header>
 
         <div class="card">
@@ -687,9 +808,14 @@
                 <div class="control-group">
                     <div class="buttons">
                         <button id="exportar" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: middle;">
-                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
-                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"></path>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: middle;">
+                                <path
+                                    d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z">
+                                </path>
+                                <path
+                                    d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z">
+                                </path>
                             </svg>
                             Exportar Gráfico
                         </button>
@@ -725,6 +851,36 @@
                 <p><span id="node-details-efficiency"></span></p>
             </div>
             <div id="node-details-values"></div>
+
+            <div class="card-inset" id="alert-info-container" style="display: none;">
+                <h4>Criterios de Eficiencia (Alertas)</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <p style="font-size: 0.9rem; margin-top: 0;">La eficiencia se calcula con la fórmula:</p>
+                        <strong
+                            style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.1); border-radius: 8px;">(1
+                            - (Entrada - Salida) / Entrada) * 100%</strong>
+                    </div>
+                    <div style="flex: 1; min-width: 250px;">
+                        <ul class="criteria-list">
+                            <li class="criteria-item">
+                                <div class="color-box" style="background-color: #38a169;"></div>
+                                <span class="criteria-text"><strong>Eficiente:</strong> Pérdida menor al 25%</span>
+                            </li>
+                            <li class="criteria-item">
+                                <div class="color-box" style="background-color: #dd6b20;"></div>
+                                <span class="criteria-text"><strong>Alerta:</strong> Pérdida entre 25% y 50%</span>
+                            </li>
+                            <li class="criteria-item">
+                                <div class="color-box" style="background-color: #e53e3e;"></div>
+                                <span class="criteria-text"><strong>Crítica:</strong> Pérdida mayor o igual al
+                                    50%</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <button id="open-details-new-tab" class="btn" style="margin-top: 1rem;">Abrir en Nueva Pestaña</button>
         </div>
 
@@ -1078,10 +1234,13 @@
                         document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
 
                         const efficiencySpan = document.getElementById('node-details-efficiency');
+                        const alertInfoContainer = document.getElementById('alert-info-container');
                         efficiencySpan.innerHTML = ''; // Limpiar
+                        alertInfoContainer.style.display = 'none'; // Ocultar por defecto
 
                         const showAlerts = document.getElementById('alert-switch').checked;
                         if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0) {
+                            alertInfoContainer.style.display = 'block'; // Mostrar si es relevante
                             const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
                             const efficiency = 1 - lossPercentage;
                             let message = '';
@@ -1152,7 +1311,7 @@
                         // Tabla de Nodos Padre
                         const parentNodesContainer = document.createElement('div');
                         const parentTable = document.createElement('table');
-                        parentTable.innerHTML = `<thead><tr><th>Nodo Padre</th><th>Valor (PJ)</th></tr></thead><tbody></tbody>`;
+                        parentTable.innerHTML = `<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th></tr></thead><tbody></tbody>`;
                         const tbody = parentTable.querySelector('tbody');
                         let parentRows = 0;
 
@@ -1168,7 +1327,7 @@
                         });
 
                         if (parentRows > 0) {
-                            parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación en Nodos Padre</h4>';
+                            parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación del Energético en la Cadena de Valor</h4>';
                             parentNodesContainer.appendChild(parentTable);
                         }
 
