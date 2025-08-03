@@ -708,6 +708,49 @@
             font-weight: 500;
         }
 
+        .card-inset {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius-small);
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-inset h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(106, 28, 50, 0.2);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .criteria-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .criteria-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
         /* Elementos flotantes decorativos */
         .floating-elements {
             position: fixed;
@@ -1221,26 +1264,24 @@
                 if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
                     const nodeInfo = allNodes.get(params.name);
 
-                    if (nodeInfo) { // Removed type check, now shows for all nodes
+                    if (nodeInfo) {
                         console.log('Displaying node details for:', nodeInfo.name);
                         document.getElementById('node-details-name').innerHTML = `<span style="display:inline-block; width:15px; height:15px; background-color:${nodeInfo.itemStyle.color}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${nodeInfo.name}`;
-                        document.getElementById('node-details-type').textContent = nodeInfo.tipo || 'N/A'; // Display N/A if type is not defined
+                        document.getElementById('node-details-type').textContent = nodeInfo.tipo || 'N/A';
                         document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
 
-                        // Actualizar los campos de resumen existentes
-                        // Restaurar los totales y manejar la eficiencia
                         document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
                         document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
                         document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
 
                         const efficiencySpan = document.getElementById('node-details-efficiency');
                         const alertInfoContainer = document.getElementById('alert-info-container');
-                        efficiencySpan.innerHTML = ''; // Limpiar
-                        alertInfoContainer.style.display = 'none'; // Ocultar por defecto
+                        efficiencySpan.innerHTML = '';
+                        alertInfoContainer.style.display = 'none';
 
                         const showAlerts = document.getElementById('alert-switch').checked;
                         if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0) {
-                            alertInfoContainer.style.display = 'block'; // Mostrar si es relevante
+                            alertInfoContainer.style.display = 'block';
                             const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
                             const efficiency = 1 - lossPercentage;
                             let message = '';
@@ -1256,23 +1297,21 @@
                         }
 
                         const valuesContainer = document.getElementById('node-details-values');
-                        valuesContainer.innerHTML = ''; // Limpiar contenido anterior
+                        valuesContainer.innerHTML = '';
 
                         const clickedNodeName = params.name;
                         const selectedYear = yearSelector.value;
 
-                        // Filtrar flujos de entrada y salida
                         const inflows = currentLinks.filter(link => link.target === clickedNodeName);
                         const outflows = currentLinks.filter(link => link.source === clickedNodeName);
 
                         let detailsHtml = '<div style="display: flex; flex-wrap: wrap; gap: 2rem;">';
 
-                        // Columna de Entradas
-                        detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                         if (inflows.length > 0) {
+                            detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                             detailsHtml += '<h4>Flujos de Entrada</h4><table id="inflow-table">';
                             detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
-                            inflows.forEach((link, index) => {
+                            inflows.forEach(link => {
                                 const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
                                 detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
@@ -1282,17 +1321,16 @@
                                 <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Salidas'</label></td></tr>
                             </tfoot></table>`;
+                            detailsHtml += '</div>';
                         } else {
-                            detailsHtml += '<h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p>';
+                            detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p></div>';
                         }
-                        detailsHtml += '</div>';
 
-                        // Columna de Salidas
-                        detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                         if (outflows.length > 0) {
+                            detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                             detailsHtml += '<h4>Flujos de Salida</h4><table id="outflow-table">';
                             detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
-                            outflows.forEach((link, index) => {
+                            outflows.forEach(link => {
                                 const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
                                 detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
                             });
@@ -1302,16 +1340,16 @@
                                 <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Entradas'</label></td></tr>
                             </tfoot></table>`;
+                            detailsHtml += '</div>';
                         } else {
-                            detailsHtml += '<h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p>';
+                            detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p></div>';
                         }
-                        detailsHtml += '</div>';
-                        detailsHtml += '</div>'; // Cierre del flex container
 
-                        // Tabla de Nodos Padre
+                        detailsHtml += '</div>';
+
                         const parentNodesContainer = document.createElement('div');
                         const parentTable = document.createElement('table');
-                        parentTable.innerHTML = `<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th></tr></thead><tbody></tbody>`;
+                        parentTable.innerHTML = '<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th></tr></thead><tbody></tbody>';
                         const tbody = parentTable.querySelector('tbody');
                         let parentRows = 0;
 
@@ -1335,19 +1373,22 @@
                         valuesContainer.insertAdjacentHTML('beforeend', '<div id="selected-balance-container" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px dashed #ccc;"></div>');
                         valuesContainer.insertAdjacentHTML('beforeend', parentNodesContainer.innerHTML);
 
-                        // --- Lógica para subtotales interactivos ---
                         const inflowTable = document.getElementById('inflow-table');
                         const outflowTable = document.getElementById('outflow-table');
 
                         function updateAllSubtotals(nodeInfo) {
                             let inflowSelectedSum = 0;
-                            inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
+                            if (inflowTable) {
+                                inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
+                            }
 
                             let outflowSelectedSum = 0;
-                            outflowTable.querySelectorAll('.flow-check:checked').forEach(cb => outflowSelectedSum += parseFloat(cb.dataset.value));
+                            if (outflowTable) {
+                                outflowTable.querySelectorAll('.flow-check:checked').forEach(cb => outflowSelectedSum += parseFloat(cb.dataset.value));
+                            }
 
-                            const sumInflowToOutflow = inflowTable.querySelector('.cross-sum').checked;
-                            const sumOutflowToInflow = outflowTable.querySelector('.cross-sum').checked;
+                            const sumInflowToOutflow = inflowTable ? inflowTable.querySelector('.cross-sum').checked : false;
+                            const sumOutflowToInflow = outflowTable ? outflowTable.querySelector('.cross-sum').checked : false;
 
                             const finalInflowSubtotal = (sumOutflowToInflow ? outflowSelectedSum : 0) + inflowSelectedSum;
                             const finalOutflowSubtotal = (sumInflowToOutflow ? inflowSelectedSum : 0) + outflowSelectedSum;
@@ -1355,13 +1396,15 @@
                             const totalInflowValue = parseFloat(nodeInfo.inflow);
                             const totalOutflowValue = parseFloat(nodeInfo.outflow);
 
-                            inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
-                            outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
+                            if (inflowTable) {
+                                inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
+                                inflowTable.querySelector('.unselected-total').textContent = formatNumber(totalInflowValue - inflowSelectedSum);
+                            }
+                            if (outflowTable) {
+                                outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
+                                outflowTable.querySelector('.unselected-total').textContent = formatNumber(totalOutflowValue - outflowSelectedSum);
+                            }
 
-                            inflowTable.querySelector('.unselected-total').textContent = formatNumber(totalInflowValue - inflowSelectedSum);
-                            outflowTable.querySelector('.unselected-total').textContent = formatNumber(totalOutflowValue - outflowSelectedSum);
-
-                            // --- Lógica para el Balance Seleccionado ---
                             const selectedBalanceContainer = document.getElementById('selected-balance-container');
                             const selectedBalance = finalInflowSubtotal - finalOutflowSubtotal;
                             let balanceHtml = `<h4>Análisis de la Selección</h4>
