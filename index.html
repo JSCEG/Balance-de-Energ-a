@@ -377,31 +377,28 @@
             transform: translateY(0);
         }
 
+        #chart-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #sankey {
+            width: 100%;
+            height: 100%;
+            transform-origin: 0 0;
+            cursor: grab;
+        }
+
         #chart-container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             position: relative;
-        }
-
-        #chart-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--color-guinda), var(--color-verde-acento), var(--color-oro));
-            border-radius: var(--border-radius);
-            z-index: -1;
-            opacity: 0.3;
-        }
-
-        #sankey {
-            width: 100%;
-            height: 70vh;
-            /* Altura flexible */
-            min-height: 400px;
+            height: 70vh; /* Altura fija para el contenedor */
         }
 
         footer {
@@ -448,6 +445,10 @@
                 opacity: 0;
             }
         }
+
+        
+
+        
 
         /* Mejoras responsivas */
         @media (min-width: 768px) {
@@ -848,8 +849,11 @@
                         <datalist id="node-list"></datalist>
                     </div>
                 </div>
+                
+
                 <div class="control-group">
                     <div class="buttons">
+                        <button id="zoom-reset-btn" class="btn">Restaurar Vista</button>
                         <button id="exportar" class="btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: middle;">
@@ -879,7 +883,9 @@
         </div>
 
         <div id="chart-container" class="card">
-            <div id="sankey"></div>
+            <div id="chart-wrapper">
+                <div id="sankey"></div>
+            </div>
         </div>
 
         <div id="node-details-container" class="card" style="display: none;">
@@ -967,6 +973,7 @@
             initializeGlassEffects();
             const chartDom = document.getElementById('sankey');
             let sankeyChart = echarts.init(chartDom, null, { renderer: 'canvas' });
+            let currentZoomLevel = 1; // Variable para gestionar el zoom
             const yearSelector = document.getElementById('year-selector');
             const searchInput = document.getElementById('search-input');
             const nodeDatalist = document.getElementById('node-list');
@@ -1080,6 +1087,7 @@
                     },
                     series: [{
                         type: 'sankey',
+                        roam: true, // Habilitar zoom y arrastre
                         data: nodes,
                         links: currentLinks,
                         emphasis: { focus: 'adjacency' },
@@ -1135,6 +1143,7 @@
             updateChart(years[0]);
 
             yearSelector.addEventListener('change', (e) => {
+                currentZoomLevel = 1; // Restablecer zoom al cambiar de año
                 updateChart(e.target.value);
                 searchInput.value = ''; // Clear search input
                 document.getElementById('node-details-container').style.display = 'none'; // Hide details table
@@ -1484,7 +1493,60 @@
 
             searchInput.addEventListener('input', handleSearch);
 
-            window.addEventListener('resize', () => sankeyChart.resize());
+            // --- Lógica de Zoom y Paneo con Transformaciones CSS ---
+            const wrapper = document.getElementById('chart-wrapper');
+            const sankeyDom = document.getElementById('sankey');
+            let scale = 1, panX = 0, panY = 0, isPanning = false, startX, startY;
+
+            function updateTransform() {
+                sankeyDom.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+            }
+
+            wrapper.addEventListener('wheel', e => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                const newScale = Math.min(Math.max(0.5, scale + delta), 4); // Límite de zoom 0.5x a 4x
+
+                const rect = wrapper.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                panX = mouseX - (mouseX - panX) * (newScale / scale);
+                panY = mouseY - (mouseY - panY) * (newScale / scale);
+
+                scale = newScale;
+                updateTransform();
+            });
+
+            sankeyDom.addEventListener('mousedown', e => {
+                isPanning = true;
+                startX = e.clientX - panX;
+                startY = e.clientY - panY;
+                sankeyDom.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', e => {
+                if (!isPanning) return;
+                panX = e.clientX - startX;
+                panY = e.clientY - startY;
+                updateTransform();
+            });
+
+            document.addEventListener('mouseup', () => {
+                isPanning = false;
+                sankeyDom.style.cursor = 'grab';
+            });
+
+            document.getElementById('zoom-reset-btn').onclick = function() {
+                scale = 1;
+                panX = 0;
+                panY = 0;
+                updateTransform();
+            };
+
+            window.addEventListener('resize', () => {
+                sankeyChart.resize();
+            });
         });
 
     </script>
