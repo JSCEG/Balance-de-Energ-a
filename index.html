@@ -1609,18 +1609,7 @@
                 const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
 
-                // Función para escalar el tamaño de los nodos (alto del rectángulo)
-                const scaleNodeSize = (value) => {
-                    const height = Math.max(20, value * scaleFactor);
-                    return [30, height]; // Ancho fijo, alto proporcional
-                };
 
-                // Función para escalar el grosor de los enlaces
-                const scaleLinkWidth = (value) => {
-                    return Math.max(1, value * scaleFactor);
-                };
-
-                // Añadir el nodo central
 
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
@@ -1677,12 +1666,6 @@
                         nodeGap: 10,
                         label: {
 
-                        edgeSymbol: ['none', 'arrow'],
-                        edgeSymbolSize: 10,
-                        label: {
-                            show: true,
-                            position: 'inside',
-
                             formatter: function(params) {
                                 return `${params.data.name}\n(${formatNumber(params.data.value)})`;
                             },
@@ -1690,9 +1673,6 @@
 
                             fontSize: 12,
                             fontWeight: 'bold'
-
-                            textBorderColor: '#000',
-                            textBorderWidth: 2
 
                         },
                         lineStyle: {
