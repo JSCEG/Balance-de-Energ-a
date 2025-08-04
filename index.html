@@ -1008,12 +1008,12 @@
                             const lossPercentage = (node.inflow - node.outflow) / node.inflow;
                             node.itemStyle = node.itemStyle || {}; // Asegurar que itemStyle exista
 
-                            if (lossPercentage >= 0.5) { // Crítico
+                            if (lossPercentage >= 0.05) { // Crítico
                                 node.itemStyle.borderColor = '#e53e3e'; // Rojo
                                 node.itemStyle.borderWidth = 2.5;
                                 node.itemStyle.shadowBlur = 15; // Resplandor más intenso
                                 node.itemStyle.shadowColor = 'rgba(229, 62, 62, 0.8)'; // Resplandor rojo
-                            } else if (lossPercentage >= 0.25) { // Alerta
+                            } else if (lossPercentage >= 0.03) { // Alerta
                                 node.itemStyle.borderColor = '#dd6b20'; // Naranja
                                 node.itemStyle.borderWidth = 2.5;
                                 node.itemStyle.shadowBlur = 10; // Resplandor intenso
@@ -1308,10 +1308,10 @@
                             const efficiency = 1 - lossPercentage;
                             let message = '';
 
-                            if (lossPercentage >= 0.5) {
-                                message = `🚨 <strong style="color:#e53e3e;">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica: >50%)</strong>`;
-                            } else if (lossPercentage >= 0.25) {
-                                message = `⚠️ <strong style="color:#dd6b20;">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta: 25%-50%)</strong>`;
+                            if (lossPercentage >= 0.05) {
+                                message = `🚨 <strong style="color:#e53e3e;">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica: >5%)</strong>`;
+                            } else if (lossPercentage >= 0.03) {
+                                message = `⚠️ <strong style="color:#dd6b20;">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta: 3%-5%)</strong>`;
                             } else {
                                 message = `✅ <strong style="color:#38a169;">Eficiencia: ${(efficiency * 100).toFixed(2)}%</strong>`;
                             }
@@ -1439,9 +1439,9 @@
                                 const efficiency = 1 - lossPercentage;
                                 let message = '';
 
-                                if (lossPercentage >= 0.5) {
+                                if (lossPercentage >= 0.05) {
                                     message = `🚨 <strong style="color:#e53e3e;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
-                                } else if (lossPercentage >= 0.25) {
+                                } else if (lossPercentage >= 0.03) {
                                     message = `⚠️ <strong style="color:#dd6b20;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
                                 } else {
                                     message = `✅ <strong style="color:#38a169;">Eficiencia en Selección: ${(efficiency * 100).toFixed(2)}%</strong>`;
