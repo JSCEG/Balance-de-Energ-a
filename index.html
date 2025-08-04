@@ -1603,79 +1603,49 @@
                 }
                 subSankeyChart = echarts.init(subChartDom);
 
-                const nodes = [];
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
 
-                // Función para escalar el tamaño de los nodos (alto del rectángulo)
-                const scaleNodeSize = (value) => {
-                    if (totalFlow === 0) return [30, 30]; // Tamaño base
-                    const height = Math.max(20, (value / totalFlow) * 200 + 15); // Mínimo 20px de alto
-                    return [30, height]; // Ancho fijo, alto proporcional
-                };
-
-                // Función para escalar el grosor de los enlaces
-                const scaleLinkWidth = (value) => {
-                    if (totalFlow === 0) return 1;
-                    return Math.max(1, (value / totalFlow) * 25);
-                };
-
-                // Añadir el nodo central
+                // Registrar nodo central
                 nodeMap.set(centerNodeName, {
-                    name: `${centerNodeName}\n(${formatNumber(totalFlow)})`,
+                    name: centerNodeName,
                     value: totalFlow,
-                    symbol: 'rect',
-                    symbolSize: scaleNodeSize(totalFlow),
-                    fixed: true, // El nodo central no se mueve
-                    x: subChartDom.clientWidth / 2,
-                    y: subChartDom.clientHeight / 2,
-                    itemStyle: { color: centerNodeInfo.itemStyle.color },
-                    label: { fontSize: 12, fontWeight: 'bold' }
+                    itemStyle: { color: centerNodeInfo.itemStyle.color }
                 });
 
-                // Añadir nodos de entrada
-                inflows.forEach((link, i) => {
+                // Registrar nodos de entrada y enlaces
+                inflows.forEach(link => {
                     const sourceNode = allNodes.get(link.source);
                     nodeMap.set(link.source, {
-                        name: `${link.source}\n(${formatNumber(link.value)})`,
+                        name: link.source,
                         value: link.value,
-                        symbol: 'rect',
-                        symbolSize: scaleNodeSize(link.value),
-                        itemStyle: { color: sourceNode.itemStyle.color },
-                        x: subChartDom.clientWidth * 0.1,
-                        y: (subChartDom.clientHeight / (inflows.length + 1)) * (i + 1)
+                        itemStyle: { color: sourceNode.itemStyle.color }
                     });
                     links.push({
                         source: link.source,
                         target: centerNodeName,
                         value: link.value,
                         lineStyle: {
-                            width: scaleLinkWidth(link.value),
                             color: sourceNode.itemStyle.color || '#888',
                             opacity: 0.7
                         }
                     });
                 });
 
-                // Añadir nodos de salida
-                outflows.forEach((link, i) => {
+                // Registrar nodos de salida y enlaces
+                outflows.forEach(link => {
                     const targetNode = allNodes.get(link.target);
                     nodeMap.set(link.target, {
-                        name: `${link.target}\n(${formatNumber(link.value)})`,
+                        name: link.target,
                         value: link.value,
-                        symbol: 'rect',
-                        symbolSize: scaleNodeSize(link.value),
-                        itemStyle: { color: targetNode.itemStyle.color },
-                        x: subChartDom.clientWidth * 0.9,
-                        y: (subChartDom.clientHeight / (outflows.length + 1)) * (i + 1)
+                        itemStyle: { color: targetNode.itemStyle.color }
                     });
                     links.push({
                         source: centerNodeName,
                         target: link.target,
                         value: link.value,
                         lineStyle: {
-                            width: scaleLinkWidth(link.value),
                             color: centerNodeInfo.itemStyle.color || '#888',
                             opacity: 0.7
                         }
@@ -1685,21 +1655,43 @@
                 const option = {
                     tooltip: {},
                     series: [{
-                        type: 'graph',
-                        layout: 'none',
-                        roam: false,
-                        draggable: true,
+                        type: 'sankey',
                         data: Array.from(nodeMap.values()),
                         links: links,
-                        edgeSymbol: ['none', 'arrow'],
-                        edgeSymbolSize: 10,
-                        label: { show: true, position: 'inside', formatter: '{b}', color: '#fff', textBorderColor: '#000', textBorderWidth: 2 },
+                        nodeWidth: 30,
+                        nodeGap: 10,
+                        label: {
+                            formatter: function(params) {
+                                return `${params.data.name}\n(${formatNumber(params.data.value)})`;
+                            },
+                            color: '#000',
+                            fontSize: 12,
+                            fontWeight: 'bold'
+                        },
+                        edgeLabel: {
+                            show: true,
+                            color: '#000',
+                            fontSize: 11,
+                            formatter: function(params) {
+                                return formatNumber(params.data.value);
+                            }
+                        },
+                        labelLayout: function(params) {
+                            if (params.dataType === 'edge') {
+                                const link = links[params.dataIndex];
+                                const isInflow = link.target === centerNodeName;
+                                return {
+                                    x: params.labelRect.x + (isInflow ? -8 : 8),
+                                    align: isInflow ? 'right' : 'left',
+                                    verticalAlign: 'middle'
+                                };
+                            }
+                        },
                         lineStyle: {
-                            curveness: 0.3,
+                            curveness: 0.5
                         },
                         emphasis: {
-                            focus: 'adjacency',
-                            lineStyle: { width: 10 }
+                            focus: 'adjacency'
                         }
                     }]
                 };
@@ -1708,7 +1700,12 @@
 
                 // Botón de descarga para el gráfico hijo
                 document.getElementById('export-sub-sankey').onclick = function() {
-                    const url = subSankeyChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+                    const background = getComputedStyle(subSankeyContainer).backgroundColor;
+                    const url = subSankeyChart.getDataURL({
+                        type: 'png',
+                        pixelRatio: 3,
+                        backgroundColor: background
+                    });
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `detalle_flujo_${centerNodeName}.png`;
