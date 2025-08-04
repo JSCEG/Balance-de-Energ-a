@@ -893,18 +893,17 @@
                 <p><strong>Balance Neto:</strong> <span id="node-details-balance"></span></p>
                 <p><span id="node-details-efficiency"></span></p>
             </div>
-            <div id="node-details-values"></div>
-
-            <div class="card-inset" id="alert-info-container" style="display: none;">
+            <div class="card-inset" id="alert-info-container" style="display: none; margin-bottom: 2rem;">
                 <h4>Criterios de Eficiencia (Alertas)</h4>
-                <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <p style="font-size: 0.9rem; margin-top: 0;">La eficiencia se calcula con la fórmula:</p>
-                        <strong
-                            style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.1); border-radius: 8px;">(1
-                            - (Entrada - Salida) / Entrada) * 100%</strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; border-top: 1px solid rgba(106, 28, 50, 0.1); padding-top: 1rem;">
+                    <!-- Columna de Cálculo -->
+                    <div style="flex: 1; box-sizing: border-box;">
+                        <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Fórmula de Cálculo</strong></p>
+                        <strong style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 8px;">(1 - (Entrada - Salida) / Entrada) * 100%</strong>
                     </div>
-                    <div style="flex: 1; min-width: 250px;">
+                    <!-- Columna de Criterios -->
+                    <div style="flex: 1; box-sizing: border-box;">
+                         <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Criterios de Alerta</strong></p>
                         <ul class="criteria-list">
                             <li class="criteria-item">
                                 <div class="color-box" style="background-color: #38a169;"></div>
@@ -916,15 +915,13 @@
                             </li>
                             <li class="criteria-item">
                                 <div class="color-box" style="background-color: #e53e3e;"></div>
-                                <span class="criteria-text"><strong>Crítica:</strong> Pérdida mayor o igual al
-                                    50%</span>
+                                <span class="criteria-text"><strong>Crítica:</strong> Pérdida &ge; 50%</span>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
-
-            <button id="open-details-new-tab" class="btn" style="margin-top: 1rem;">Abrir en Nueva Pestaña</button>
+            <div id="node-details-values"></div>
         </div>
 
         <footer>
@@ -993,21 +990,39 @@
                     if (!node.esEspaciador) {
                         allNodes.set(node.name, node);
 
+                        // Establecer un resplandor base para todos los nodos
+                        node.itemStyle = node.itemStyle || {};
+                        node.itemStyle.shadowBlur = 3; // Resplandor sutil por defecto
+                        node.itemStyle.shadowColor = 'rgba(0, 0, 0, 0.2)'; // Color de resplandor sutil
+
                         // Lógica de indicadores visuales por pérdida de energía
                         const showAlerts = document.getElementById('alert-switch').checked;
-                        if (showAlerts && node.inflow > 0 && node.outflow > 0) { // Solo para nodos de transformación
+                        const transformationNodes = [
+                            "Coquizadoras y Hornos",
+                            "Plantas de Gas y Fraccionadoras",
+                            "Refinerías y Despuntadoras",
+                            "Centrales Eléctricas"
+                        ];
+
+                        if (showAlerts && node.inflow > 0 && node.outflow > 0 && !transformationNodes.includes(node.name)) { // Excluir nodos de transformación específicos
                             const lossPercentage = (node.inflow - node.outflow) / node.inflow;
                             node.itemStyle = node.itemStyle || {}; // Asegurar que itemStyle exista
 
                             if (lossPercentage >= 0.5) { // Crítico
                                 node.itemStyle.borderColor = '#e53e3e'; // Rojo
                                 node.itemStyle.borderWidth = 2.5;
+                                node.itemStyle.shadowBlur = 15; // Resplandor más intenso
+                                node.itemStyle.shadowColor = 'rgba(229, 62, 62, 0.8)'; // Resplandor rojo
                             } else if (lossPercentage >= 0.25) { // Alerta
                                 node.itemStyle.borderColor = '#dd6b20'; // Naranja
                                 node.itemStyle.borderWidth = 2.5;
+                                node.itemStyle.shadowBlur = 10; // Resplandor intenso
+                                node.itemStyle.shadowColor = 'rgba(221, 107, 32, 0.6)'; // Resplandor naranja
                             } else { // Eficiente
                                 node.itemStyle.borderColor = '#38a169'; // Verde
                                 node.itemStyle.borderWidth = 2;
+                                node.itemStyle.shadowBlur = 5; // Resplandor ligeramente mayor para eficiente
+                                node.itemStyle.shadowColor = 'rgba(56, 161, 105, 0.4)'; // Resplandor verde
                             }
                         }
                     }
@@ -1280,7 +1295,14 @@
                         alertInfoContainer.style.display = 'none';
 
                         const showAlerts = document.getElementById('alert-switch').checked;
-                        if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0) {
+                        const transformationNodes = [
+                            "Coquizadoras y Hornos",
+                            "Plantas de Gas y Fraccionadoras",
+                            "Refinerías y Despuntadoras",
+                            "Centrales Eléctricas"
+                        ];
+
+                        if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0 && !transformationNodes.includes(nodeInfo.name)) {
                             alertInfoContainer.style.display = 'block';
                             const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
                             const efficiency = 1 - lossPercentage;
