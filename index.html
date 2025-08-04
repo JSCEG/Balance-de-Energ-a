@@ -678,6 +678,10 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        #sub-sankey-container {
+            background: #fff;
+        }
+
         .card-inset h4 {
             margin-top: 0;
             color: var(--primary-color);
@@ -1610,7 +1614,6 @@
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
                 const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
-
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
@@ -1659,7 +1662,6 @@
                     tooltip: {},
                     series: [{
                         type: 'sankey',
-
                         top: 20,
                         bottom: 20,
                         data: Array.from(nodeMap.values()),
