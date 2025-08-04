@@ -879,6 +879,17 @@
                         </label>
                     </div>
                 </div>
+                <div class="control-group">
+                    <div class="toggle-container">
+                        <label class="toggle-label">
+                            <span class="toggle-text">Ver Descripciones</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="description-switch" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1078,7 +1089,8 @@
                                 tooltipText += `Total: ${formatNumber(params.value)}`;
                             }
 
-                            if (nodeInfo && nodeInfo.description) {
+                            const showDescription = document.getElementById('description-switch').checked;
+                            if (showDescription && nodeInfo && nodeInfo.description) {
                                 tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeInfo.description}</i>`;
                             }
                             return tooltipText;
@@ -1489,6 +1501,10 @@
 
             document.getElementById('alert-switch').addEventListener('change', () => {
                 updateChart(yearSelector.value);
+            });
+
+            document.getElementById('description-switch').addEventListener('change', () => {
+                // No es necesario redibujar todo el gráfico, ECharts actualizará los tooltips automáticamente.
             });
 
             searchInput.addEventListener('input', handleSearch);
