@@ -1608,8 +1608,6 @@
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
                 const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
-
-
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
@@ -1670,6 +1668,26 @@
                             fontSize: 12,
                             fontWeight: 'bold'
                         },
+                        edgeLabel: {
+                            show: true,
+                            color: '#000',
+                            fontSize: 11,
+                            formatter: function(params) {
+                                return formatNumber(params.data.value);
+                            }
+                        },
+                        labelLayout: function(params) {
+                            if (params.dataType === 'edge') {
+                                const link = links[params.dataIndex];
+                                const isInflow = link.target === centerNodeName;
+                                return {
+                                    x: params.labelRect.x + (isInflow ? -8 : 8),
+                                    align: isInflow ? 'right' : 'left',
+                                    verticalAlign: 'middle'
+                                };
+                            }
+                        },
+
                         lineStyle: {
                             curveness: 0.5
                         },
