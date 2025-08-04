@@ -1607,18 +1607,17 @@
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
+                const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
                 // Función para escalar el tamaño de los nodos (alto del rectángulo)
                 const scaleNodeSize = (value) => {
-                    if (totalFlow === 0) return [30, 30]; // Tamaño base
-                    const height = Math.max(20, (value / totalFlow) * 200 + 15); // Mínimo 20px de alto
+                    const height = Math.max(20, value * scaleFactor);
                     return [30, height]; // Ancho fijo, alto proporcional
                 };
 
                 // Función para escalar el grosor de los enlaces
                 const scaleLinkWidth = (value) => {
-                    if (totalFlow === 0) return 1;
-                    return Math.max(1, (value / totalFlow) * 25);
+                    return Math.max(1, value * scaleFactor);
                 };
 
                 // Añadir el nodo central
