@@ -380,7 +380,7 @@
         #chart-wrapper {
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            overflow: auto; /* Permitir scroll */
             position: absolute;
             top: 0;
             left: 0;
@@ -508,6 +508,10 @@
             .control-group select,
             .control-group input {
                 width: 250px;
+            }
+
+            #sankey {
+                min-width: 1200px; /* Ancho mínimo para el gráfico en móviles */
             }
         }
 
@@ -1521,16 +1525,26 @@
             wrapper.addEventListener('wheel', e => {
                 e.preventDefault();
                 const delta = e.deltaY > 0 ? -0.1 : 0.1;
-                const newScale = Math.min(Math.max(0.5, scale + delta), 4); // Límite de zoom 0.5x a 4x
 
-                const rect = wrapper.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
+                // Si se intenta alejar más allá del 100%, restablecer la vista
+                if (scale + delta < 1) {
+                    scale = 1;
+                    panX = 0;
+                    panY = 0;
+                } else {
+                    const newScale = Math.min(Math.max(1, scale + delta), 4); // Límite de zoom 1x a 4x
 
-                panX = mouseX - (mouseX - panX) * (newScale / scale);
-                panY = mouseY - (mouseY - panY) * (newScale / scale);
+                    // Calcular el punto del cursor relativo al contenedor
+                    const rect = wrapper.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
 
-                scale = newScale;
+                    // Ajustar el paneo para que el zoom se centre en el cursor
+                    panX = mouseX - (mouseX - panX) * (newScale / scale);
+                    panY = mouseY - (mouseY - panY) * (newScale / scale);
+                    
+                    scale = newScale;
+                }
                 updateTransform();
             });
 
