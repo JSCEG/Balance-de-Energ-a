@@ -70,7 +70,10 @@ window.dataProcessor = {
                                 source: source,
                                 target: target,
                                 value: Math.abs(value),
-                                lineStyle: { color: config.energeticColors[hijo["Nodo Hijo"]] || '#888' } // Asignar color del energético
+                                lineStyle: {
+                                    color: config.energeticColors[hijo["Nodo Hijo"]] || '#888',
+                                    opacity: 0.7
+                                } // Asignar color del energético con mayor definición
                             });
                         }
                     }
