@@ -1623,7 +1623,7 @@
 
                 // Añadir el nodo central
                 nodeMap.set(centerNodeName, {
-                    name: `${centerNodeName}\n(${formatNumber(totalFlow)})`,
+                    name: centerNodeName,
                     value: totalFlow,
                     symbol: 'rect',
                     symbolSize: scaleNodeSize(totalFlow),
@@ -1638,7 +1638,7 @@
                 inflows.forEach((link, i) => {
                     const sourceNode = allNodes.get(link.source);
                     nodeMap.set(link.source, {
-                        name: `${link.source}\n(${formatNumber(link.value)})`,
+                        name: link.source,
                         value: link.value,
                         symbol: 'rect',
                         symbolSize: scaleNodeSize(link.value),
@@ -1662,7 +1662,7 @@
                 outflows.forEach((link, i) => {
                     const targetNode = allNodes.get(link.target);
                     nodeMap.set(link.target, {
-                        name: `${link.target}\n(${formatNumber(link.value)})`,
+                        name: link.target,
                         value: link.value,
                         symbol: 'rect',
                         symbolSize: scaleNodeSize(link.value),
@@ -1693,7 +1693,16 @@
                         links: links,
                         edgeSymbol: ['none', 'arrow'],
                         edgeSymbolSize: 10,
-                        label: { show: true, position: 'inside', formatter: '{b}', color: '#fff', textBorderColor: '#000', textBorderWidth: 2 },
+                        label: {
+                            show: true,
+                            position: 'inside',
+                            formatter: function(params) {
+                                return `${params.data.name}\n(${formatNumber(params.data.value)})`;
+                            },
+                            color: '#fff',
+                            textBorderColor: '#000',
+                            textBorderWidth: 2
+                        },
                         lineStyle: {
                             curveness: 0.3,
                         },
