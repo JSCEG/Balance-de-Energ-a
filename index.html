@@ -1610,7 +1610,6 @@
 
 
 
-
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
@@ -1661,19 +1660,15 @@
                         type: 'sankey',
                         data: Array.from(nodeMap.values()),
                         links: links,
-
                         nodeWidth: 30,
                         nodeGap: 10,
                         label: {
-
                             formatter: function(params) {
                                 return `${params.data.name}\n(${formatNumber(params.data.value)})`;
                             },
-                            color: '#fff',
-
+                            color: '#000',
                             fontSize: 12,
                             fontWeight: 'bold'
-
                         },
                         lineStyle: {
                             curveness: 0.5
@@ -1688,7 +1683,12 @@
 
                 // Botón de descarga para el gráfico hijo
                 document.getElementById('export-sub-sankey').onclick = function() {
-                    const url = subSankeyChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+                    const background = getComputedStyle(subSankeyContainer).backgroundColor;
+                    const url = subSankeyChart.getDataURL({
+                        type: 'png',
+                        pixelRatio: 3,
+                        backgroundColor: background
+                    });
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `detalle_flujo_${centerNodeName}.png`;
