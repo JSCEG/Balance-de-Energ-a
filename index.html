@@ -1612,8 +1612,8 @@
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
+                const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
-                // Registrar nodo central
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
