@@ -1606,8 +1606,11 @@
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
+                const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
-                // Registrar nodo central
+
+
+
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
@@ -1658,15 +1661,19 @@
                         type: 'sankey',
                         data: Array.from(nodeMap.values()),
                         links: links,
+
                         nodeWidth: 30,
                         nodeGap: 10,
                         label: {
+
                             formatter: function(params) {
                                 return `${params.data.name}\n(${formatNumber(params.data.value)})`;
                             },
                             color: '#fff',
+
                             fontSize: 12,
                             fontWeight: 'bold'
+
                         },
                         lineStyle: {
                             curveness: 0.5
