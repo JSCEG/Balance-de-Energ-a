@@ -943,6 +943,12 @@
                 </div>
             </div>
             <div id="node-details-values"></div>
+
+            <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 2rem;">
+                <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
+                <div id="sub-sankey-chart" style="height: 400px; width: 100%;"></div>
+                <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar Vista Detallada</button>
+            </div>
         </div>
 
         <footer>
@@ -1299,6 +1305,8 @@
                 };
             };
 
+            let subSankeyChart = null; // Variable para el gráfico hijo
+
             sankeyChart.on('click', function (params) {
                 console.log('Click en Sankey:', params);
                 if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
@@ -1493,6 +1501,10 @@
                         setupTableInteractivity(outflowTable);
 
                         document.getElementById('node-details-container').style.display = 'block';
+
+                        // --- Lógica del Gráfico Hijo ---
+                        createSubSankey(clickedNodeName, inflows, outflows, nodeInfo);
+
                     } else {
                         console.log('Not an energetic child node or spacer.');
                         document.getElementById('node-details-container').style.display = 'none';
@@ -1576,7 +1588,133 @@
 
             window.addEventListener('resize', () => {
                 sankeyChart.resize();
+                if (subSankeyChart) {
+                    subSankeyChart.resize();
+                }
             });
+
+            function createSubSankey(centerNodeName, inflows, outflows, centerNodeInfo) {
+                const subSankeyContainer = document.getElementById('sub-sankey-container');
+                subSankeyContainer.style.display = 'block';
+
+                const subChartDom = document.getElementById('sub-sankey-chart');
+                if (subSankeyChart) {
+                    subSankeyChart.dispose();
+                }
+                subSankeyChart = echarts.init(subChartDom);
+
+                const nodes = [];
+                const links = [];
+                const nodeMap = new Map();
+                const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
+
+                // Función para escalar el tamaño de los nodos (alto del rectángulo)
+                const scaleNodeSize = (value) => {
+                    if (totalFlow === 0) return [30, 30]; // Tamaño base
+                    const height = Math.max(20, (value / totalFlow) * 200 + 15); // Mínimo 20px de alto
+                    return [30, height]; // Ancho fijo, alto proporcional
+                };
+
+                // Función para escalar el grosor de los enlaces
+                const scaleLinkWidth = (value) => {
+                    if (totalFlow === 0) return 1;
+                    return Math.max(1, (value / totalFlow) * 25);
+                };
+
+                // Añadir el nodo central
+                nodeMap.set(centerNodeName, {
+                    name: `${centerNodeName}\n(${formatNumber(totalFlow)})`,
+                    value: totalFlow,
+                    symbol: 'rect',
+                    symbolSize: scaleNodeSize(totalFlow),
+                    fixed: true, // El nodo central no se mueve
+                    x: subChartDom.clientWidth / 2,
+                    y: subChartDom.clientHeight / 2,
+                    itemStyle: { color: centerNodeInfo.itemStyle.color },
+                    label: { fontSize: 12, fontWeight: 'bold' }
+                });
+
+                // Añadir nodos de entrada
+                inflows.forEach((link, i) => {
+                    const sourceNode = allNodes.get(link.source);
+                    nodeMap.set(link.source, {
+                        name: `${link.source}\n(${formatNumber(link.value)})`,
+                        value: link.value,
+                        symbol: 'rect',
+                        symbolSize: scaleNodeSize(link.value),
+                        itemStyle: { color: sourceNode.itemStyle.color },
+                        x: subChartDom.clientWidth * 0.1,
+                        y: (subChartDom.clientHeight / (inflows.length + 1)) * (i + 1)
+                    });
+                    links.push({
+                        source: link.source,
+                        target: centerNodeName,
+                        value: link.value,
+                        lineStyle: {
+                            width: scaleLinkWidth(link.value),
+                            color: sourceNode.itemStyle.color || '#888',
+                            opacity: 0.7
+                        }
+                    });
+                });
+
+                // Añadir nodos de salida
+                outflows.forEach((link, i) => {
+                    const targetNode = allNodes.get(link.target);
+                    nodeMap.set(link.target, {
+                        name: `${link.target}\n(${formatNumber(link.value)})`,
+                        value: link.value,
+                        symbol: 'rect',
+                        symbolSize: scaleNodeSize(link.value),
+                        itemStyle: { color: targetNode.itemStyle.color },
+                        x: subChartDom.clientWidth * 0.9,
+                        y: (subChartDom.clientHeight / (outflows.length + 1)) * (i + 1)
+                    });
+                    links.push({
+                        source: centerNodeName,
+                        target: link.target,
+                        value: link.value,
+                        lineStyle: {
+                            width: scaleLinkWidth(link.value),
+                            color: centerNodeInfo.itemStyle.color || '#888',
+                            opacity: 0.7
+                        }
+                    });
+                });
+
+                const option = {
+                    tooltip: {},
+                    series: [{
+                        type: 'graph',
+                        layout: 'none',
+                        roam: false,
+                        draggable: true,
+                        data: Array.from(nodeMap.values()),
+                        links: links,
+                        edgeSymbol: ['none', 'arrow'],
+                        edgeSymbolSize: 10,
+                        label: { show: true, position: 'inside', formatter: '{b}', color: '#fff', textBorderColor: '#000', textBorderWidth: 2 },
+                        lineStyle: {
+                            curveness: 0.3,
+                        },
+                        emphasis: {
+                            focus: 'adjacency',
+                            lineStyle: { width: 10 }
+                        }
+                    }]
+                };
+
+                subSankeyChart.setOption(option);
+
+                // Botón de descarga para el gráfico hijo
+                document.getElementById('export-sub-sankey').onclick = function() {
+                    const url = subSankeyChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `detalle_flujo_${centerNodeName}.png`;
+                    a.click();
+                };
+            }
         });
 
     </script>
