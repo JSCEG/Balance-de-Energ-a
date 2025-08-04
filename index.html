@@ -1607,23 +1607,22 @@
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
+                const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
                 // Función para escalar el tamaño de los nodos (alto del rectángulo)
                 const scaleNodeSize = (value) => {
-                    if (totalFlow === 0) return [30, 30]; // Tamaño base
-                    const height = Math.max(20, (value / totalFlow) * 200 + 15); // Mínimo 20px de alto
+                    const height = Math.max(20, value * scaleFactor);
                     return [30, height]; // Ancho fijo, alto proporcional
                 };
 
                 // Función para escalar el grosor de los enlaces
                 const scaleLinkWidth = (value) => {
-                    if (totalFlow === 0) return 1;
-                    return Math.max(1, (value / totalFlow) * 25);
+                    return Math.max(1, value * scaleFactor);
                 };
 
                 // Añadir el nodo central
                 nodeMap.set(centerNodeName, {
-                    name: `${centerNodeName}\n(${formatNumber(totalFlow)})`,
+                    name: centerNodeName,
                     value: totalFlow,
                     symbol: 'rect',
                     symbolSize: scaleNodeSize(totalFlow),
@@ -1638,7 +1637,7 @@
                 inflows.forEach((link, i) => {
                     const sourceNode = allNodes.get(link.source);
                     nodeMap.set(link.source, {
-                        name: `${link.source}\n(${formatNumber(link.value)})`,
+                        name: link.source,
                         value: link.value,
                         symbol: 'rect',
                         symbolSize: scaleNodeSize(link.value),
@@ -1662,7 +1661,7 @@
                 outflows.forEach((link, i) => {
                     const targetNode = allNodes.get(link.target);
                     nodeMap.set(link.target, {
-                        name: `${link.target}\n(${formatNumber(link.value)})`,
+                        name: link.target,
                         value: link.value,
                         symbol: 'rect',
                         symbolSize: scaleNodeSize(link.value),
@@ -1693,7 +1692,16 @@
                         links: links,
                         edgeSymbol: ['none', 'arrow'],
                         edgeSymbolSize: 10,
-                        label: { show: true, position: 'inside', formatter: '{b}', color: '#fff', textBorderColor: '#000', textBorderWidth: 2 },
+                        label: {
+                            show: true,
+                            position: 'inside',
+                            formatter: function(params) {
+                                return `${params.data.name}\n(${formatNumber(params.data.value)})`;
+                            },
+                            color: '#fff',
+                            textBorderColor: '#000',
+                            textBorderWidth: 2
+                        },
                         lineStyle: {
                             curveness: 0.3,
                         },
