@@ -906,7 +906,7 @@
                         <label class="toggle-label">
                             <span class="toggle-text">Habilitar Zoom</span>
                             <div class="toggle-switch">
-                                <input type="checkbox" id="zoom-switch" checked>
+                                <input type="checkbox" id="zoom-switch">
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
@@ -1120,8 +1120,8 @@
                                     formatter: function (params) {
                                         return `${params.name}\n${valueText}`;
                                     },
-                                    fontSize: 24,
-                                    fontWeight: 'bold',
+                                    fontSize: 8,
+                                    fontWeight: 'normal',
                                     color: '#333',
                                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                                     borderRadius: 4,
@@ -1178,6 +1178,17 @@
                 nodes.forEach(node => {
                     if (!node.esEspaciador) {
                         allNodes.set(node.name, node);
+                    } else {
+                        // Para nodos espaciadores, deshabilitar completamente la interacción
+                        node.silent = true; // Deshabilita todos los eventos de mouse
+                        node.itemStyle = node.itemStyle || {};
+                        node.itemStyle.color = 'transparent';
+                        node.itemStyle.borderColor = 'transparent';
+                        node.itemStyle.borderWidth = 0;
+                        node.label = { show: false };
+                    }
+                    
+                    if (!node.esEspaciador) {
 
                         // Establecer un resplandor base para todos los nodos
                         node.itemStyle = node.itemStyle || {};
@@ -1234,13 +1245,20 @@
                         trigger: 'item',
                         triggerOn: 'mousemove',
                         formatter: function (params) {
-                            if (params.name && params.name.startsWith('SPACER')) return '';
+                            // Verificación simple y directa para nodos espaciadores
+                            if (params.name && params.name.includes('SPACER')) {
+                                return null; // null previene el tooltip completamente
+                            }
+                            
+                            // Verificar por propiedades del nodo
+                            const nodeInfo = allNodes.get(params.name);
+                            if (nodeInfo && nodeInfo.esEspaciador) {
+                                return null;
+                            }
 
                             if (params.dataType === 'edge') {
                                 return `${params.data.source} → ${params.data.target}: ${formatNumber(params.value)}`;
                             }
-
-                            const nodeInfo = allNodes.get(params.name);
                             let tooltipText = `<b>${params.name}</b><br/>`;
 
                             if (nodeInfo) {
@@ -1277,6 +1295,10 @@
 
                         data: nodes,
                         links: currentLinks,
+                        label: {
+                            fontSize: 8,
+                            fontWeight: 'normal'
+                        },
                         emphasis: {
                             focus: 'adjacency',
                             blurScope: 'coordinateSystem',
@@ -1507,7 +1529,7 @@
 
                 if (focusMode) {
                     // Modo fijar foco activado
-                    if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
+                    if (params.dataType === 'node' && !params.name.startsWith('SPACER') && !params.name.includes('SPACER')) {
                         if (focusedNodeIndex === params.dataIndex) {
                             // Si hacemos clic en el mismo nodo, lo deseleccionamos
                             sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
@@ -1553,7 +1575,7 @@
                     document.getElementById('sub-sankey-container').style.display = 'none';
                     return;
                 }
-                if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
+                if (params.dataType === 'node' && !params.name.startsWith('SPACER') && !params.name.includes('SPACER')) {
                     const nodeInfo = allNodes.get(params.name);
 
                     if (nodeInfo) {
@@ -1771,6 +1793,17 @@
 
             // Deshabilitar hover automático cuando focus mode está activado
             sankeyChart.on('mouseover', function (params) {
+                // Verificación simple para nodos espaciadores
+                if (params.name && params.name.includes('SPACER')) {
+                    return false;
+                }
+                
+                // Verificar por propiedades del nodo
+                const nodeInfo = allNodes.get(params.name);
+                if (nodeInfo && nodeInfo.esEspaciador) {
+                    return false;
+                }
+                
                 if (focusMode && focusedNodeIndex !== null) {
                     // Si hay un nodo fijo seleccionado, no permitir hover en otros
                     if (params.dataIndex !== focusedNodeIndex) {
@@ -1780,6 +1813,16 @@
             });
 
             sankeyChart.on('mouseout', function (params) {
+                // Verificación simple para nodos espaciadores
+                if (params.name && params.name.includes('SPACER')) {
+                    return false;
+                }
+                
+                const nodeInfo = allNodes.get(params.name);
+                if (nodeInfo && nodeInfo.esEspaciador) {
+                    return false;
+                }
+                
                 if (focusMode && focusedNodeIndex !== null) {
                     // Mantener el foco en el nodo seleccionado con mejor timing
                     setTimeout(() => {

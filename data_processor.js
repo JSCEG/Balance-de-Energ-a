@@ -24,7 +24,6 @@ window.dataProcessor = {
                     const nodeConfig = {
                         ...(nodeData || {}), // Copy all properties from nodeData
                         name: nodo.nombre,
-                        itemStyle: { color: (nodeData && nodeData.color && nodeData.color !== '') ? nodeData.color : '#888' },
                         description: nodeData ? nodeData.descripcion : '',
                         tipo: nodeData ? nodeData.tipo : nodo.tipo,
                         padre: nodo.padre || null,
@@ -36,9 +35,18 @@ window.dataProcessor = {
 
                     // Lógica para espaciadores
                     if (nodeConfig.esEspaciador) {
-                        nodeConfig.itemStyle = { color: 'transparent', borderColor: 'transparent' };
+                        nodeConfig.itemStyle = { 
+                            color: 'rgba(0,0,0,0)', // Completamente transparente
+                            borderColor: 'rgba(0,0,0,0)',
+                            borderWidth: 0,
+                            opacity: 0
+                        };
                         nodeConfig.label = { show: false };
+                        nodeConfig.silent = true; // Deshabilitar todos los eventos de mouse
                         nodeConfig.value = nodo.valorEspaciador || 0.1; // Asignar valor para que ocupe espacio
+                    } else {
+                        // Solo asignar color a nodos no espaciadores
+                        nodeConfig.itemStyle = { color: (nodeData && nodeData.color && nodeData.color !== '') ? nodeData.color : '#888' };
                     }
 
                     nodes.set(nodo.nombre, nodeConfig);

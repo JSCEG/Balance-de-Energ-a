@@ -88,10 +88,10 @@ window.sankeyConfig = {
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'justify', // 'left' respeta mejor las posiciones Y manuales
-        nodeGap: 15, // Un poco más de espacio para evitar empalmes y facilitar el arrastre
-        nodeWidth: 20, // Nodos más delgados
+        nodeGap: 12, // Un poco más de espacio para evitar empalmes y facilitar el arrastre
+        nodeWidth: 22, // Nodos más delgados
         layoutIterations: 0, // 0 = respeta tu orden manual completamente
-        curveness: 0.6 // Líneas menos curvas
+        curveness: 0.7 // Líneas menos curvas
     },
     columnas: [
         {
@@ -101,7 +101,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Primaria", // Solo hijos cuyo tipo sea "Energía Primaria"
             alineacionVertical: "abajo",
             nodos: [
-                { nombre: "SPACER_BIG_IEP", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 3500 },
+                { nombre: "SPACER_BIG_IEP", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 3000 },
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Importación EP", tipo: "Padre", visible: true, posicion: 0, y: 100, flow: 'source' },
                 //{ nombre: "Variación de Inventarios EP (+)", tipo: "Padre", visible: true, posicion: 1, }, // Default para manejar valores +/- 
@@ -117,7 +117,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Primaria",
             padre: "Oferta Interna Bruta EP", // Solo hijos cuyo tipo sea "Energía Primaria"
             nodos: [
-                { nombre: "SPACER_BIG_EPP", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1500 },
+                { nombre: "SPACER_BIG_EPP", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 2500 },
                 // Si dejas vacío, se autollenará con todos los hijos de Oferta Interna Bruta EP que sean tipo "Energía Primaria"
                 // O puedes forzar el orden así:
                 { nombre: "Petróleo crudo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 0 },
@@ -270,7 +270,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Secundaria", // Solo hijos cuyo tipo sea "Energía Primaria"
             alineacionVertical: "abajo",
             nodos: [
-                //{ nombre: "SPACER_BIG_4", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1000 },
+                { nombre: "SPACER_BIG_sect", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 4000 },
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Industrial", tipo: "Padre", visible: true, posicion: 0, flow: 'sink' },
                 { nombre: "Transporte", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' }, // Default para manejar valores +/-         

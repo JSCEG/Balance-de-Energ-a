@@ -23370,7 +23370,7 @@ window.energyData = {
         }
       ],
       "descripcion": "Suma de Variación de Inventarios EP (+) y Diferencia Estadística EP (+) por energético.",
-      "id_padre": 5,
+      "id_padre": 102,
       "color": "#7F7F7F"
     }
 
