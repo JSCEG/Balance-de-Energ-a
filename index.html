@@ -1147,10 +1147,9 @@
                         bottom: 20,
                         roam: zoomEnabled,
                         draggable: focusMode || !zoomEnabled,
-
                         data: nodes,
                         links: currentLinks,
-                        emphasis: { focus: 'adjacency' },
+                        emphasis: { focus: focusMode ? 'none' : 'adjacency' },
                         nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
                         nodeGap: window.sankeyConfig.layoutConfig.nodeGap,
                         nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
@@ -1575,6 +1574,15 @@
                 }
             });
 
+            sankeyChart.on('mouseover', function () {
+                if (focusMode) {
+                    sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                    if (focusedNodeIndex !== null) {
+                        sankeyChart.dispatchAction({ type: 'focusNodeAdjacency', seriesIndex: 0, dataIndex: focusedNodeIndex });
+                    }
+                }
+            });
+
             document.getElementById('alert-switch').addEventListener('change', () => {
                 updateChart(yearSelector.value);
             });
@@ -1658,7 +1666,13 @@
                 updateTransform();
                 sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
                 sankeyChart.setOption({
-                    series: [{ roam: zoomEnabled, draggable: focusMode || !zoomEnabled }]
+
+                    series: [{
+                        roam: zoomEnabled,
+                        draggable: focusMode || !zoomEnabled,
+                        emphasis: { focus: focusMode ? 'none' : 'adjacency' }
+                    }]
+
                 });
             });
 
@@ -1667,7 +1681,11 @@
                 focusedNodeIndex = null;
                 sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 sankeyChart.setOption({
-                    series: [{ draggable: focusMode || !zoomEnabled }]
+
+                    series: [{
+                        draggable: focusMode || !zoomEnabled,
+                        emphasis: { focus: focusMode ? 'none' : 'adjacency' }
+                    }]
 
                 });
             });
