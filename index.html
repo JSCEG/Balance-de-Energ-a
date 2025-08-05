@@ -909,6 +909,18 @@
                         </label>
                     </div>
                 </div>
+
+                <div class="control-group">
+                    <div class="toggle-container">
+                        <label class="toggle-label">
+                            <span class="toggle-text">Fijar foco</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="focus-switch">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1015,6 +1027,11 @@
             const nodeDatalist = document.getElementById('node-list');
             const zoomSwitch = document.getElementById('zoom-switch');
             let zoomEnabled = zoomSwitch.checked;
+
+            const focusSwitch = document.getElementById('focus-switch');
+            let focusMode = focusSwitch.checked;
+            let focusedNodeIndex = null;
+
 
             let energyData = window.energyData;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
@@ -1128,9 +1145,8 @@
                         type: 'sankey',
                         top: 20,
                         bottom: 20,
-
                         roam: zoomEnabled,
-                        draggable: !zoomEnabled,
+                        draggable: focusMode || !zoomEnabled,
 
                         data: nodes,
                         links: currentLinks,
@@ -1146,6 +1162,10 @@
                 };
                 sankeyChart.setOption(option, true);
                 populateDatalist(nodes);
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                focusedNodeIndex = null;
+                document.getElementById('node-details-container').style.display = 'none';
+                document.getElementById('sub-sankey-container').style.display = 'none';
             }
 
             function populateDatalist(nodes) {
@@ -1331,6 +1351,24 @@
 
             sankeyChart.on('click', function (params) {
                 console.log('Click en Sankey:', params);
+                if (focusMode) {
+                    if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
+                        if (focusedNodeIndex === params.dataIndex) {
+                            sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                            focusedNodeIndex = null;
+                        } else {
+                            sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                            sankeyChart.dispatchAction({ type: 'focusNodeAdjacency', seriesIndex: 0, dataIndex: params.dataIndex });
+                            focusedNodeIndex = params.dataIndex;
+                        }
+                    } else {
+                        sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                        focusedNodeIndex = null;
+                    }
+                    document.getElementById('node-details-container').style.display = 'none';
+                    document.getElementById('sub-sankey-container').style.display = 'none';
+                    return;
+                }
                 if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
                     const nodeInfo = allNodes.get(params.name);
 
@@ -1620,7 +1658,17 @@
                 updateTransform();
                 sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
                 sankeyChart.setOption({
-                    series: [{ roam: zoomEnabled, draggable: !zoomEnabled }]
+                    series: [{ roam: zoomEnabled, draggable: focusMode || !zoomEnabled }]
+                });
+            });
+
+            focusSwitch.addEventListener('change', () => {
+                focusMode = focusSwitch.checked;
+                focusedNodeIndex = null;
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                sankeyChart.setOption({
+                    series: [{ draggable: focusMode || !zoomEnabled }]
+
                 });
             });
 
@@ -1647,7 +1695,6 @@
                 const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
                 // Registrar nodo central
-
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
