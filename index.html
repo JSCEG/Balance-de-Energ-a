@@ -398,7 +398,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            height: 70vh; /* Altura fija para el contenedor */
+            height: 90vh; /* Altura fija para el contenedor */
         }
 
         footer {
@@ -678,6 +678,10 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        #sub-sankey-container {
+            background: #fff;
+        }
+
         .card-inset h4 {
             margin-top: 0;
             color: var(--primary-color);
@@ -894,6 +898,17 @@
                         </label>
                     </div>
                 </div>
+                <div class="control-group">
+                    <div class="toggle-container">
+                        <label class="toggle-label">
+                            <span class="toggle-text">Habilitar Zoom</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="zoom-switch" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -946,7 +961,7 @@
 
             <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 2rem;">
                 <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
-                <div id="sub-sankey-chart" style="height: 400px; width: 100%;"></div>
+                <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
                 <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar Vista Detallada</button>
             </div>
         </div>
@@ -998,6 +1013,8 @@
             const yearSelector = document.getElementById('year-selector');
             const searchInput = document.getElementById('search-input');
             const nodeDatalist = document.getElementById('node-list');
+            const zoomSwitch = document.getElementById('zoom-switch');
+            let zoomEnabled = zoomSwitch.checked;
 
             let energyData = window.energyData;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
@@ -1109,7 +1126,10 @@
                     },
                     series: [{
                         type: 'sankey',
-                        roam: true, // Habilitar zoom y arrastre
+                        top: 20,
+                        bottom: 20,
+                        roam: zoomEnabled,
+                        draggable: !zoomEnabled,
                         data: nodes,
                         links: currentLinks,
                         emphasis: { focus: 'adjacency' },
@@ -1528,6 +1548,7 @@
             // --- Lógica de Zoom y Paneo con Transformaciones CSS ---
             const wrapper = document.getElementById('chart-wrapper');
             const sankeyDom = document.getElementById('sankey');
+            sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             let scale = 1, panX = 0, panY = 0, isPanning = false, startX, startY;
 
             function updateTransform() {
@@ -1535,6 +1556,7 @@
             }
 
             wrapper.addEventListener('wheel', e => {
+                if (!zoomEnabled) return;
                 e.preventDefault();
                 const delta = e.deltaY > 0 ? -0.1 : 0.1;
 
@@ -1554,13 +1576,14 @@
                     // Ajustar el paneo para que el zoom se centre en el cursor
                     panX = mouseX - (mouseX - panX) * (newScale / scale);
                     panY = mouseY - (mouseY - panY) * (newScale / scale);
-                    
+
                     scale = newScale;
                 }
                 updateTransform();
             });
 
             sankeyDom.addEventListener('mousedown', e => {
+                if (!zoomEnabled) return;
                 isPanning = true;
                 startX = e.clientX - panX;
                 startY = e.clientY - panY;
@@ -1568,15 +1591,16 @@
             });
 
             document.addEventListener('mousemove', e => {
-                if (!isPanning) return;
+                if (!zoomEnabled || !isPanning) return;
                 panX = e.clientX - startX;
                 panY = e.clientY - startY;
                 updateTransform();
             });
 
             document.addEventListener('mouseup', () => {
+                if (!isPanning) return;
                 isPanning = false;
-                sankeyDom.style.cursor = 'grab';
+                sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             });
 
             document.getElementById('zoom-reset-btn').onclick = function() {
@@ -1585,6 +1609,18 @@
                 panY = 0;
                 updateTransform();
             };
+
+            zoomSwitch.addEventListener('change', () => {
+                zoomEnabled = zoomSwitch.checked;
+                scale = 1;
+                panX = 0;
+                panY = 0;
+                updateTransform();
+                sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
+                sankeyChart.setOption({
+                    series: [{ roam: zoomEnabled, draggable: !zoomEnabled }]
+                });
+            });
 
             window.addEventListener('resize', () => {
                 sankeyChart.resize();
@@ -1603,79 +1639,49 @@
                 }
                 subSankeyChart = echarts.init(subChartDom);
 
-                const nodes = [];
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
 
-                // Función para escalar el tamaño de los nodos (alto del rectángulo)
-                const scaleNodeSize = (value) => {
-                    if (totalFlow === 0) return [30, 30]; // Tamaño base
-                    const height = Math.max(20, (value / totalFlow) * 200 + 15); // Mínimo 20px de alto
-                    return [30, height]; // Ancho fijo, alto proporcional
-                };
-
-                // Función para escalar el grosor de los enlaces
-                const scaleLinkWidth = (value) => {
-                    if (totalFlow === 0) return 1;
-                    return Math.max(1, (value / totalFlow) * 25);
-                };
-
-                // Añadir el nodo central
+                // Registrar nodo central
                 nodeMap.set(centerNodeName, {
-                    name: `${centerNodeName}\n(${formatNumber(totalFlow)})`,
+                    name: centerNodeName,
                     value: totalFlow,
-                    symbol: 'rect',
-                    symbolSize: scaleNodeSize(totalFlow),
-                    fixed: true, // El nodo central no se mueve
-                    x: subChartDom.clientWidth / 2,
-                    y: subChartDom.clientHeight / 2,
-                    itemStyle: { color: centerNodeInfo.itemStyle.color },
-                    label: { fontSize: 12, fontWeight: 'bold' }
+                    itemStyle: { color: centerNodeInfo.itemStyle.color }
                 });
 
-                // Añadir nodos de entrada
-                inflows.forEach((link, i) => {
+                // Registrar nodos de entrada y enlaces
+                inflows.forEach(link => {
                     const sourceNode = allNodes.get(link.source);
                     nodeMap.set(link.source, {
-                        name: `${link.source}\n(${formatNumber(link.value)})`,
+                        name: link.source,
                         value: link.value,
-                        symbol: 'rect',
-                        symbolSize: scaleNodeSize(link.value),
-                        itemStyle: { color: sourceNode.itemStyle.color },
-                        x: subChartDom.clientWidth * 0.1,
-                        y: (subChartDom.clientHeight / (inflows.length + 1)) * (i + 1)
+                        itemStyle: { color: sourceNode.itemStyle.color }
                     });
                     links.push({
                         source: link.source,
                         target: centerNodeName,
                         value: link.value,
                         lineStyle: {
-                            width: scaleLinkWidth(link.value),
                             color: sourceNode.itemStyle.color || '#888',
                             opacity: 0.7
                         }
                     });
                 });
 
-                // Añadir nodos de salida
-                outflows.forEach((link, i) => {
+                // Registrar nodos de salida y enlaces
+                outflows.forEach(link => {
                     const targetNode = allNodes.get(link.target);
                     nodeMap.set(link.target, {
-                        name: `${link.target}\n(${formatNumber(link.value)})`,
+                        name: link.target,
                         value: link.value,
-                        symbol: 'rect',
-                        symbolSize: scaleNodeSize(link.value),
-                        itemStyle: { color: targetNode.itemStyle.color },
-                        x: subChartDom.clientWidth * 0.9,
-                        y: (subChartDom.clientHeight / (outflows.length + 1)) * (i + 1)
+                        itemStyle: { color: targetNode.itemStyle.color }
                     });
                     links.push({
                         source: centerNodeName,
                         target: link.target,
                         value: link.value,
                         lineStyle: {
-                            width: scaleLinkWidth(link.value),
                             color: centerNodeInfo.itemStyle.color || '#888',
                             opacity: 0.7
                         }
@@ -1685,21 +1691,45 @@
                 const option = {
                     tooltip: {},
                     series: [{
-                        type: 'graph',
-                        layout: 'none',
-                        roam: false,
-                        draggable: true,
+                        type: 'sankey',
+                        top: 20,
+                        bottom: 20,
                         data: Array.from(nodeMap.values()),
                         links: links,
-                        edgeSymbol: ['none', 'arrow'],
-                        edgeSymbolSize: 10,
-                        label: { show: true, position: 'inside', formatter: '{b}', color: '#fff', textBorderColor: '#000', textBorderWidth: 2 },
+                        nodeWidth: 30,
+                        nodeGap: 30,
+                        label: {
+                            formatter: function(params) {
+                                return params.data.name;
+                            },
+                            color: '#000',
+                            fontSize: 12,
+                            fontWeight: 'bold'
+                        },
+                        edgeLabel: {
+                            show: true,
+                            color: '#000',
+                            fontSize: 11,
+                            formatter: function(params) {
+                                return formatNumber(params.data.value);
+                            }
+                        },
+                        labelLayout: function(params) {
+                            if (params.dataType === 'edge') {
+                                const link = links[params.dataIndex];
+                                const isInflow = link.target === centerNodeName;
+                                return {
+                                    x: params.labelRect.x + (isInflow ? -8 : 8),
+                                    align: isInflow ? 'right' : 'left',
+                                    verticalAlign: 'middle'
+                                };
+                            }
+                        },
                         lineStyle: {
-                            curveness: 0.3,
+                            curveness: 0.5
                         },
                         emphasis: {
-                            focus: 'adjacency',
-                            lineStyle: { width: 10 }
+                            focus: 'adjacency'
                         }
                     }]
                 };
@@ -1708,7 +1738,12 @@
 
                 // Botón de descarga para el gráfico hijo
                 document.getElementById('export-sub-sankey').onclick = function() {
-                    const url = subSankeyChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+                    const background = getComputedStyle(subSankeyContainer).backgroundColor;
+                    const url = subSankeyChart.getDataURL({
+                        type: 'png',
+                        pixelRatio: 3,
+                        backgroundColor: background
+                    });
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `detalle_flujo_${centerNodeName}.png`;
