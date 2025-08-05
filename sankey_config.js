@@ -268,8 +268,10 @@ window.sankeyConfig = {
                 { nombre: "Comercial", tipo: "Padre", visible: true, posicion: 3, flow: 'sink' },
                 { nombre: "Público", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' },
                 { nombre: "Residencial", tipo: "Padre", visible: true, posicion: 5, flow: 'sink' },
-                { nombre: "Petroquímica PEMEX", tipo: "Padre", visible: true, posicion: 6, flow: 'sink' },
-                { nombre: "Otras ramas económicas", tipo: "Padre", visible: true, posicion: 7, flow: 'sink' },
+                //{ nombre: "Petroquímica PEMEX", tipo: "Padre", visible: true, posicion: 6, flow: 'sink' },
+                //{ nombre: "Otras ramas económicas", tipo: "Padre", visible: true, posicion: 7, flow: 'sink' },
+                { nombre: "Consumo final no energético", tipo: "Padre", visible: true, posicion: 7, flow: 'sink' },
+
             ]
         },
     ],
