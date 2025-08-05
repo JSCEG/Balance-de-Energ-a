@@ -84,7 +84,7 @@ window.sankeyConfig = {
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'left', // 'left' respeta mejor las posiciones Y manuales
-        nodeGap: 25, // Más espacio para evitar empalmes verticales
+        nodeGap: 45, // Un poco más de espacio para evitar empalmes y facilitar el arrastre
         nodeWidth: 15, // Nodos más delgados
         layoutIterations: 0, // 0 = respeta tu orden manual completamente
         curveness: 0.8 // Líneas menos curvas
