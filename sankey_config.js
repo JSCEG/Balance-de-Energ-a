@@ -87,11 +87,11 @@ window.sankeyConfig = {
     },
     // Configuración general del layout
     layoutConfig: {
-        nodeAlign: 'left', // 'left' respeta mejor las posiciones Y manuales
-        nodeGap: 45, // Un poco más de espacio para evitar empalmes y facilitar el arrastre
-        nodeWidth: 15, // Nodos más delgados
+        nodeAlign: 'justify', // 'left' respeta mejor las posiciones Y manuales
+        nodeGap: 15, // Un poco más de espacio para evitar empalmes y facilitar el arrastre
+        nodeWidth: 20, // Nodos más delgados
         layoutIterations: 0, // 0 = respeta tu orden manual completamente
-        curveness: 0.8 // Líneas menos curvas
+        curveness: 0.6 // Líneas menos curvas
     },
     columnas: [
         {
@@ -101,6 +101,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Primaria", // Solo hijos cuyo tipo sea "Energía Primaria"
             alineacionVertical: "abajo",
             nodos: [
+                { nombre: "SPACER_BIG_IEP", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 3500 },
                 // Puedes agregar más nodos padre aquí si lo deseas
                 { nombre: "Importación EP", tipo: "Padre", visible: true, posicion: 0, y: 100, flow: 'source' },
                 //{ nombre: "Variación de Inventarios EP (+)", tipo: "Padre", visible: true, posicion: 1, }, // Default para manejar valores +/- 
@@ -116,6 +117,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Primaria",
             padre: "Oferta Interna Bruta EP", // Solo hijos cuyo tipo sea "Energía Primaria"
             nodos: [
+                { nombre: "SPACER_BIG_EPP", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1500 },
                 // Si dejas vacío, se autollenará con todos los hijos de Oferta Interna Bruta EP que sean tipo "Energía Primaria"
                 // O puedes forzar el orden así:
                 { nombre: "Petróleo crudo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 0 },
@@ -141,7 +143,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 20000 },
+                { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 10000 },
                 // Nodos reales posicionados después del espaciador
                 //{ nombre: "Exportación EP", tipo: "Padre", visible: true, posicion: 1, depth: 2, flow: 'sink' },
                 //{ nombre: "Energía No Aprovechada EP", tipo: "Padre", visible: true, posicion: 2, depth: 2, flow: 'sink' },
@@ -161,7 +163,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG_3", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 1000 },
+                { nombre: "SPACER_BIG_3", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 3500 },
                 // Nodos reales posicionados después del espaciador
                 { nombre: "Coquizadoras y Hornos", tipo: "Padre", visible: true, posicion: 1, depth: 3 },
                 { nombre: "Plantas de Gas y Fraccionadoras", tipo: "Padre", visible: true, posicion: 2, depth: 3 },
@@ -182,11 +184,10 @@ window.sankeyConfig = {
                 { nombre: "Importación ES", tipo: "Padre", visible: true, posicion: 0, flow: 'source' },
                 //{ nombre: "Variación de Inventarios ES (+)", tipo: "Padre", visible: true, posicion: 1, flow: 'source' }, // Default para manejar valores +/-         
                 //{ nombre: "Diferencia Estadística ES (+)", tipo: "Padre", visible: true, posicion: 3, flow: 'source' },
-            { nombre: "V.I. y Dif. Est. ES", tipo: "Padre", visible: true, posicion: 1, flow: 'source' },
+                { nombre: "V.I. y Dif. Est. ES", tipo: "Padre", visible: true, posicion: 1, flow: 'source' },
             ]
         },
         // Energéticos Secundarios
-
         {
             // Columna 5: Hijos de Oferta Interna Bruta EP, solo los de tipo Energía Secundaria
             nombre: "Energía Secundaria",
@@ -242,6 +243,7 @@ window.sankeyConfig = {
                 // // ...
             ]
         },
+
         {
             // Columna 6: Salidas de Energía Secundaria
             nombre: "Salidas de Energía Secundaria",
@@ -250,7 +252,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 20000 },
+                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 12000 },
                 // Nodos reales posicionados después del espaciador
                 // { nombre: "Exportación ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' },
                 // { nombre: "Energía No Aprovechada ES", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
@@ -276,12 +278,16 @@ window.sankeyConfig = {
                 { nombre: "Comercial", tipo: "Padre", visible: true, posicion: 3, flow: 'sink' },
                 { nombre: "Público", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' },
                 { nombre: "Residencial", tipo: "Padre", visible: true, posicion: 5, flow: 'sink' },
+
                 //{ nombre: "Petroquímica PEMEX", tipo: "Padre", visible: true, posicion: 6, flow: 'sink' },
                 //{ nombre: "Otras ramas económicas", tipo: "Padre", visible: true, posicion: 7, flow: 'sink' },
+
                 { nombre: "Consumo final no energético", tipo: "Padre", visible: true, posicion: 7, flow: 'sink' },
 
             ]
         },
+
+
     ],
     enlaces: [
         // Si quieres forzar enlaces explícitos, agrégalos aquí:
