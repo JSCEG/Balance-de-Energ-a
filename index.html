@@ -1158,7 +1158,24 @@
 
                         data: nodes,
                         links: currentLinks,
-                        emphasis: { focus: 'adjacency' },
+                        emphasis: { 
+                            focus: 'adjacency',
+                            blurScope: 'coordinateSystem',
+                            itemStyle: {
+                                borderWidth: 3,
+                                borderColor: '#ffffff',
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0,0,0,0.3)'
+                            }
+                        },
+                        blur: {
+                            itemStyle: {
+                                opacity: 0.15
+                            },
+                            lineStyle: {
+                                opacity: 0.1
+                            }
+                        },
                         nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
                         nodeGap: window.sankeyConfig.layoutConfig.nodeGap,
                         nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
@@ -1731,8 +1748,22 @@
                     series: [{
                         draggable: focusMode || !zoomEnabled,
                         emphasis: {
-                            focus: 'adjacency', // Mantener siempre el énfasis disponible
-                            disabled: false // No deshabilitar el énfasis
+                            focus: 'adjacency',
+                            blurScope: 'coordinateSystem',
+                            itemStyle: {
+                                borderWidth: focusMode ? 4 : 3, // Borde más grueso en focus mode
+                                borderColor: focusMode ? '#6a1c32' : '#ffffff', // Color guinda en focus mode
+                                shadowBlur: focusMode ? 15 : 10,
+                                shadowColor: focusMode ? 'rgba(106, 28, 50, 0.5)' : 'rgba(0,0,0,0.3)'
+                            }
+                        },
+                        blur: {
+                            itemStyle: {
+                                opacity: focusMode ? 0.08 : 0.15 // Más transparente en focus mode
+                            },
+                            lineStyle: {
+                                opacity: focusMode ? 0.05 : 0.1 // Enlaces más transparentes en focus mode
+                            }
                         }
                     }]
                 });
