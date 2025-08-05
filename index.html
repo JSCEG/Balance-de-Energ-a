@@ -928,6 +928,8 @@
         </div>
 
         <div id="chart-container" class="card">
+
+
             <div id="chart-wrapper">
                 <div id="sankey"></div>
             </div>
@@ -1047,6 +1049,123 @@
 
             const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
 
+            // Función para mostrar información del nodo en modo focus
+
+            // Función para mostrar valor PJ debajo del nombre del nodo
+            function showFocusNodeInfo(nodeName) {
+                const nodeInfo = allNodes.get(nodeName);
+
+                if (nodeInfo) {
+                    // Primero limpiar todos los labels existentes
+                    hideFocusNodeInfo();
+
+                    // Calcular el valor total (puede ser entrada, salida o balance según el tipo de nodo)
+                    let displayValue = 0;
+                    if (nodeInfo.inflow > 0 && nodeInfo.outflow > 0) {
+                        // Nodo de transformación - mostrar entrada
+                        displayValue = nodeInfo.inflow;
+                    } else if (nodeInfo.outflow > 0) {
+                        // Nodo fuente - mostrar salida
+                        displayValue = nodeInfo.outflow;
+                    } else if (nodeInfo.inflow > 0) {
+                        // Nodo sumidero - mostrar entrada
+                        displayValue = nodeInfo.inflow;
+                    }
+
+                    const valueText = formatNumber(displayValue);
+
+                    // Encontrar todos los nodos conectados (adyacentes)
+                    const connectedNodes = new Set();
+                    connectedNodes.add(nodeName); // Incluir el nodo seleccionado
+
+                    // Buscar nodos conectados a través de los enlaces
+                    currentLinks.forEach(link => {
+                        if (link.source === nodeName) {
+                            connectedNodes.add(link.target);
+                        }
+                        if (link.target === nodeName) {
+                            connectedNodes.add(link.source);
+                        }
+                    });
+
+                    // Actualizar el gráfico con labels para todos los nodos conectados
+                    const currentOption = sankeyChart.getOption();
+                    const nodes = currentOption.series[0].data;
+
+                    connectedNodes.forEach(connectedNodeName => {
+                        const connectedNodeInfo = allNodes.get(connectedNodeName);
+                        if (connectedNodeInfo) {
+                            // Calcular el valor para cada nodo conectado
+                            let displayValue = 0;
+                            if (connectedNodeInfo.inflow > 0 && connectedNodeInfo.outflow > 0) {
+                                // Nodo de transformación - mostrar entrada
+                                displayValue = connectedNodeInfo.inflow;
+                            } else if (connectedNodeInfo.outflow > 0) {
+                                // Nodo fuente - mostrar salida
+                                displayValue = connectedNodeInfo.outflow;
+                            } else if (connectedNodeInfo.inflow > 0) {
+                                // Nodo sumidero - mostrar entrada
+                                displayValue = connectedNodeInfo.inflow;
+                            }
+
+                            const valueText = formatNumber(displayValue);
+
+                            // Encontrar el nodo y agregar el label
+                            const nodeIndex = nodes.findIndex(node => node.name === connectedNodeName);
+                            if (nodeIndex !== -1) {
+                                nodes[nodeIndex].label = {
+                                    show: true,
+                                    position: 'bottom',
+                                    distance: 5,
+                                    formatter: function (params) {
+                                        return `${params.name}\n${valueText}`;
+                                    },
+                                    fontSize: 12,
+                                    fontWeight: 'bold',
+                                    color: '#333',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    borderRadius: 4,
+                                    padding: [4, 8],
+                                    shadowBlur: 2,
+                                    shadowColor: 'rgba(0,0,0,0.2)'
+                                };
+                            }
+                        }
+                    });
+
+                    // Actualizar el gráfico
+                    sankeyChart.setOption({
+                        series: [{
+                            data: nodes
+                        }]
+                    });
+
+                    console.log('Mostrando valores PJ para nodo principal:', nodeName, 'y', connectedNodes.size - 1, 'nodos conectados');
+                }
+            }
+
+            // Función para ocultar información del nodo
+            function hideFocusNodeInfo() {
+                // Limpiar todos los labels personalizados
+                const currentOption = sankeyChart.getOption();
+                if (currentOption && currentOption.series && currentOption.series[0]) {
+                    const nodes = currentOption.series[0].data;
+
+                    nodes.forEach(node => {
+                        if (node.label && node.label.show) {
+                            delete node.label;
+                        }
+                    });
+
+                    // Actualizar el gráfico
+                    sankeyChart.setOption({
+                        series: [{
+                            data: nodes
+                        }]
+                    });
+                }
+            }
+
             function updateChart(year) {
                 if (!energyData) return;
 
@@ -1158,7 +1277,7 @@
 
                         data: nodes,
                         links: currentLinks,
-                        emphasis: { 
+                        emphasis: {
                             focus: 'adjacency',
                             blurScope: 'coordinateSystem',
                             itemStyle: {
@@ -1215,6 +1334,7 @@
                 if (focusMode) {
                     sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                     focusedNodeIndex = null;
+                    hideFocusNodeInfo();
                 }
 
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
@@ -1393,6 +1513,10 @@
                             sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                             sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
                             focusedNodeIndex = null;
+
+                            // Ocultar información del nodo
+                            hideFocusNodeInfo();
+
                             console.log('Nodo deseleccionado');
                         } else {
                             // Seleccionar nuevo nodo
@@ -1406,6 +1530,10 @@
                             });
 
                             focusedNodeIndex = params.dataIndex;
+
+                            // Mostrar información del nodo
+                            showFocusNodeInfo(params.name);
+
                             console.log('Nodo seleccionado:', params.name, 'dataIndex:', params.dataIndex);
                         }
                     } else {
@@ -1413,6 +1541,10 @@
                         sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                         sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
                         focusedNodeIndex = null;
+
+                        // Ocultar información del nodo
+                        hideFocusNodeInfo();
+
                         console.log('Deselección por click fuera');
                     }
 
@@ -1649,14 +1781,17 @@
 
             sankeyChart.on('mouseout', function (params) {
                 if (focusMode && focusedNodeIndex !== null) {
-                    // Mantener el foco en el nodo seleccionado
+                    // Mantener el foco en el nodo seleccionado con mejor timing
                     setTimeout(() => {
+                        // Primero limpiar todo
+                        sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                        // Luego resaltar el nodo fijo
                         sankeyChart.dispatchAction({
                             type: 'highlight',
                             seriesIndex: 0,
                             dataIndex: focusedNodeIndex
                         });
-                    }, 10);
+                    }, 50);
                 }
             });
 
@@ -1742,6 +1877,11 @@
                 focusedNodeIndex = null;
                 sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+
+                // Ocultar información del nodo cuando se desactive el modo focus
+                if (!focusMode) {
+                    hideFocusNodeInfo();
+                }
 
                 // Actualizar la configuración del gráfico
                 sankeyChart.setOption({
