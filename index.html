@@ -380,7 +380,8 @@
         #chart-wrapper {
             width: 100%;
             height: 100%;
-            overflow: auto; /* Permitir scroll */
+            overflow: auto;
+            /* Permitir scroll */
             position: absolute;
             top: 0;
             left: 0;
@@ -398,7 +399,8 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            height: 90vh; /* Altura fija para el contenedor */
+            height: 90vh;
+            /* Altura fija para el contenedor */
         }
 
         footer {
@@ -446,9 +448,9 @@
             }
         }
 
-        
 
-        
+
+
 
         /* Mejoras responsivas */
         @media (min-width: 768px) {
@@ -511,7 +513,8 @@
             }
 
             #sankey {
-                min-width: 1200px; /* Ancho mínimo para el gráfico en móviles */
+                min-width: 1200px;
+                /* Ancho mínimo para el gráfico en móviles */
             }
         }
 
@@ -857,7 +860,7 @@
                         <datalist id="node-list"></datalist>
                     </div>
                 </div>
-                
+
 
                 <div class="control-group">
                     <div class="buttons">
@@ -943,15 +946,20 @@
             </div>
             <div class="card-inset" id="alert-info-container" style="display: none; margin-bottom: 2rem;">
                 <h4>Criterios de Eficiencia (Alertas)</h4>
-                <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; border-top: 1px solid rgba(106, 28, 50, 0.1); padding-top: 1rem;">
+                <div
+                    style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; border-top: 1px solid rgba(106, 28, 50, 0.1); padding-top: 1rem;">
                     <!-- Columna de Cálculo -->
                     <div style="flex: 1; box-sizing: border-box;">
-                        <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Fórmula de Cálculo</strong></p>
-                        <strong style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 8px;">(1 - (Entrada - Salida) / Entrada) * 100%</strong>
+                        <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Fórmula de
+                                Cálculo</strong></p>
+                        <strong
+                            style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 8px;">(1
+                            - (Entrada - Salida) / Entrada) * 100%</strong>
                     </div>
                     <!-- Columna de Criterios -->
                     <div style="flex: 1; box-sizing: border-box;">
-                         <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Criterios de Alerta</strong></p>
+                        <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Criterios de
+                                Alerta</strong></p>
                         <ul class="criteria-list">
                             <li class="criteria-item">
                                 <div class="color-box" style="background-color: #38a169;"></div>
@@ -1185,9 +1193,17 @@
 
             function handleSearch() {
                 const searchTerm = searchInput.value;
+
+                // Si focus mode está activado, limpiar la selección fija primero
+                if (focusMode) {
+                    sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                    focusedNodeIndex = null;
+                }
+
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
                 if (searchTerm) {
                     sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, name: searchTerm });
+                    console.log('Buscando:', searchTerm);
                 }
             }
 
@@ -1351,20 +1367,39 @@
 
             sankeyChart.on('click', function (params) {
                 console.log('Click en Sankey:', params);
+
                 if (focusMode) {
+                    // Modo fijar foco activado
                     if (params.dataType === 'node' && !params.name.startsWith('SPACER')) {
                         if (focusedNodeIndex === params.dataIndex) {
+                            // Si hacemos clic en el mismo nodo, lo deseleccionamos
                             sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                            sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
                             focusedNodeIndex = null;
+                            console.log('Nodo deseleccionado');
                         } else {
-                            sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
-                            sankeyChart.dispatchAction({ type: 'focusNodeAdjacency', seriesIndex: 0, dataIndex: params.dataIndex });
+                            // Seleccionar nuevo nodo
+                            sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+
+                            // Aplicar highlight al nodo seleccionado
+                            sankeyChart.dispatchAction({
+                                type: 'highlight',
+                                seriesIndex: 0,
+                                name: params.name
+                            });
+
                             focusedNodeIndex = params.dataIndex;
+                            console.log('Nodo seleccionado:', params.name, 'dataIndex:', params.dataIndex);
                         }
                     } else {
+                        // Click fuera de un nodo válido, deseleccionar todo
                         sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                        sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
                         focusedNodeIndex = null;
+                        console.log('Deselección por click fuera');
                     }
+
+                    // En modo focus, no mostrar detalles automáticamente
                     document.getElementById('node-details-container').style.display = 'none';
                     document.getElementById('sub-sankey-container').style.display = 'none';
                     return;
@@ -1585,6 +1620,29 @@
 
             searchInput.addEventListener('input', handleSearch);
 
+            // Deshabilitar hover automático cuando focus mode está activado
+            sankeyChart.on('mouseover', function (params) {
+                if (focusMode && focusedNodeIndex !== null) {
+                    // Si hay un nodo fijo seleccionado, no permitir hover en otros
+                    if (params.dataIndex !== focusedNodeIndex) {
+                        return false;
+                    }
+                }
+            });
+
+            sankeyChart.on('mouseout', function (params) {
+                if (focusMode && focusedNodeIndex !== null) {
+                    // Mantener el foco en el nodo seleccionado
+                    setTimeout(() => {
+                        sankeyChart.dispatchAction({
+                            type: 'highlight',
+                            seriesIndex: 0,
+                            dataIndex: focusedNodeIndex
+                        });
+                    }, 10);
+                }
+            });
+
             // --- Lógica de Zoom y Paneo con Transformaciones CSS ---
             const wrapper = document.getElementById('chart-wrapper');
             const sankeyDom = document.getElementById('sankey');
@@ -1643,7 +1701,7 @@
                 sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             });
 
-            document.getElementById('zoom-reset-btn').onclick = function() {
+            document.getElementById('zoom-reset-btn').onclick = function () {
                 scale = 1;
                 panX = 0;
                 panY = 0;
@@ -1666,10 +1724,29 @@
                 focusMode = focusSwitch.checked;
                 focusedNodeIndex = null;
                 sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
-                sankeyChart.setOption({
-                    series: [{ draggable: focusMode || !zoomEnabled }]
+                sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
 
+                // Actualizar la configuración del gráfico
+                sankeyChart.setOption({
+                    series: [{
+                        draggable: focusMode || !zoomEnabled,
+                        emphasis: {
+                            focus: 'adjacency', // Mantener siempre el énfasis disponible
+                            disabled: false // No deshabilitar el énfasis
+                        }
+                    }]
                 });
+
+                console.log('Focus mode:', focusMode ? 'ACTIVADO' : 'DESACTIVADO');
+
+                // Cambiar el estilo del contenedor para indicar el modo
+                const chartContainer = document.getElementById('chart-container');
+                if (focusMode) {
+                    chartContainer.style.border = '2px solid var(--color-guinda)';
+                    chartContainer.style.borderRadius = 'var(--border-radius)';
+                } else {
+                    chartContainer.style.border = 'none';
+                }
             });
 
             window.addEventListener('resize', () => {
@@ -1750,7 +1827,7 @@
                         nodeWidth: 30,
                         nodeGap: 30,
                         label: {
-                            formatter: function(params) {
+                            formatter: function (params) {
                                 return params.data.name;
                             },
                             color: '#000',
@@ -1761,11 +1838,11 @@
                             show: true,
                             color: '#000',
                             fontSize: 11,
-                            formatter: function(params) {
+                            formatter: function (params) {
                                 return formatNumber(params.data.value);
                             }
                         },
-                        labelLayout: function(params) {
+                        labelLayout: function (params) {
                             if (params.dataType === 'edge') {
                                 const link = links[params.dataIndex];
                                 const isInflow = link.target === centerNodeName;
@@ -1788,7 +1865,7 @@
                 subSankeyChart.setOption(option);
 
                 // Botón de descarga para el gráfico hijo
-                document.getElementById('export-sub-sankey').onclick = function() {
+                document.getElementById('export-sub-sankey').onclick = function () {
                     const background = getComputedStyle(subSankeyContainer).backgroundColor;
                     const url = subSankeyChart.getDataURL({
                         type: 'png',
