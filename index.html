@@ -898,6 +898,17 @@
                         </label>
                     </div>
                 </div>
+                <div class="control-group">
+                    <div class="toggle-container">
+                        <label class="toggle-label">
+                            <span class="toggle-text">Habilitar Zoom</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="zoom-switch" checked>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1002,6 +1013,8 @@
             const yearSelector = document.getElementById('year-selector');
             const searchInput = document.getElementById('search-input');
             const nodeDatalist = document.getElementById('node-list');
+            const zoomSwitch = document.getElementById('zoom-switch');
+            let zoomEnabled = zoomSwitch.checked;
 
             let energyData = window.energyData;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
@@ -1115,7 +1128,10 @@
                         type: 'sankey',
                         top: 20,
                         bottom: 20,
-                        roam: true, // Habilitar zoom y arrastre
+
+                        roam: zoomEnabled,
+                        draggable: !zoomEnabled,
+
                         data: nodes,
                         links: currentLinks,
                         emphasis: { focus: 'adjacency' },
@@ -1534,6 +1550,7 @@
             // --- Lógica de Zoom y Paneo con Transformaciones CSS ---
             const wrapper = document.getElementById('chart-wrapper');
             const sankeyDom = document.getElementById('sankey');
+            sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             let scale = 1, panX = 0, panY = 0, isPanning = false, startX, startY;
 
             function updateTransform() {
@@ -1541,6 +1558,7 @@
             }
 
             wrapper.addEventListener('wheel', e => {
+                if (!zoomEnabled) return;
                 e.preventDefault();
                 const delta = e.deltaY > 0 ? -0.1 : 0.1;
 
@@ -1560,13 +1578,14 @@
                     // Ajustar el paneo para que el zoom se centre en el cursor
                     panX = mouseX - (mouseX - panX) * (newScale / scale);
                     panY = mouseY - (mouseY - panY) * (newScale / scale);
-                    
+
                     scale = newScale;
                 }
                 updateTransform();
             });
 
             sankeyDom.addEventListener('mousedown', e => {
+                if (!zoomEnabled) return;
                 isPanning = true;
                 startX = e.clientX - panX;
                 startY = e.clientY - panY;
@@ -1574,15 +1593,16 @@
             });
 
             document.addEventListener('mousemove', e => {
-                if (!isPanning) return;
+                if (!zoomEnabled || !isPanning) return;
                 panX = e.clientX - startX;
                 panY = e.clientY - startY;
                 updateTransform();
             });
 
             document.addEventListener('mouseup', () => {
+                if (!isPanning) return;
                 isPanning = false;
-                sankeyDom.style.cursor = 'grab';
+                sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             });
 
             document.getElementById('zoom-reset-btn').onclick = function() {
@@ -1591,6 +1611,18 @@
                 panY = 0;
                 updateTransform();
             };
+
+            zoomSwitch.addEventListener('change', () => {
+                zoomEnabled = zoomSwitch.checked;
+                scale = 1;
+                panX = 0;
+                panY = 0;
+                updateTransform();
+                sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
+                sankeyChart.setOption({
+                    series: [{ roam: zoomEnabled, draggable: !zoomEnabled }]
+                });
+            });
 
             window.addEventListener('resize', () => {
                 sankeyChart.resize();
@@ -1613,6 +1645,8 @@
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
                 const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
+
+                // Registrar nodo central
 
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
