@@ -252,7 +252,7 @@ window.sankeyConfig = {
                 // { nombre: "Pérdidas técnicas por transporte, transmisión y distribución ES", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' },
                 // { nombre: "Variación de Inventarios ES (-)", tipo: "Padre", visible: true, posicion: 4, flow: 'sink' }, // Default para manejar valores +/- 
                 // { nombre: "Diferencia Estadística ES (-)", tipo: "Padre", visible: true, posicion: 5, flow: 'sink' }, // Default para manejar valores +/- 
-                { nombre: "Pérdidas ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' },
+                { nombre: "Pérdidas ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' }, // Default para manejar valores +/- 
             ]
         },
         {
