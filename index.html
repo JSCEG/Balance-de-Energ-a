@@ -909,6 +909,7 @@
                         </label>
                     </div>
                 </div>
+
                 <div class="control-group">
                     <div class="toggle-container">
                         <label class="toggle-label">
@@ -1026,9 +1027,11 @@
             const nodeDatalist = document.getElementById('node-list');
             const zoomSwitch = document.getElementById('zoom-switch');
             let zoomEnabled = zoomSwitch.checked;
+
             const focusSwitch = document.getElementById('focus-switch');
             let focusMode = focusSwitch.checked;
             let focusedNodeIndex = null;
+
 
             let energyData = window.energyData;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
@@ -1144,6 +1147,7 @@
                         bottom: 20,
                         roam: zoomEnabled,
                         draggable: focusMode || !zoomEnabled,
+
                         data: nodes,
                         links: currentLinks,
                         emphasis: { focus: 'adjacency' },
@@ -1664,6 +1668,7 @@
                 sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 sankeyChart.setOption({
                     series: [{ draggable: focusMode || !zoomEnabled }]
+
                 });
             });
 
@@ -1687,6 +1692,7 @@
                 const links = [];
                 const nodeMap = new Map();
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
+                const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
                 // Registrar nodo central
                 nodeMap.set(centerNodeName, {
