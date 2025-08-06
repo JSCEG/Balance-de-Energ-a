@@ -85,6 +85,12 @@ window.sankeyConfig = {
         "V.I. y Dif. Est. EP": "#666666",
         "V.I. y Dif. Est. ES": "#666666",
     },
+    // Colores para indicadores de eficiencia
+    efficiencyColors: {
+        "efficient": "#38a169",    // Verde para eficiente
+        "warning": "#dd6b20",      // Naranja para alerta
+        "critical": "#e53e3e"      // Rojo para crítico
+    },
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'justify', // 'left' respeta mejor las posiciones Y manuales

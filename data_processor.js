@@ -1,4 +1,41 @@
 window.dataProcessor = {
+    // Función auxiliar para identificar si un nodo es un energético específico o un contenedor
+    isSpecificEnergetic: function(nodeName) {
+        // Los contenedores típicamente tienen palabras clave como estas
+        const containerKeywords = [
+            "Importación", "Exportación", "Producción", "Variación", "Inventarios", 
+            "Diferencia", "Estadística", "Pérdidas", "Oferta", "Bruta", "Consumo", 
+            "Propio", "Sector", "Centrales", "Eléctricas", "Coquizadoras", "Hornos", 
+            "Plantas", "Gas", "Fraccionadoras", "Refinerías", "Despuntadoras", 
+            "Industrial", "Transporte", "Agropecuario", "Comercial", "Público", 
+            "Residencial", "Petroquímica", "PEMEX", "Total", "V.I.", "Dif.", "Est."
+        ];
+        
+        // Si el nombre contiene alguna palabra clave de contenedor, no es un energético específico
+        return !containerKeywords.some(keyword => nodeName.includes(keyword));
+    },
+
+    // Función auxiliar para obtener el color del energético correcto
+    getEnergeticColor: function(nodeName, nodeData, config) {
+        // Si el nombre del nodo es un energético específico, usar su color
+        if (this.isSpecificEnergetic(nodeName) && config.energeticColors[nodeName]) {
+            return config.energeticColors[nodeName];
+        }
+        
+        // Si es un nodo hijo y el nombre del hijo es un energético específico
+        if (nodeData && nodeData["Nodo Hijo"] && this.isSpecificEnergetic(nodeData["Nodo Hijo"])) {
+            return config.energeticColors[nodeData["Nodo Hijo"]];
+        }
+        
+        // Si no es un energético específico, intentar con el nombre directo del nodo (para contenedores)
+        if (config.energeticColors[nodeName]) {
+            return config.energeticColors[nodeName];
+        }
+        
+        // Para nodos sin color específico, usar color genérico
+        return '#888';
+    },
+
     processSankeyData: function(data, year, config) {
         const nodes = new Map();
         const links = [];
@@ -45,8 +82,8 @@ window.dataProcessor = {
                         nodeConfig.silent = true; // Deshabilitar todos los eventos de mouse
                         nodeConfig.value = nodo.valorEspaciador || 0.1; // Asignar valor para que ocupe espacio
                     } else {
-                        // Solo asignar color a nodos no espaciadores
-                        nodeConfig.itemStyle = { color: (nodeData && nodeData.color && nodeData.color !== '') ? nodeData.color : '#888' };
+                        // Solo asignar color a nodos no espaciadores - usar función inteligente para obtener color del energético
+                        nodeConfig.itemStyle = { color: this.getEnergeticColor(nodo.nombre, nodeData, config) };
                     }
 
                     nodes.set(nodo.nombre, nodeConfig);
@@ -74,14 +111,19 @@ window.dataProcessor = {
                                 source = padre["Nodo Padre"];
                                 target = hijo["Nodo Hijo"];
                             }
+                            // Determinar el color del energético que fluye
+                            // En la mayoría de casos, el hijo es el energético específico
+                            const energeticName = hijo["Nodo Hijo"];
+                            const energeticColor = this.getEnergeticColor(energeticName, hijo, config);
+                            
                             links.push({
                                 source: source,
                                 target: target,
                                 value: Math.abs(value),
                                 lineStyle: {
-                                    color: config.energeticColors[hijo["Nodo Hijo"]] || '#888',
+                                    color: energeticColor,
                                     opacity: 0.7
-                                } // Asignar color del energético con mayor definición
+                                } // Usar color del energético que fluye
                             });
                         }
                     }
