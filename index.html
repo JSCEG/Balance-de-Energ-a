@@ -469,9 +469,24 @@
                 width: 250px;
             }
 
-            #sankey {
+                        #sankey {
                 min-width: 1200px;
                 /* Ancho mínimo para el gráfico en móviles */
+            }
+
+                        .modal-content {
+                width: 95%;
+                padding: 1rem;
+                max-height: 85vh; /* Limitar altura en móviles */
+                overflow-y: auto; /* Permitir scroll vertical */
+            }
+
+            .modal-content h3 {
+                font-size: 1.2rem;
+            }
+
+            .details-table-wrapper {
+                overflow-x: auto;
             }
         }
 
@@ -1714,7 +1729,7 @@
 
                         if (inflows.length > 0) {
                             detailsHtml += '<div style="flex: 1; min-width: 300px;">';
-                            detailsHtml += '<h4>Flujos de Entrada</h4><table id="inflow-table">';
+                            detailsHtml += '<h4>Flujos de Entrada</h4><div class="details-table-wrapper"><table id="inflow-table">';
                             detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
                             inflows.forEach((link, index) => {
                                 const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
@@ -1725,7 +1740,7 @@
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Salidas'</label></td></tr>
-                            </tfoot></table>`;
+                            </tfoot></table></div>`;
                             detailsHtml += '</div>';
                         } else {
                             detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p></div>';
@@ -1733,7 +1748,7 @@
 
                         if (outflows.length > 0) {
                             detailsHtml += '<div style="flex: 1; min-width: 300px;">';
-                            detailsHtml += '<h4>Flujos de Salida</h4><table id="outflow-table">';
+                            detailsHtml += '<h4>Flujos de Salida</h4><div class="details-table-wrapper"><table id="outflow-table">';
                             detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
                             outflows.forEach((link, index) => {
                                 const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
@@ -1744,7 +1759,7 @@
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Entradas'</label></td></tr>
-                            </tfoot></table>`;
+                            </tfoot></table></div>`;
                             detailsHtml += '</div>';
                         } else {
                             detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p></div>';
