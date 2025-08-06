@@ -426,9 +426,9 @@
                 /* Centra el contenido del header en móvil */
             }
 
-            .sener-logo {
+                        .header-logo {
                 display: none;
-                /* Oculta el logo de SENER en móvil */
+                /* Oculta los logos en móvil */
             }
 
             .header-text {
@@ -780,6 +780,22 @@
             top: auto;
             bottom: 100%;
             border-color: transparent transparent var(--color-guinda) transparent;
+        }
+
+        /* Estilo para el preloader */
+        .loader {
+            border: 8px solid #f3f3f3; /* Gris claro */
+            border-top: 8px solid var(--color-guinda); /* Color principal */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 4rem auto; /* Centrar y dar espacio */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -1598,11 +1614,13 @@
                             efficiencySpan.innerHTML = message;
                         }
 
-                        const valuesContainer = document.getElementById('node-details-values');
-                        valuesContainer.innerHTML = '';
+                                                const valuesContainer = document.getElementById('node-details-values');
+                        valuesContainer.innerHTML = '<div class="loader"></div>'; // Mostrar preloader
 
-                        const clickedNodeName = params.name;
-                        const selectedYear = yearSelector.value;
+                        // Usar setTimeout para permitir que el preloader se renderice antes de la carga pesada
+                        setTimeout(() => {
+                            const clickedNodeName = params.name;
+                            const selectedYear = yearSelector.value;
 
                         const inflows = currentLinks.filter(link => link.target === clickedNodeName);
                         const outflows = currentLinks.filter(link => link.source === clickedNodeName);
@@ -1751,6 +1769,7 @@
 
                         // --- Lógica del Gráfico Hijo ---
                         createSubSankey(clickedNodeName, inflows, outflows, nodeInfo);
+                        }, 50); // 50ms de retraso para asegurar el renderizado del loader
 
                     } else {
                         console.log('Not an energetic child node or spacer.');
