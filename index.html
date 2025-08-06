@@ -884,7 +884,7 @@
                         <label class="toggle-label">
                             <span class="toggle-text">Mostrar Alertas</span>
                             <div class="toggle-switch">
-                                <input type="checkbox" id="alert-switch" checked>
+                                <input type="checkbox" id="alert-switch">
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
@@ -895,7 +895,7 @@
                         <label class="toggle-label">
                             <span class="toggle-text">Ver Descripciones</span>
                             <div class="toggle-switch">
-                                <input type="checkbox" id="description-switch" checked>
+                                <input type="checkbox" id="description-switch">
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
@@ -1187,7 +1187,7 @@
                         node.itemStyle.borderWidth = 0;
                         node.label = { show: false };
                     }
-                    
+
                     if (!node.esEspaciador) {
 
                         // Establecer un resplandor base para todos los nodos
@@ -1249,7 +1249,7 @@
                             if (params.name && params.name.includes('SPACER')) {
                                 return null; // null previene el tooltip completamente
                             }
-                            
+
                             // Verificar por propiedades del nodo
                             const nodeInfo = allNodes.get(params.name);
                             if (nodeInfo && nodeInfo.esEspaciador) {
@@ -1797,13 +1797,13 @@
                 if (params.name && params.name.includes('SPACER')) {
                     return false;
                 }
-                
+
                 // Verificar por propiedades del nodo
                 const nodeInfo = allNodes.get(params.name);
                 if (nodeInfo && nodeInfo.esEspaciador) {
                     return false;
                 }
-                
+
                 if (focusMode && focusedNodeIndex !== null) {
                     // Si hay un nodo fijo seleccionado, no permitir hover en otros
                     if (params.dataIndex !== focusedNodeIndex) {
@@ -1817,12 +1817,12 @@
                 if (params.name && params.name.includes('SPACER')) {
                     return false;
                 }
-                
+
                 const nodeInfo = allNodes.get(params.name);
                 if (nodeInfo && nodeInfo.esEspaciador) {
                     return false;
                 }
-                
+
                 if (focusMode && focusedNodeIndex !== null) {
                     // Mantener el foco en el nodo seleccionado con mejor timing
                     setTimeout(() => {
@@ -1901,6 +1901,14 @@
                 panX = 0;
                 panY = 0;
                 updateTransform();
+
+                // Resetear también el zoom interno de ECharts
+                sankeyChart.dispatchAction({
+                    type: 'restore'
+                });
+
+                // Asegurar que el cursor esté correcto
+                sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             };
 
             zoomSwitch.addEventListener('change', () => {
