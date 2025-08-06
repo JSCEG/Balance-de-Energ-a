@@ -426,7 +426,7 @@
                 /* Centra el contenido del header en móvil */
             }
 
-                        .header-logo {
+            .header-logo {
                 display: none;
                 /* Oculta los logos en móvil */
             }
@@ -469,16 +469,18 @@
                 width: 250px;
             }
 
-                        #sankey {
+            #sankey {
                 min-width: 1200px;
                 /* Ancho mínimo para el gráfico en móviles */
             }
 
-                        .modal-content {
+            .modal-content {
                 width: 95%;
                 padding: 1rem;
-                max-height: 85vh; /* Limitar altura en móviles */
-                overflow-y: auto; /* Permitir scroll vertical */
+                max-height: 85vh;
+                /* Limitar altura en móviles */
+                overflow-y: auto;
+                /* Permitir scroll vertical */
             }
 
             .modal-content h3 {
@@ -799,18 +801,26 @@
 
         /* Estilo para el preloader */
         .loader {
-            border: 8px solid #f3f3f3; /* Gris claro */
-            border-top: 8px solid var(--color-guinda); /* Color principal */
+            border: 8px solid #f3f3f3;
+            /* Gris claro */
+            border-top: 8px solid var(--color-guinda);
+            /* Color principal */
             border-radius: 50%;
             width: 60px;
             height: 60px;
             animation: spin 1s linear infinite;
-            margin: 4rem auto; /* Centrar y dar espacio */
+            margin: 4rem auto;
+            /* Centrar y dar espacio */
         }
 
-                @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Estilos para el Modal */
@@ -822,7 +832,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.6);
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: flex;
@@ -834,7 +844,7 @@
             background: white;
             padding: 2rem;
             border-radius: var(--border-radius);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             width: 80%;
             max-width: 900px;
             position: relative;
@@ -1071,7 +1081,7 @@
         <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 2rem;">
             <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
             <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
-            <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar Vista Detallada</button>
+            <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar selección del Sankey</button>
         </div>
     </div>
 
@@ -1082,7 +1092,8 @@
             <h3 id="historic-chart-title"></h3>
             <div id="historic-chart-container" style="width: 100%; height: 400px;"></div>
             <div class="modal-footer">
-                <p class="projection-note">Nota: Todos los valores se muestran como absolutos. Proyección calculada mediante Regresión Lineal Simple.</p>
+                <p class="projection-note">Nota: Todos los valores se muestran como absolutos. Proyección calculada
+                    mediante Regresión Lineal Simple.</p>
                 <button id="download-historic-chart-btn" class="btn">Descargar PNG</button>
             </div>
         </div>
@@ -1134,7 +1145,11 @@
             let allNodes = new Map(); // Para guardar la info completa de los nodos
             let currentLinks = []; // Para guardar los enlaces actuales
 
-            const formatNumber = (num) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
+            const formatNumber = (num) => {
+                const formatted = num.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
+                console.log(`formatNumber(${num}) -> ${formatted}`);
+                return formatted;
+            };
 
             // Función para mostrar información del nodo en modo focus
 
@@ -1722,155 +1737,155 @@
                             const clickedNodeName = params.name;
                             const selectedYear = yearSelector.value;
 
-                        const inflows = currentLinks.filter(link => link.target === clickedNodeName);
-                        const outflows = currentLinks.filter(link => link.source === clickedNodeName);
+                            const inflows = currentLinks.filter(link => link.target === clickedNodeName);
+                            const outflows = currentLinks.filter(link => link.source === clickedNodeName);
 
-                        let detailsHtml = '<div style="display: flex; flex-wrap: wrap; gap: 2rem;">';
+                            let detailsHtml = '<div style="display: flex; flex-wrap: wrap; gap: 2rem;">';
 
-                        if (inflows.length > 0) {
-                            detailsHtml += '<div style="flex: 1; min-width: 300px;">';
-                            detailsHtml += '<h4>Flujos de Entrada</h4><div class="details-table-wrapper"><table id="inflow-table">';
-                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
-                            inflows.forEach((link, index) => {
-                                const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
-                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
-                            });
-                            detailsHtml += `</tbody><tfoot>
+                            if (inflows.length > 0) {
+                                detailsHtml += '<div style="flex: 1; min-width: 300px;">';
+                                detailsHtml += '<h4>Flujos de Entrada</h4><div class="details-table-wrapper"><table id="inflow-table">';
+                                detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
+                                inflows.forEach((link, index) => {
+                                    const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
+                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
+                                });
+                                detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.inflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Salidas'</label></td></tr>
                             </tfoot></table></div>`;
-                            detailsHtml += '</div>';
-                        } else {
-                            detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p></div>';
-                        }
+                                detailsHtml += '</div>';
+                            } else {
+                                detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p></div>';
+                            }
 
-                        if (outflows.length > 0) {
-                            detailsHtml += '<div style="flex: 1; min-width: 300px;">';
-                            detailsHtml += '<h4>Flujos de Salida</h4><div class="details-table-wrapper"><table id="outflow-table">';
-                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
-                            outflows.forEach((link, index) => {
-                                const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
-                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
-                            });
-                            detailsHtml += `</tbody><tfoot>
+                            if (outflows.length > 0) {
+                                detailsHtml += '<div style="flex: 1; min-width: 300px;">';
+                                detailsHtml += '<h4>Flujos de Salida</h4><div class="details-table-wrapper"><table id="outflow-table">';
+                                detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
+                                outflows.forEach((link, index) => {
+                                    const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
+                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
+                                });
+                                detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
                                 <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.outflow)}</td></tr>
                                 <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Entradas'</label></td></tr>
                             </tfoot></table></div>`;
+                                detailsHtml += '</div>';
+                            } else {
+                                detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p></div>';
+                            }
+
                             detailsHtml += '</div>';
-                        } else {
-                            detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p></div>';
-                        }
 
-                        detailsHtml += '</div>';
+                            const parentNodesContainer = document.createElement('div');
+                            const parentTable = document.createElement('table');
+                            parentTable.innerHTML = '<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody></tbody>';
+                            const tbody = parentTable.querySelector('tbody');
+                            let parentRows = 0;
 
-                        const parentNodesContainer = document.createElement('div');
-                        const parentTable = document.createElement('table');
-                        parentTable.innerHTML = '<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody></tbody>';
-                        const tbody = parentTable.querySelector('tbody');
-                        let parentRows = 0;
+                            window.energyData.Datos.forEach((parentData, index) => {
+                                const parentName = parentData["Nodo Padre"];
+                                const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
+                                if (childEnergetic && childEnergetic[selectedYear] !== undefined && childEnergetic[selectedYear] !== null) {
+                                    const parentColor = window.sankeyConfig.energeticColors[parentName] || '#888';
+                                    const row = tbody.insertRow();
+                                    row.innerHTML = `<td><span style="display:inline-block; width:15px; height:15px; background-color:${parentColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td><td><div id="sparkline-parent-${index}" class="sparkline-container" data-source="${parentName}" data-target="${clickedNodeName}"></div></td>`;
+                                    parentRows++;
+                                }
+                            });
 
-                        window.energyData.Datos.forEach((parentData, index) => {
-                            const parentName = parentData["Nodo Padre"];
-                            const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
-                            if (childEnergetic && childEnergetic[selectedYear] !== undefined && childEnergetic[selectedYear] !== null) {
-                                const parentColor = window.sankeyConfig.energeticColors[parentName] || '#888';
-                                const row = tbody.insertRow();
-                                row.innerHTML = `<td><span style="display:inline-block; width:15px; height:15px; background-color:${parentColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td><td><div id="sparkline-parent-${index}" class="sparkline-container" data-source="${parentName}" data-target="${clickedNodeName}"></div></td>`;
-                                parentRows++;
-                            }
-                        });
-
-                        if (parentRows > 0) {
-                            parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación del Energético en la Cadena de Valor</h4>';
-                            parentNodesContainer.appendChild(parentTable);
-                        }
-
-                        valuesContainer.innerHTML = detailsHtml;
-                        valuesContainer.insertAdjacentHTML('beforeend', '<div id="selected-balance-container" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px dashed #ccc;"></div>');
-                        valuesContainer.insertAdjacentHTML('beforeend', parentNodesContainer.innerHTML);
-
-                        const inflowTable = document.getElementById('inflow-table');
-                        const outflowTable = document.getElementById('outflow-table');
-
-                        function updateAllSubtotals(nodeInfo) {
-                            let inflowSelectedSum = 0;
-                            if (inflowTable) {
-                                inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
+                            if (parentRows > 0) {
+                                parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación del Energético en la Cadena de Valor</h4>';
+                                parentNodesContainer.appendChild(parentTable);
                             }
 
-                            let outflowSelectedSum = 0;
-                            if (outflowTable) {
-                                outflowTable.querySelectorAll('.flow-check:checked').forEach(cb => outflowSelectedSum += parseFloat(cb.dataset.value));
-                            }
+                            valuesContainer.innerHTML = detailsHtml;
+                            valuesContainer.insertAdjacentHTML('beforeend', '<div id="selected-balance-container" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px dashed #ccc;"></div>');
+                            valuesContainer.insertAdjacentHTML('beforeend', parentNodesContainer.innerHTML);
 
-                            const sumInflowToOutflow = inflowTable ? inflowTable.querySelector('.cross-sum').checked : false;
-                            const sumOutflowToInflow = outflowTable ? outflowTable.querySelector('.cross-sum').checked : false;
+                            const inflowTable = document.getElementById('inflow-table');
+                            const outflowTable = document.getElementById('outflow-table');
 
-                            const finalInflowSubtotal = (sumOutflowToInflow ? outflowSelectedSum : 0) + inflowSelectedSum;
-                            const finalOutflowSubtotal = (sumInflowToOutflow ? inflowSelectedSum : 0) + outflowSelectedSum;
+                            function updateAllSubtotals(nodeInfo) {
+                                let inflowSelectedSum = 0;
+                                if (inflowTable) {
+                                    inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
+                                }
 
-                            const totalInflowValue = parseFloat(nodeInfo.inflow);
-                            const totalOutflowValue = parseFloat(nodeInfo.outflow);
+                                let outflowSelectedSum = 0;
+                                if (outflowTable) {
+                                    outflowTable.querySelectorAll('.flow-check:checked').forEach(cb => outflowSelectedSum += parseFloat(cb.dataset.value));
+                                }
 
-                            if (inflowTable) {
-                                inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
-                                inflowTable.querySelector('.unselected-total').textContent = formatNumber(totalInflowValue - inflowSelectedSum);
-                            }
-                            if (outflowTable) {
-                                outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
-                                outflowTable.querySelector('.unselected-total').textContent = formatNumber(totalOutflowValue - outflowSelectedSum);
-                            }
+                                const sumInflowToOutflow = inflowTable ? inflowTable.querySelector('.cross-sum').checked : false;
+                                const sumOutflowToInflow = outflowTable ? outflowTable.querySelector('.cross-sum').checked : false;
 
-                            const selectedBalanceContainer = document.getElementById('selected-balance-container');
-                            const selectedBalance = finalInflowSubtotal - finalOutflowSubtotal;
-                            let balanceHtml = `<h4>Análisis de la Selección</h4>
+                                const finalInflowSubtotal = (sumOutflowToInflow ? outflowSelectedSum : 0) + inflowSelectedSum;
+                                const finalOutflowSubtotal = (sumInflowToOutflow ? inflowSelectedSum : 0) + outflowSelectedSum;
+
+                                const totalInflowValue = parseFloat(nodeInfo.inflow);
+                                const totalOutflowValue = parseFloat(nodeInfo.outflow);
+
+                                if (inflowTable) {
+                                    inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
+                                    inflowTable.querySelector('.unselected-total').textContent = formatNumber(totalInflowValue - inflowSelectedSum);
+                                }
+                                if (outflowTable) {
+                                    outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
+                                    outflowTable.querySelector('.unselected-total').textContent = formatNumber(totalOutflowValue - outflowSelectedSum);
+                                }
+
+                                const selectedBalanceContainer = document.getElementById('selected-balance-container');
+                                const selectedBalance = finalInflowSubtotal - finalOutflowSubtotal;
+                                let balanceHtml = `<h4>Análisis de la Selección</h4>
                                 <p><strong>Entrada Seleccionada:</strong> ${formatNumber(finalInflowSubtotal)}</p>
                                 <p><strong>Salida Seleccionada:</strong> ${formatNumber(finalOutflowSubtotal)}</p>
                                 <p><strong>Balance Seleccionado:</strong> ${formatNumber(selectedBalance)}</p>`;
 
-                            if (finalInflowSubtotal > 0) {
-                                const lossPercentage = (finalInflowSubtotal - finalOutflowSubtotal) / finalInflowSubtotal;
-                                const efficiency = 1 - lossPercentage;
-                                let message = '';
+                                if (finalInflowSubtotal > 0) {
+                                    const lossPercentage = (finalInflowSubtotal - finalOutflowSubtotal) / finalInflowSubtotal;
+                                    const efficiency = 1 - lossPercentage;
+                                    let message = '';
 
-                                if (lossPercentage >= 0.05) {
-                                    message = `🚨 <strong style="color:#e53e3e;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
-                                } else if (lossPercentage >= 0.03) {
-                                    message = `⚠️ <strong style="color:#dd6b20;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
-                                } else {
-                                    message = `✅ <strong style="color:#38a169;">Eficiencia en Selección: ${(efficiency * 100).toFixed(2)}%</strong>`;
+                                    if (lossPercentage >= 0.05) {
+                                        message = `🚨 <strong style="color:#e53e3e;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
+                                    } else if (lossPercentage >= 0.03) {
+                                        message = `⚠️ <strong style="color:#dd6b20;">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
+                                    } else {
+                                        message = `✅ <strong style="color:#38a169;">Eficiencia en Selección: ${(efficiency * 100).toFixed(2)}%</strong>`;
+                                    }
+                                    balanceHtml += `<p>${message}</p>`;
                                 }
-                                balanceHtml += `<p>${message}</p>`;
+                                selectedBalanceContainer.innerHTML = balanceHtml;
                             }
-                            selectedBalanceContainer.innerHTML = balanceHtml;
-                        }
 
-                        function setupTableInteractivity(table) {
-                            if (!table) return;
-                            const selectAll = table.querySelector('.select-all');
-                            const checkboxes = table.querySelectorAll('.flow-check, .cross-sum');
+                            function setupTableInteractivity(table) {
+                                if (!table) return;
+                                const selectAll = table.querySelector('.select-all');
+                                const checkboxes = table.querySelectorAll('.flow-check, .cross-sum');
 
-                            selectAll.addEventListener('change', function () {
-                                table.querySelectorAll('.flow-check').forEach(cb => cb.checked = this.checked);
-                                updateAllSubtotals(nodeInfo);
-                            });
+                                selectAll.addEventListener('change', function () {
+                                    table.querySelectorAll('.flow-check').forEach(cb => cb.checked = this.checked);
+                                    updateAllSubtotals(nodeInfo);
+                                });
 
-                            checkboxes.forEach(cb => cb.addEventListener('change', () => updateAllSubtotals(nodeInfo)));
-                        }
+                                checkboxes.forEach(cb => cb.addEventListener('change', () => updateAllSubtotals(nodeInfo)));
+                            }
 
-                        setupTableInteractivity(inflowTable);
-                        setupTableInteractivity(outflowTable);
+                            setupTableInteractivity(inflowTable);
+                            setupTableInteractivity(outflowTable);
 
-                        renderSparklines();
+                            renderSparklines();
 
-                        document.getElementById('node-details-container').style.display = 'block';
+                            document.getElementById('node-details-container').style.display = 'block';
 
-                        // --- Lógica del Gráfico Hijo ---
-                        createSubSankey(clickedNodeName, inflows, outflows, nodeInfo);
+                            // --- Lógica del Gráfico Hijo ---
+                            createSubSankey(clickedNodeName, inflows, outflows, nodeInfo);
                         }, 50); // 50ms de retraso para asegurar el renderizado del loader
 
                     } else {
@@ -2100,7 +2115,7 @@
                 const option = {
                     tooltip: {
                         trigger: 'axis',
-                                                formatter: function (params) {
+                        formatter: function (params) {
                             const year = params[0].axisValue;
                             let tooltip = `${year}<br/>`;
                             params.forEach(param => {
@@ -2120,7 +2135,7 @@
                         name: 'Petajoules (PJ)',
                         axisLabel: {
                             formatter: function (value) {
-                                return value.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' PJ';
+                                return value.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
                             }
                         }
                     },
@@ -2167,7 +2182,7 @@
 
             function calculateProjection(years, values) {
                 const n = years.length;
-                if (n < 2) return { year: parseInt(years[n-1]) + 1, value: values[n-1] }; // No se puede proyectar con menos de 2 puntos
+                if (n < 2) return { year: parseInt(years[n - 1]) + 1, value: values[n - 1] }; // No se puede proyectar con menos de 2 puntos
 
                 const x = years.map(y => parseInt(y));
                 const y = values;
@@ -2190,7 +2205,7 @@
                 historicModal.style.display = 'none';
             };
 
-            document.getElementById('download-historic-chart-btn').onclick = function() {
+            document.getElementById('download-historic-chart-btn').onclick = function () {
                 const title = document.getElementById('historic-chart-title').innerText;
                 const url = historicChart.getDataURL({
                     type: 'png',
@@ -2289,7 +2304,20 @@
                 });
 
                 const option = {
-                    tooltip: {},
+                    tooltip: {
+                        trigger: 'item',
+                        triggerOn: 'mousemove',
+                        formatter: function (params) {
+                            if (params.dataType === 'edge') {
+                                // Para enlaces (flujos)
+                                return `${params.data.source} → ${params.data.target}: ${formatNumber(params.value)}`;
+                            } else {
+                                // Para nodos
+                                return `<b>${params.name}</b><br/>Valor: ${formatNumber(params.value)}`;
+                            }
+                        },
+                        extraCssText: 'max-width:400px; white-space: normal;'
+                    },
                     series: [{
                         type: 'sankey',
                         top: 20,
