@@ -763,6 +763,68 @@
             font-weight: 500;
         }
 
+        /* Tooltips informativos */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--color-guinda) 0%, #8b2635 100%);
+            color: white;
+            text-align: center;
+            padding: 0.8rem 1rem;
+            border-radius: var(--border-radius-small);
+            font-size: 0.8rem;
+            font-weight: 500;
+            line-height: 1.3;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 250px;
+            white-space: normal;
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--color-guinda) transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* Tooltips específicos para diferentes elementos */
+        .chart-tooltip {
+            bottom: auto;
+            top: 125%;
+            max-width: 300px;
+        }
+
+        .chart-tooltip::after {
+            top: auto;
+            bottom: 100%;
+            border-color: transparent transparent var(--color-guinda) transparent;
+        }
+
         /* Elementos flotantes decorativos */
         .floating-elements {
             position: fixed;
@@ -845,26 +907,42 @@
             </div>
         </header>
 
-        <div class="card">
-            <div class="controls">
-                <div class="control-group">
-                    <label for="year-selector">Seleccionar Año:</label>
-                    <div class="input-wrapper year-selector">
-                        <select id="year-selector"></select>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label for="search-input">Buscar Energético:</label>
-                    <div class="input-wrapper search-input">
-                        <input type="text" id="search-input" list="node-list" placeholder="Escribe para buscar...">
-                        <datalist id="node-list"></datalist>
-                    </div>
-                </div>
 
 
-                <div class="control-group">
-                    <div class="buttons">
+        <div class="card"></div>
+        <div class="controls">
+            <div class="control-group tooltip-container">
+                <label for="year-selector">Seleccionar Año:</label>
+                <div class="input-wrapper year-selector">
+                    <select id="year-selector"></select>
+                </div>
+                <div class="tooltip">
+                    Selecciona cualquier año disponible para visualizar los datos energéticos. Los datos se actualizan
+                    automáticamente.
+                </div>
+            </div>
+            <div class="control-group tooltip-container">
+                <label for="search-input">Buscar Energético:</label>
+                <div class="input-wrapper search-input">
+                    <input type="text" id="search-input" list="node-list" placeholder="Escribe para buscar...">
+                    <datalist id="node-list"></datalist>
+                </div>
+                <div class="tooltip">
+                    Escribe el nombre de cualquier energético para buscarlo. La búsqueda es en tiempo real y resalta
+                    coincidencias.
+                </div>
+            </div>
+
+
+            <div class="control-group">
+                <div class="buttons">
+                    <div class="tooltip-container">
                         <button id="zoom-reset-btn" class="btn">Restaurar Vista</button>
+                        <div class="tooltip">
+                            Restaura el diagrama a su vista original, eliminando zoom y paneo aplicados.
+                        </div>
+                    </div>
+                    <div class="tooltip-container">
                         <button id="exportar" class="btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: middle;">
@@ -877,120 +955,142 @@
                             </svg>
                             Exportar Gráfico
                         </button>
+                        <div class="tooltip">
+                            Descarga el diagrama actual como imagen PNG para usar en reportes y presentaciones.
+                        </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="toggle-container">
-                        <label class="toggle-label">
-                            <span class="toggle-text">Mostrar Alertas</span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="alert-switch">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                    </div>
+            </div>
+            <div class="control-group tooltip-container">
+                <div class="toggle-container">
+                    <label class="toggle-label">
+                        <span class="toggle-text">Mostrar Alertas</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="alert-switch">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
                 </div>
-                <div class="control-group">
-                    <div class="toggle-container">
-                        <label class="toggle-label">
-                            <span class="toggle-text">Ver Descripciones</span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="description-switch">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                    </div>
+                <div class="tooltip">
+                    Activa indicadores de eficiencia energética. Muestra alertas para pérdidas críticas (>5%) y de
+                    alerta (3-5%).
                 </div>
-                <div class="control-group">
-                    <div class="toggle-container">
-                        <label class="toggle-label">
-                            <span class="toggle-text">Habilitar Zoom</span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="zoom-switch">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                    </div>
+            </div>
+            <div class="control-group tooltip-container">
+                <div class="toggle-container">
+                    <label class="toggle-label">
+                        <span class="toggle-text">Ver Descripciones</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="description-switch">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
                 </div>
+                <div class="tooltip">
+                    Muestra información detallada de cada energético en los tooltips al pasar el mouse sobre los nodos.
+                </div>
+            </div>
+            <div class="control-group tooltip-container">
+                <div class="toggle-container">
+                    <label class="toggle-label">
+                        <span class="toggle-text">Habilitar Zoom</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="zoom-switch">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="tooltip">
+                    Permite hacer zoom con la rueda del mouse y arrastrar el diagrama para navegar en diagramas
+                    complejos.
+                </div>
+            </div>
 
-                <div class="control-group">
-                    <div class="toggle-container">
-                        <label class="toggle-label">
-                            <span class="toggle-text">Fijar foco</span>
-                            <div class="toggle-switch">
-                                <input type="checkbox" id="focus-switch">
-                                <span class="toggle-slider"></span>
-                            </div>
-                        </label>
-                    </div>
+            <div class="control-group tooltip-container">
+                <div class="toggle-container">
+                    <label class="toggle-label">
+                        <span class="toggle-text">Fijar foco</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="focus-switch">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="tooltip">
+                    Mantiene nodos seleccionados al hacer clic. Útil para comparar múltiples nodos y mostrar sus tablas
+                    de detalles.
                 </div>
             </div>
         </div>
+    </div>
 
-        <div id="chart-container" class="card">
-
-
-            <div id="chart-wrapper">
-                <div id="sankey"></div>
-            </div>
+    <div id="chart-container" class="card tooltip-container">
+        <div class="tooltip chart-tooltip">
+            💡 <strong>Cómo usar:</strong> Pasa el mouse sobre los nodos para ver información básica. Haz clic en
+            cualquier nodo para ver tablas detalladas de flujos de entrada y salida.
         </div>
 
-        <div id="node-details-container" class="card" style="display: none;">
-            <h2>Detalles del Energético: <span id="node-details-name"></span></h2>
-            <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
-            <p><strong style="color: var(--primary-color);">Descripción:</strong> <span
-                    id="node-details-description"></span></p>
-            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
-                <p><strong>Entrada Total:</strong> <span id="node-details-inflow"></span></p>
-                <p><strong>Salida Total:</strong> <span id="node-details-outflow"></span></p>
-                <p><strong>Balance Neto:</strong> <span id="node-details-balance"></span></p>
-                <p><span id="node-details-efficiency"></span></p>
-            </div>
-            <div class="card-inset" id="alert-info-container" style="display: none; margin-bottom: 2rem;">
-                <h4>Criterios de Eficiencia (Alertas)</h4>
-                <div
-                    style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; border-top: 1px solid rgba(106, 28, 50, 0.1); padding-top: 1rem;">
-                    <!-- Columna de Cálculo -->
-                    <div style="flex: 1; box-sizing: border-box;">
-                        <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Fórmula de
-                                Cálculo</strong></p>
-                        <strong
-                            style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 8px;">(1
-                            - (Entrada - Salida) / Entrada) * 100%</strong>
-                    </div>
-                    <!-- Columna de Criterios -->
-                    <div style="flex: 1; box-sizing: border-box;">
-                        <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Criterios de
-                                Alerta</strong></p>
-                        <ul class="criteria-list">
-                            <li class="criteria-item">
-                                <div class="color-box" style="background-color: #38a169;"></div>
-                                <span class="criteria-text"><strong>Eficiente:</strong> Pérdida menor al 25%</span>
-                            </li>
-                            <li class="criteria-item">
-                                <div class="color-box" style="background-color: #dd6b20;"></div>
-                                <span class="criteria-text"><strong>Alerta:</strong> Pérdida entre 25% y 50%</span>
-                            </li>
-                            <li class="criteria-item">
-                                <div class="color-box" style="background-color: #e53e3e;"></div>
-                                <span class="criteria-text"><strong>Crítica:</strong> Pérdida &ge; 50%</span>
-                            </li>
-                        </ul>
-                    </div>
+        <div id="chart-wrapper">
+            <div id="sankey"></div>
+        </div>
+    </div>
+
+    <div id="node-details-container" class="card" style="display: none;">
+        <h2>Detalles del Energético: <span id="node-details-name"></span></h2>
+        <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
+        <p><strong style="color: var(--primary-color);">Descripción:</strong> <span
+                id="node-details-description"></span></p>
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
+            <p><strong>Entrada Total:</strong> <span id="node-details-inflow"></span></p>
+            <p><strong>Salida Total:</strong> <span id="node-details-outflow"></span></p>
+            <p><strong>Balance Neto:</strong> <span id="node-details-balance"></span></p>
+            <p><span id="node-details-efficiency"></span></p>
+        </div>
+        <div class="card-inset" id="alert-info-container" style="display: none; margin-bottom: 2rem;">
+            <h4>Criterios de Eficiencia (Alertas)</h4>
+            <div
+                style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; border-top: 1px solid rgba(106, 28, 50, 0.1); padding-top: 1rem;">
+                <!-- Columna de Cálculo -->
+                <div style="flex: 1; box-sizing: border-box;">
+                    <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Fórmula de
+                            Cálculo</strong></p>
+                    <strong
+                        style="font-size: 1rem; display: block; text-align: center; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 8px;">(1
+                        - (Entrada - Salida) / Entrada) * 100%</strong>
+                </div>
+                <!-- Columna de Criterios -->
+                <div style="flex: 1; box-sizing: border-box;">
+                    <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Criterios de
+                            Alerta</strong></p>
+                    <ul class="criteria-list">
+                        <li class="criteria-item">
+                            <div class="color-box" style="background-color: #38a169;"></div>
+                            <span class="criteria-text"><strong>Eficiente:</strong> Pérdida menor al 25%</span>
+                        </li>
+                        <li class="criteria-item">
+                            <div class="color-box" style="background-color: #dd6b20;"></div>
+                            <span class="criteria-text"><strong>Alerta:</strong> Pérdida entre 25% y 50%</span>
+                        </li>
+                        <li class="criteria-item">
+                            <div class="color-box" style="background-color: #e53e3e;"></div>
+                            <span class="criteria-text"><strong>Crítica:</strong> Pérdida &ge; 50%</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div id="node-details-values"></div>
-
-            <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 2rem;">
-                <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
-                <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
-                <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar Vista Detallada</button>
-            </div>
         </div>
+        <div id="node-details-values"></div>
 
-        <footer>
-            <p>Fuente de datos: Secretaría de Energía (SENER).</p>
-        </footer>
+        <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 2rem;">
+            <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
+            <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
+            <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar Vista Detallada</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Fuente de datos: Secretaría de Energía (SENER).</p>
+    </footer>
     </div>
     </div>
     <script src="datos.js"></script>
@@ -1539,7 +1639,12 @@
                             // Ocultar información del nodo
                             hideFocusNodeInfo();
 
+                            // Ocultar también las tablas de detalles
+                            document.getElementById('node-details-container').style.display = 'none';
+                            document.getElementById('sub-sankey-container').style.display = 'none';
+
                             console.log('Nodo deseleccionado');
+                            return;
                         } else {
                             // Seleccionar nuevo nodo
                             sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
@@ -1557,6 +1662,9 @@
                             showFocusNodeInfo(params.name);
 
                             console.log('Nodo seleccionado:', params.name, 'dataIndex:', params.dataIndex);
+
+                            // En modo focus, continuar para mostrar también las tablas de detalles
+                            // No hacer return aquí para que se ejecute el código de las tablas
                         }
                     } else {
                         // Click fuera de un nodo válido, deseleccionar todo
@@ -1567,13 +1675,13 @@
                         // Ocultar información del nodo
                         hideFocusNodeInfo();
 
-                        console.log('Deselección por click fuera');
-                    }
+                        // Ocultar también las tablas de detalles
+                        document.getElementById('node-details-container').style.display = 'none';
+                        document.getElementById('sub-sankey-container').style.display = 'none';
 
-                    // En modo focus, no mostrar detalles automáticamente
-                    document.getElementById('node-details-container').style.display = 'none';
-                    document.getElementById('sub-sankey-container').style.display = 'none';
-                    return;
+                        console.log('Deselección por click fuera');
+                        return;
+                    }
                 }
                 if (params.dataType === 'node' && !params.name.startsWith('SPACER') && !params.name.includes('SPACER')) {
                     const nodeInfo = allNodes.get(params.name);
