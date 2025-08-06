@@ -385,6 +385,7 @@
             height: 90vh;
             /* Altura fija para el contenedor */
             padding: 2rem;
+            margin: 0 2rem;
         }
 
         footer {
@@ -915,13 +916,13 @@
         </div>
     </div>
 
-    <div id="chart-container" class="card pe-5 ps-5">
+    <div id="chart-container" class="">
         <div id="chart-wrapper">
             <div id="sankey"></div>
         </div>
     </div>
 
-    <div id="node-details-container" class="card" style="display: none;">
+    <div id="node-details-container" class="container" style="display: none;">
         <h2>Detalles del Energético: <span id="node-details-name"></span></h2>
         <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
         <p><strong style="color: var(--primary-color);">Descripción:</strong> <span
@@ -934,8 +935,7 @@
         </div>
         <div class="card-inset" id="alert-info-container" style="display: none; margin-bottom: 2rem;">
             <h4>Criterios de Eficiencia (Alertas)</h4>
-            <div
-                style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start; border-top: 1px solid rgba(106, 28, 50, 0.1); padding-top: 1rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start;">
                 <!-- Columna de Cálculo -->
                 <div style="flex: 1; box-sizing: border-box;">
                     <p style="font-size: 0.9rem; margin-top: 0; text-align: center;"><strong>Fórmula de
