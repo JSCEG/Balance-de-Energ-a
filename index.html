@@ -1067,7 +1067,7 @@
             <h3 id="historic-chart-title"></h3>
             <div id="historic-chart-container" style="width: 100%; height: 400px;"></div>
             <div class="modal-footer">
-                <p class="projection-note">Proyección calculada mediante Regresión Lineal Simple.</p>
+                <p class="projection-note">Nota: Todos los valores se muestran como absolutos. Proyección calculada mediante Regresión Lineal Simple.</p>
                 <button id="download-historic-chart-btn" class="btn">Descargar PNG</button>
             </div>
         </div>
@@ -2085,12 +2085,12 @@
                 const option = {
                     tooltip: {
                         trigger: 'axis',
-                        formatter: function (params) {
+                                                formatter: function (params) {
                             const year = params[0].axisValue;
                             let tooltip = `${year}<br/>`;
                             params.forEach(param => {
                                 if (param.value != null) {
-                                    const value = parseFloat(param.value).toFixed(2);
+                                    const value = parseFloat(param.value).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                     const label = param.seriesName === 'Proyección' ? 'Proyección' : 'Valor';
                                     tooltip += `${param.marker} ${label}: <b>${value} PJ</b><br/>`;
                                 }
@@ -2104,7 +2104,9 @@
                         type: 'value',
                         name: 'Petajoules (PJ)',
                         axisLabel: {
-                            formatter: '{value} PJ'
+                            formatter: function (value) {
+                                return value.toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' PJ';
+                            }
                         }
                     },
                     series: [
@@ -2144,7 +2146,7 @@
                 if (!childNode) return null;
 
                 const years = Object.keys(childNode).filter(k => !isNaN(k)).sort();
-                const values = years.map(y => childNode[y]);
+                const values = years.map(y => Math.abs(childNode[y])); // Usar siempre valores absolutos
                 return { years, values };
             }
 
