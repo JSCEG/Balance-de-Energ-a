@@ -793,9 +793,63 @@
             margin: 4rem auto; /* Centrar y dar espacio */
         }
 
-        @keyframes spin {
+                @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos para el Modal */
+        .modal {
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 80%;
+            max-width: 900px;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: var(--color-guinda);
+            text-decoration: none;
+        }
+
+        .sparkline-container {
+            width: 120px;
+            height: 40px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .sparkline-container:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -987,6 +1041,15 @@
             <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
             <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
             <button id="export-sub-sankey" class="btn" style="margin-top: 1rem;">Descargar Vista Detallada</button>
+        </div>
+    </div>
+
+    <!-- Modal para el Gráfico Histórico -->
+    <div id="historic-chart-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn">&times;</span>
+            <h3 id="historic-chart-title"></h3>
+            <div id="historic-chart-container" style="width: 100%; height: 400px;"></div>
         </div>
     </div>
 
@@ -1614,8 +1677,10 @@
                             efficiencySpan.innerHTML = message;
                         }
 
-                                                const valuesContainer = document.getElementById('node-details-values');
+                        const valuesContainer = document.getElementById('node-details-values');
                         valuesContainer.innerHTML = '<div class="loader"></div>'; // Mostrar preloader
+                        document.getElementById('node-details-container').style.display = 'block';
+
 
                         // Usar setTimeout para permitir que el preloader se renderice antes de la carga pesada
                         setTimeout(() => {
@@ -1630,10 +1695,10 @@
                         if (inflows.length > 0) {
                             detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                             detailsHtml += '<h4>Flujos de Entrada</h4><table id="inflow-table">';
-                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th></tr></thead><tbody>';
-                            inflows.forEach(link => {
+                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
+                            inflows.forEach((link, index) => {
                                 const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
-                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td></tr>`;
+                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
                             });
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
@@ -1649,10 +1714,10 @@
                         if (outflows.length > 0) {
                             detailsHtml += '<div style="flex: 1; min-width: 300px;">';
                             detailsHtml += '<h4>Flujos de Salida</h4><table id="outflow-table">';
-                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th></tr></thead><tbody>';
-                            outflows.forEach(link => {
+                            detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
+                            outflows.forEach((link, index) => {
                                 const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
-                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td></tr>`;
+                                detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
                             });
                             detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
@@ -1669,17 +1734,17 @@
 
                         const parentNodesContainer = document.createElement('div');
                         const parentTable = document.createElement('table');
-                        parentTable.innerHTML = '<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th></tr></thead><tbody></tbody>';
+                        parentTable.innerHTML = '<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody></tbody>';
                         const tbody = parentTable.querySelector('tbody');
                         let parentRows = 0;
 
-                        window.energyData.Datos.forEach(parentData => {
+                        window.energyData.Datos.forEach((parentData, index) => {
                             const parentName = parentData["Nodo Padre"];
                             const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === clickedNodeName);
                             if (childEnergetic && childEnergetic[selectedYear] !== undefined && childEnergetic[selectedYear] !== null) {
                                 const parentColor = window.sankeyConfig.energeticColors[parentName] || '#888';
                                 const row = tbody.insertRow();
-                                row.innerHTML = `<td><span style="display:inline-block; width:15px; height:15px; background-color:${parentColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td>`;
+                                row.innerHTML = `<td><span style="display:inline-block; width:15px; height:15px; background-color:${parentColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td><td><div id="sparkline-parent-${index}" class="sparkline-container" data-source="${parentName}" data-target="${clickedNodeName}"></div></td>`;
                                 parentRows++;
                             }
                         });
@@ -1764,6 +1829,8 @@
 
                         setupTableInteractivity(inflowTable);
                         setupTableInteractivity(outflowTable);
+
+                        renderSparklines();
 
                         document.getElementById('node-details-container').style.display = 'block';
 
@@ -1977,6 +2044,118 @@
                     subSankeyChart.resize();
                 }
             });
+
+            // --- Lógica para el Gráfico Histórico ---
+            const historicModal = document.getElementById('historic-chart-modal');
+            const historicChartContainer = document.getElementById('historic-chart-container');
+            let historicChart = echarts.init(historicChartContainer);
+
+            function showHistoricChart(sourceNodeName, targetNodeName) {
+                const historicData = getHistoricData(sourceNodeName, targetNodeName);
+                if (!historicData) {
+                    alert("No se encontraron datos históricos para este flujo.");
+                    return;
+                }
+
+                const { years, values } = historicData;
+                const projection = calculateProjection(years, values);
+
+                document.getElementById('historic-chart-title').innerText = `Evolución: ${sourceNodeName} → ${targetNodeName}`;
+
+                const option = {
+                    tooltip: { trigger: 'axis' },
+                    legend: { data: ['Valor Histórico', 'Proyección'] },
+                    xAxis: { type: 'category', data: [...years, projection.year] },
+                    yAxis: { type: 'value', name: 'Petajoules (PJ)' },
+                    series: [
+                        {
+                            name: 'Valor Histórico',
+                            type: 'line',
+                            data: values,
+                            smooth: true
+                        },
+                        {
+                            name: 'Proyección',
+                            type: 'line',
+                            data: new Array(values.length).fill(null).concat([projection.value]),
+                            lineStyle: { type: 'dashed', color: '#e53e3e' },
+                            itemStyle: { color: '#e53e3e' },
+                            symbol: 'circle',
+                            symbolSize: 8
+                        }
+                    ]
+                };
+
+                historicChart.setOption(option, true);
+                historicModal.style.display = 'flex';
+            }
+
+            function getHistoricData(sourceNodeName, targetNodeName) {
+                let parentNode = energyData.Datos.find(p => p["Nodo Padre"] === sourceNodeName);
+                let childNode = parentNode ? parentNode["Nodos Hijo"].find(c => c["Nodo Hijo"] === targetNodeName) : null;
+
+                // Si no se encuentra, intentar la búsqueda inversa (target como padre)
+                if (!childNode) {
+                    parentNode = energyData.Datos.find(p => p["Nodo Padre"] === targetNodeName);
+                    childNode = parentNode ? parentNode["Nodos Hijo"].find(c => c["Nodo Hijo"] === sourceNodeName) : null;
+                }
+
+                if (!childNode) return null;
+
+                const years = Object.keys(childNode).filter(k => !isNaN(k)).sort();
+                const values = years.map(y => childNode[y]);
+                return { years, values };
+            }
+
+            function calculateProjection(years, values) {
+                const n = years.length;
+                if (n < 2) return { year: parseInt(years[n-1]) + 1, value: values[n-1] }; // No se puede proyectar con menos de 2 puntos
+
+                const x = years.map(y => parseInt(y));
+                const y = values;
+
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumXY = x.map((xi, i) => xi * y[i]).reduce((a, b) => a + b, 0);
+                const sumX2 = x.map(xi => xi * xi).reduce((a, b) => a + b, 0);
+
+                const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+
+                const nextYear = x[n - 1] + 1;
+                const projectedValue = slope * nextYear + intercept;
+
+                return { year: nextYear, value: projectedValue };
+            }
+
+            document.querySelector('.modal-close-btn').onclick = () => {
+                historicModal.style.display = 'none';
+            };
+
+            function renderSparklines() {
+                document.querySelectorAll('.sparkline-container').forEach(container => {
+                    const source = container.dataset.source;
+                    const target = container.dataset.target;
+                    const historicData = getHistoricData(source, target);
+
+                    if (historicData && historicData.values.length > 1) {
+                        const sparklineChart = echarts.init(container);
+                        sparklineChart.setOption({
+                            grid: { top: 5, bottom: 5, left: 5, right: 5 },
+                            xAxis: { type: 'category', show: false },
+                            yAxis: { type: 'value', show: false },
+                            series: [{
+                                type: 'line',
+                                data: historicData.values,
+                                smooth: true,
+                                symbol: 'none',
+                                lineStyle: { width: 2, color: '#6a1c32' }
+                            }]
+                        });
+                        container.addEventListener('click', () => showHistoricChart(source, target));
+                    }
+                });
+            }
 
             function createSubSankey(centerNodeName, inflows, outflows, centerNodeInfo) {
                 const subSankeyContainer = document.getElementById('sub-sankey-container');
