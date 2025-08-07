@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
     <style>
@@ -31,6 +32,11 @@
             --color-verde-bandera: #006847;
             --color-rojo-bandera: #CE1126;
 
+            /* Colores oficiales de SENER */
+            --color-sener-verde: #2c5234;
+            --color-sener-verde-oscuro: #1a3d28;
+            --color-sener-verde-muy-oscuro: #0d2415;
+
             /* Variables de diseño glassmorphism */
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-bg-strong: rgba(255, 255, 255, 0.85);
@@ -49,6 +55,19 @@
             --border-radius-small: 12px;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .navbar-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            /* más alto que otros elementos */
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             font-weight: 400;
@@ -56,6 +75,7 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
+            padding-top: 120px !important;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -89,17 +109,30 @@
 
         header {
             text-align: center;
-            background: linear-gradient(135deg, var(--color-guinda) 0%, #8b2635 50%, #a12d42 100%);
+            background: linear-gradient(135deg, var(--color-guinda) 0%, #8b2635 50%, #a12d42 100%) !important;
             backdrop-filter: var(--backdrop-blur-strong);
             -webkit-backdrop-filter: var(--backdrop-blur-strong);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             color: var(--color-blanco);
-            padding: 1.5rem 1rem;
-            margin-bottom: 1rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--glass-shadow), 0 0 40px rgba(106, 28, 50, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            position: relative;
+            padding: 0.75rem 0.5rem;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 10001 !important;
+            box-shadow: 0 2px 20px rgba(106, 28, 50, 0.3), 0 0 40px rgba(106, 28, 50, 0.2) !important;
             overflow: hidden;
+            transform: translateZ(0);
+            will-change: transform;
+            isolation: isolate;
+        }
+
+        /* Asegurar que el header se mantenga fijo */
+        header.fixed-navbar {
+            position: fixed !important;
+            top: 0 !important;
+            z-index: 10001 !important;
         }
 
         /* Efecto de brillo adicional en el header */
@@ -135,13 +168,37 @@
             }
         }
 
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0 1.5rem;
+        }
+
+        .header-logo {
+            height: 65px;
+            max-width: 220px;
+            object-fit: contain;
+        }
+
+        .sener-logo {
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .header-text {
+            flex-grow: 1;
+        }
+
         header h1 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: #ffffff;
             margin: 0;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.1rem;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
             position: relative;
             z-index: 2;
@@ -174,10 +231,10 @@
         header p {
             font-family: 'Montserrat', sans-serif;
             font-weight: 400;
-            font-size: 1.2rem;
+            font-size: 1rem;
             max-width: 800px;
             margin: 0 auto;
-            margin-top: 0.25rem;
+            margin-top: 0.1rem;
             color: rgba(255, 255, 255, 0.9);
             position: relative;
             z-index: 2;
@@ -195,6 +252,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            z-index: 1;
         }
 
         .card::before {
@@ -391,18 +449,164 @@
         }
 
         footer {
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.9rem;
-            color: var(--color-gris-oscuro);
+            background: var(--color-guinda);
+            color: white;
+            padding: 2rem 0 0 0;
             margin-top: auto;
-            background: var(--glass-bg);
-            backdrop-filter: var(--backdrop-blur);
-            -webkit-backdrop-filter: var(--backdrop-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--border-radius);
-            box-shadow: var(--glass-shadow);
-            margin-bottom: 1rem;
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr 1fr;
+            gap: 2rem;
+            padding: 0 2rem 2rem 2rem;
+            align-items: start;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .footer-logo-img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .footer-section h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            color: white;
+        }
+
+        .footer-section h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.5rem 0;
+            color: white;
+        }
+
+        .footer-section p {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin: 0 0 1rem 0;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .footer-email {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .footer-email:hover {
+            text-decoration: underline;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .footer-pattern {
+            height: 60px;
+            background: #8b2635;
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.05) 10px,
+                    rgba(255, 255, 255, 0.05) 20px);
+            position: relative;
+        }
+
+        .footer-pattern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20s-20-8.954-20-20 8.954-20 20-20 20 8.954 20 20zm-20-18c-9.941 0-18 8.059-18 18s8.059 18 18 18 18-8.059 18-18-8.059-18-18-18z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Z-index hierarchy */
+        .container {
+            z-index: 1;
+        }
+
+        .controls {
+            z-index: 2;
+        }
+
+        #chart-container {
+            z-index: 1;
+        }
+
+        /* Responsive footer */
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 0 1rem 2rem 1rem;
+                text-align: center;
+            }
+
+            .footer-logo {
+                justify-content: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
         }
 
 
@@ -414,7 +618,7 @@
         /* Mejoras responsivas */
         @media (min-width: 768px) {
             header h1 {
-                font-size: 3.2rem;
+                font-size: 2rem;
             }
 
             .container {
@@ -425,6 +629,8 @@
         @media (max-width: 767px) {
             .header-content {
                 justify-content: center;
+                gap: 0.25rem;
+                padding: 0 0.5rem;
                 /* Centra el contenido del header en móvil */
             }
 
@@ -442,12 +648,16 @@
                 padding: 0.5rem;
             }
 
+            body {
+                padding-top: 100px;
+            }
+
             header {
-                padding: 1rem 0.5rem;
+                padding: 0.5rem 0.25rem;
             }
 
             header h1 {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
 
             .card {
@@ -509,6 +719,8 @@
             overflow: hidden;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
         #node-details-container th,
@@ -829,7 +1041,7 @@
         /* Estilos para el Modal */
         .modal {
             position: fixed;
-            z-index: 1001;
+            z-index: 10002;
             left: 0;
             top: 0;
             width: 100%;
@@ -937,23 +1149,20 @@
 </head>
 
 <body>
+    <header>
+        <div class="header-content">
+            <img src="img/logo_sener.png" alt="Logo Secretaría de Energía" class="header-logo sener-logo">
+            <div class="header-text">
+                <h1>Balance Nacional de Energía México</h1>
+                <p>Sankey de Datos Energéticos</p>
+            </div>
+            <img src="img/logo_gob.png" alt="Logo Gobierno de México" class="header-logo">
+        </div>
+    </header>
 
 
 
     <div class="container">
-        <header>
-            <div class="header-content">
-                <img src="img/logo_gob.png" alt="Logo Gobierno de México" class="header-logo">
-                <div class="header-text">
-                    <h1>Balance Nacional de Energía México</h1>
-                    <p>Sankey de Datos Energéticos</p>
-                </div>
-                <img src="img/logo_sener.png" alt="Logo Secretaría de Energía" class="header-logo sener-logo">
-            </div>
-        </header>
-
-
-
         <div class="controls">
             <div class="control-group tooltip-container">
                 <label for="year-selector">Seleccionar Año:</label>
@@ -968,12 +1177,13 @@
             <div class="control-group tooltip-container">
                 <label for="search-input">Buscar Energético:</label>
                 <div class="input-wrapper search-input">
-                    <input type="text" id="search-input" list="node-list" placeholder="Escribe para buscar...">
+                    <input type="text" id="search-input" list="node-list"
+                        placeholder="Buscar energético (ESC para limpiar)">
                     <datalist id="node-list"></datalist>
                 </div>
                 <div class="tooltip">
-                    Escribe el nombre de cualquier energético para buscarlo. La búsqueda es en tiempo real y resalta
-                    coincidencias.
+                    Busca cualquier energético y se mantendrá resaltado de forma fija. Activa automáticamente el modo
+                    focus. Presiona ESC para limpiar.
                 </div>
             </div>
 
@@ -1141,7 +1351,58 @@
     </div>
 
     <footer>
-        <p>Fuente de datos: Secretaría de Energía (SENER).</p>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="img/logo_gob.png" alt="Gobierno de México" class="footer-logo-img">
+            </div>
+
+            <div class="footer-section">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="https://datos.gob.mx/" target="_blank">Datos</a></li>
+                    <li><a href="https://www.gob.mx/transparencia" target="_blank">Transparencia</a></li>
+                    <li><a href="https://www.gob.mx/pnt" target="_blank">PNT</a></li>
+                    <li><a href="https://www.gob.mx/inai" target="_blank">INAI</a></li>
+                    <li><a href="https://www.gob.mx/alerta" target="_blank">Alerta</a></li>
+                    <li><a href="https://www.gob.mx/denuncia" target="_blank">Denuncia</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>¿Qué es gob.mx?</h4>
+                <p>Es el portal único de trámites, información y participación ciudadana. <a
+                        href="https://www.gob.mx/que-es-gobmx" target="_blank">Leer más</a></p>
+                <ul class="footer-links">
+                    <li><a href="https://www.gob.mx/en" target="_blank">English</a></li>
+                    <li><a href="https://www.gob.mx/accesibilidad" target="_blank">Declaración de Accesibilidad</a></li>
+                    <li><a href="https://www.gob.mx/terminos" target="_blank">Términos y Condiciones</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>Dudas e información a</p>
+                <a href="mailto:calidad@energia.gob.mx" class="footer-email">calidad@energia.gob.mx</a>
+
+                <h5>Síguenos en</h5>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/gobmexico" target="_blank" class="social-link facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/GobiernoMX" target="_blank" class="social-link twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/gobiernomx" target="_blank" class="social-link instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.youtube.com/user/GobiernoMexico" target="_blank" class="social-link youtube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-pattern"></div>
     </footer>
     </div>
     </div>
@@ -1149,8 +1410,6 @@
     <script src="sankey_config.js"></script>
     <script src="data_processor.js"></script>
     <script>
-
-
         // Efecto de hover mejorado para cards
         function initializeGlassEffects() {
 
@@ -1513,19 +1772,88 @@
             }
 
             function handleSearch() {
-                const searchTerm = searchInput.value;
+                const searchTerm = searchInput.value.trim();
 
-                // Si focus mode está activado, limpiar la selección fija primero
-                if (focusMode) {
-                    sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
-                    focusedNodeIndex = null;
-                    hideFocusNodeInfo();
-                }
-
+                // Limpiar cualquier selección previa
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                focusedNodeIndex = null;
+                hideFocusNodeInfo();
+
                 if (searchTerm) {
-                    sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, name: searchTerm });
-                    console.log('Buscando:', searchTerm);
+                    // Buscar el nodo en los datos actuales
+                    const currentOption = sankeyChart.getOption();
+                    const nodes = currentOption.series[0].data;
+                    const foundNodeIndex = nodes.findIndex(node =>
+                        node.name && node.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                        !node.name.startsWith('SPACER')
+                    );
+
+                    if (foundNodeIndex !== -1) {
+                        const foundNode = nodes[foundNodeIndex];
+
+                        // Activar focus mode automáticamente si no está activado
+                        if (!focusMode) {
+                            focusSwitch.checked = true;
+                            focusMode = true;
+
+                            // Aplicar estilos de focus mode
+                            const chartContainer = document.getElementById('chart-container');
+                            chartContainer.style.border = '2px solid var(--color-guinda)';
+                            chartContainer.style.borderRadius = 'var(--border-radius)';
+
+                            sankeyChart.setOption({
+                                series: [{
+                                    draggable: true,
+                                    emphasis: {
+                                        focus: 'adjacency',
+                                        blurScope: 'coordinateSystem',
+                                        itemStyle: {
+                                            borderWidth: 4,
+                                            borderColor: '#6a1c32',
+                                            shadowBlur: 15,
+                                            shadowColor: 'rgba(106, 28, 50, 0.5)'
+                                        }
+                                    },
+                                    blur: {
+                                        itemStyle: {
+                                            opacity: 0.08
+                                        },
+                                        lineStyle: {
+                                            opacity: 0.05
+                                        }
+                                    }
+                                }]
+                            });
+                        }
+
+                        // Establecer el foco persistente en el nodo encontrado
+                        focusedNodeIndex = foundNodeIndex;
+
+                        // Aplicar el foco visual
+                        sankeyChart.dispatchAction({
+                            type: 'focusNodeAdjacency',
+                            seriesIndex: 0,
+                            dataIndex: foundNodeIndex
+                        });
+
+                        sankeyChart.dispatchAction({
+                            type: 'highlight',
+                            seriesIndex: 0,
+                            dataIndex: foundNodeIndex
+                        });
+
+                        // Mostrar información del nodo
+                        showFocusNodeInfo(foundNode, foundNodeIndex);
+
+                        console.log('Nodo encontrado y fijado:', foundNode.name);
+                    } else {
+                        console.log('No se encontró el energético:', searchTerm);
+                        // Opcional: mostrar mensaje de "no encontrado"
+                    }
+                } else {
+                    // Si se borra la búsqueda, limpiar todo
+                    console.log('Búsqueda limpiada');
                 }
             }
 
@@ -1568,7 +1896,7 @@
                 modal.style.display = 'flex';
                 modal.style.justifyContent = 'center';
                 modal.style.alignItems = 'center';
-                modal.style.zIndex = '1000';
+                modal.style.zIndex = '10002';
 
                 const modalContent = document.createElement('div');
                 modalContent.style.backgroundColor = 'white';
@@ -1968,6 +2296,15 @@
             });
 
             searchInput.addEventListener('input', handleSearch);
+
+            // Agregar funcionalidad para limpiar búsqueda con Escape
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    handleSearch(); // Esto limpiará la selección
+                    searchInput.blur(); // Quitar foco del input
+                }
+            });
 
             // Deshabilitar hover automático cuando focus mode está activado
             sankeyChart.on('mouseover', function (params) {
