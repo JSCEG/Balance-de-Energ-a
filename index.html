@@ -1145,6 +1145,35 @@
                 margin-bottom: 1rem;
             }
         }
+
+        /* Evita que el brillo del header intercepte eventos */
+        header::before {
+            pointer-events: none;
+        }
+
+        /* Tooltips de CONTROLES: abrir hacia abajo y con flecha arriba */
+        .controls .tooltip {
+            bottom: auto;
+            /* deja de abrir hacia arriba */
+            top: calc(100% + 10px);
+            /* abre debajo del control */
+            transform: translateX(-50%);
+            /* resetea el translateY del hover global */
+            z-index: 1002;
+            /* suficiente dentro del stacking del contenido */
+        }
+
+        .controls .tooltip::after {
+            top: -5px;
+            /* flecha mirando hacia arriba */
+            bottom: auto;
+            border-color: transparent transparent var(--color-guinda) transparent;
+        }
+
+        /* Hover para tooltips de controles: desplazar ligeramente hacia abajo */
+        .controls .tooltip-container:hover .tooltip {
+            transform: translateX(-50%) translateY(6px);
+        }
     </style>
 </head>
 
