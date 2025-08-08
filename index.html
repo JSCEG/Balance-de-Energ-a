@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
@@ -297,11 +297,13 @@
 
         .control-group label {
             color: var(--color-gris-oscuro);
-            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500; /* Montserrat Medium según lineamientos oficiales */
             font-size: 0.9rem;
             text-shadow: none;
             margin: 0;
             white-space: nowrap;
+            letter-spacing: 0.25px; /* Mejor legibilidad */
         }
 
         .control-group {
@@ -318,11 +320,69 @@
             -webkit-backdrop-filter: blur(15px);
             border: 2px solid rgba(106, 28, 50, 0.1);
             border-radius: var(--border-radius-small);
+            font-family: 'Montserrat', sans-serif; /* Asegurar tipografía oficial */
             font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 400; /* Montserrat Regular para contenido */
             color: var(--color-gris-oscuro);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Validación visual mejorada */
+        .control-group input:invalid,
+        .control-group input.error {
+            border-color: #e53e3e;
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+        }
+
+        .control-group input:valid {
+            border-color: #38a169;
+        }
+
+        /* Feedback visual para estados de carga */
+        .loading-state {
+            position: relative;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading-state::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--color-guinda);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Mensajes de error elegantes */
+        .error-message {
+            color: #e53e3e;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .error-message::before {
+            content: '⚠️';
+            font-size: 0.9rem;
         }
 
         .control-group select:focus,
@@ -383,8 +443,9 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1rem 2rem;
             border-radius: var(--border-radius-small);
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 600; /* Montserrat Medium/SemiBold para botones según lineamientos */
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-transform: uppercase;
@@ -480,21 +541,27 @@
         }
 
         .footer-section h4 {
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 600; /* Montserrat SemiBold para subtítulos */
             margin: 0 0 1rem 0;
             color: white;
+            letter-spacing: 0.5px;
         }
 
         .footer-section h5 {
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 500; /* Montserrat Medium para subtítulos menores */
             margin: 1.5rem 0 0.5rem 0;
             color: white;
+            letter-spacing: 0.25px;
         }
 
         .footer-section p {
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.85rem;
+            font-weight: 400; /* Montserrat Regular para cuerpo de texto */
             line-height: 1.4;
             margin: 0 0 1rem 0;
             color: rgba(255, 255, 255, 0.9);
@@ -513,7 +580,9 @@
         .footer-section ul li a {
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.85rem;
+            font-weight: 400; /* Montserrat Regular para enlaces */
             transition: color 0.3s ease;
         }
 
@@ -733,7 +802,8 @@
 
         #node-details-container th {
             background: linear-gradient(135deg, #d32f2f 0%, #b92b27 100%);
-            font-weight: 700;
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+            font-weight: 600; /* Montserrat SemiBold para encabezados */
             font-size: 0.9rem;
             color: var(--color-blanco);
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
@@ -748,7 +818,8 @@
 
         #node-details-container td {
             color: var(--text-color);
-            font-weight: 500;
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+            font-weight: 400; /* Montserrat Regular para contenido de tabla */
         }
 
         #node-details-container tr:nth-child(even) td {
@@ -758,7 +829,7 @@
         #node-details-container tr:hover td {
             background: rgba(106, 28, 50, 0.15);
             color: var(--color-guinda);
-            font-weight: 600;
+            font-weight: 500; /* Montserrat Medium para hover */
         }
 
         /* Redondear esquinas de la tabla */
@@ -794,10 +865,12 @@
         }
 
         .toggle-text {
-            font-weight: 600;
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+            font-weight: 500; /* Montserrat Medium según lineamientos */
             color: var(--color-gris-oscuro);
             font-size: 0.9rem;
             white-space: nowrap;
+            letter-spacing: 0.25px; /* Mejor legibilidad */
         }
 
         .toggle-switch {
@@ -877,10 +950,12 @@
         .card-inset h4 {
             margin-top: 0;
             color: var(--primary-color);
-            font-weight: 600;
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+            font-weight: 600; /* Montserrat SemiBold para subtítulos */
             border-bottom: 1px solid rgba(106, 28, 50, 0.2);
             padding-bottom: 0.5rem;
             margin-bottom: 1rem;
+            letter-spacing: 0.25px;
         }
 
         .criteria-list {
@@ -905,51 +980,9 @@
         }
 
         .criteria-text {
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .card-inset {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: var(--border-radius-small);
-            padding: 1rem 1.5rem;
-            margin-top: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-inset h4 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(106, 28, 50, 0.2);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .criteria-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .criteria-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .color-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-        }
-
-        .criteria-text {
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 400; /* Montserrat Regular para contenido */
         }
 
         /* Tooltips informativos */
@@ -970,8 +1003,9 @@
             text-align: center;
             padding: 0.8rem 1rem;
             border-radius: var(--border-radius-small);
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 400; /* Montserrat Regular para contenido */
             line-height: 1.3;
             white-space: nowrap;
             z-index: 1000;
@@ -1065,6 +1099,7 @@
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
         }
 
         .modal-close-btn {
@@ -1106,7 +1141,9 @@
         }
 
         .projection-note {
+            font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             font-size: 0.8rem;
+            font-weight: 400; /* Montserrat Regular para notas */
             color: #666;
             font-style: italic;
             margin: 0;
@@ -1207,7 +1244,11 @@
                 <label for="search-input">Buscar Energético:</label>
                 <div class="input-wrapper search-input">
                     <input type="text" id="search-input" list="node-list"
-                        placeholder="Buscar energético (ESC para limpiar)">
+                        placeholder="Buscar energético (ESC para limpiar)"
+                        pattern="[A-Za-zÀ-ÿÑñ\s\-]+"
+                        title="Solo se permiten letras, espacios y guiones"
+                        maxlength="50"
+                        autocomplete="off">
                     <datalist id="node-list"></datalist>
                 </div>
                 <div class="tooltip">
@@ -1802,6 +1843,14 @@
 
             function handleSearch() {
                 const searchTerm = searchInput.value.trim();
+                
+                // Validación de entrada mejorada
+                if (searchTerm && !/^[A-Za-zÀ-ÿÑñ\s\-]+$/.test(searchTerm)) {
+                    showValidationError(searchInput, 'Solo se permiten letras, espacios y guiones');
+                    return;
+                } else {
+                    clearValidationError(searchInput);
+                }
 
                 // Limpiar cualquier selección previa
                 sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
@@ -1877,12 +1926,44 @@
 
                         console.log('Nodo encontrado y fijado:', foundNode.name);
                     } else {
+                        showValidationError(searchInput, 'No se encontró el energético especificado');
                         console.log('No se encontró el energético:', searchTerm);
-                        // Opcional: mostrar mensaje de "no encontrado"
                     }
                 } else {
                     // Si se borra la búsqueda, limpiar todo
                     console.log('Búsqueda limpiada');
+                }
+            }
+
+            // Funciones de validación mejoradas
+            function showValidationError(inputElement, message) {
+                // Remover mensaje de error existente
+                clearValidationError(inputElement);
+                
+                // Agregar clase de error al input
+                inputElement.classList.add('error');
+                
+                // Crear y mostrar mensaje de error
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message show';
+                errorDiv.textContent = message;
+                errorDiv.setAttribute('data-error-for', inputElement.id);
+                
+                // Insertar después del wrapper del input
+                const wrapper = inputElement.closest('.input-wrapper') || inputElement.parentNode;
+                wrapper.parentNode.insertBefore(errorDiv, wrapper.nextSibling);
+                
+                // Auto-remover después de 4 segundos
+                setTimeout(() => {
+                    clearValidationError(inputElement);
+                }, 4000);
+            }
+            
+            function clearValidationError(inputElement) {
+                inputElement.classList.remove('error');
+                const existingError = document.querySelector(`[data-error-for="${inputElement.id}"]`);
+                if (existingError) {
+                    existingError.remove();
                 }
             }
 
@@ -1902,10 +1983,34 @@
             updateChart(years[0]);
 
             yearSelector.addEventListener('change', (e) => {
-                currentZoomLevel = 1; // Restablecer zoom al cambiar de año
-                updateChart(e.target.value);
-                searchInput.value = ''; // Clear search input
-                document.getElementById('node-details-container').style.display = 'none'; // Hide details table
+                const selectedYear = e.target.value;
+                
+                // Validación del año seleccionado
+                if (!selectedYear || !years.includes(selectedYear)) {
+                    showValidationError(yearSelector, 'Por favor selecciona un año válido');
+                    return;
+                }
+                
+                clearValidationError(yearSelector);
+                
+                // Agregar estado de carga visual
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.classList.add('loading-state');
+                
+                try {
+                    currentZoomLevel = 1; // Restablecer zoom al cambiar de año
+                    updateChart(selectedYear);
+                    searchInput.value = ''; // Clear search input
+                    document.getElementById('node-details-container').style.display = 'none'; // Hide details table
+                } catch (error) {
+                    console.error('Error al actualizar el gráfico:', error);
+                    showValidationError(yearSelector, 'Error al cargar los datos del año seleccionado');
+                } finally {
+                    // Remover estado de carga
+                    setTimeout(() => {
+                        chartContainer.classList.remove('loading-state');
+                    }, 500);
+                }
             });
 
             document.getElementById('exportar').onclick = function () {
@@ -2324,7 +2429,19 @@
                 // No es necesario redibujar todo el gráfico, ECharts actualizará los tooltips automáticamente.
             });
 
-            searchInput.addEventListener('input', handleSearch);
+            searchInput.addEventListener('input', (e) => {
+                const value = e.target.value;
+                
+                // Validación en tiempo real
+                if (value && !/^[A-Za-zÀ-ÿÑñ\s\-]*$/.test(value)) {
+                    // Remover caracteres no válidos
+                    e.target.value = value.replace(/[^A-Za-zÀ-ÿÑñ\s\-]/g, '');
+                    showValidationError(searchInput, 'Solo se permiten letras, espacios y guiones');
+                } else {
+                    clearValidationError(searchInput);
+                    handleSearch();
+                }
+            });
 
             // Agregar funcionalidad para limpiar búsqueda con Escape
             searchInput.addEventListener('keydown', (e) => {
