@@ -385,6 +385,7 @@
             font-size: 0.9rem;
         }
 
+        /* Mejoras de accesibilidad y UX */
         .control-group select:focus,
         .control-group input:focus {
             border-color: var(--primary-color);
@@ -394,11 +395,43 @@
             transform: translateY(-2px);
         }
 
+        /* Indicador de focus mejorado para mejor accesibilidad */
+        .btn:focus {
+            outline: 3px solid rgba(106, 28, 50, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Hover states mejorados */
         .control-group select:hover,
         .control-group input:hover {
             border-color: rgba(106, 28, 50, 0.3);
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Mejoras para lectores de pantalla */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Estado disabled elegante */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* Iconos para los controles */
@@ -687,7 +720,10 @@
         /* Mejoras responsivas */
         @media (min-width: 768px) {
             header h1 {
+                font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
                 font-size: 2rem;
+                font-weight: 700; /* Montserrat Bold para títulos */
+                letter-spacing: 1px;
             }
 
             .container {
@@ -726,7 +762,15 @@
             }
 
             header h1 {
+                font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
                 font-size: 1.5rem;
+                font-weight: 700; /* Montserrat Bold para títulos móviles */
+                letter-spacing: 0.5px;
+            }
+
+            header p {
+                font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+                font-weight: 400; /* Montserrat Regular para subtítulos móviles */
             }
 
             .card {
@@ -745,9 +789,21 @@
                 gap: 0.5rem;
             }
 
+            .control-group label {
+                font-weight: 500; /* Montserrat Medium para labels móviles */
+                text-align: center;
+            }
+
             .control-group select,
             .control-group input {
                 width: 250px;
+                font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+                font-weight: 400; /* Montserrat Regular */
+            }
+
+            .btn {
+                font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
+                font-weight: 600; /* Montserrat SemiBold para botones móviles */
             }
 
             #sankey {
@@ -763,14 +819,23 @@
                 overflow-y: auto;
                 /* Permitir scroll vertical */
                 margin: 1rem;
+                font-family: 'Montserrat', sans-serif; /* Tipografía oficial */
             }
 
             .modal-content h3 {
                 font-size: 1.2rem;
+                font-weight: 600; /* Montserrat SemiBold para títulos modales móviles */
             }
 
             .details-table-wrapper {
                 overflow-x: auto;
+            }
+
+            /* Validación mejorada en móviles */
+            .error-message {
+                font-size: 0.75rem;
+                text-align: center;
+                margin-top: 0.25rem;
             }
         }
 
@@ -1248,8 +1313,11 @@
                         pattern="[A-Za-zÀ-ÿÑñ\s\-]+"
                         title="Solo se permiten letras, espacios y guiones"
                         maxlength="50"
-                        autocomplete="off">
+                        autocomplete="off"
+                        aria-label="Buscar energético específico en el diagrama"
+                        aria-describedby="search-help">
                     <datalist id="node-list"></datalist>
+                    <span id="search-help" class="sr-only">Escribe el nombre de un energético para buscarlo y resaltarlo en el diagrama. Presiona Escape para limpiar la búsqueda.</span>
                 </div>
                 <div class="tooltip">
                     Busca cualquier energético y se mantendrá resaltado de forma fija. Activa automáticamente el modo
@@ -1261,15 +1329,15 @@
             <div class="control-group">
                 <div class="buttons">
                     <div class="tooltip-container">
-                        <button id="zoom-reset-btn" class="btn">Restaurar Vista</button>
+                        <button id="zoom-reset-btn" class="btn" aria-label="Restaurar vista original del diagrama">Restaurar Vista</button>
                         <div class="tooltip">
                             Restaura el diagrama a su vista original, eliminando zoom y paneo aplicados.
                         </div>
                     </div>
                     <div class="tooltip-container">
-                        <button id="exportar" class="btn">
+                        <button id="exportar" class="btn" aria-label="Exportar diagrama como imagen">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: middle;">
+                                viewBox="0 0 16 16" style="margin-right: 8px; vertical-align: middle;" aria-hidden="true">
                                 <path
                                     d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z">
                                 </path>
@@ -1287,13 +1355,14 @@
             </div>
             <div class="control-group tooltip-container">
                 <div class="toggle-container">
-                    <label class="toggle-label">
+                    <label class="toggle-label" for="alert-switch">
                         <span class="toggle-text">Mostrar Alertas</span>
                         <div class="toggle-switch">
-                            <input type="checkbox" id="alert-switch">
+                            <input type="checkbox" id="alert-switch" aria-describedby="alert-help">
                             <span class="toggle-slider"></span>
                         </div>
                     </label>
+                    <span id="alert-help" class="sr-only">Activa indicadores de eficiencia energética para mostrar alertas de pérdidas críticas</span>
                 </div>
                 <div class="tooltip">
                     Activa indicadores de eficiencia energética. Muestra alertas para pérdidas críticas (>5%) y de
