@@ -300,15 +300,16 @@ window.sankeyConfig = {
     ],
     // Títulos/etiquetas de columnas (ajusta left en % y top en px)
     columnLabels: [
-        { id: 'col-origen', text: 'Origen', left: '25%', top: 12 },
-        // { id: 'col-ep', text: 'Energía Primaria', left: '14%', top: 8 },
-        // { id: 'col-salidas-ep', text: 'Salidas EP', left: '28%', top: 8 },
+     { id: 'col-ep', text: 'FEP', left: '5%', top: 80 },
+        { id: 'col-origen', text: 'Energéticos Primarios', left: '10%', top: 80 },
+        { id: 'col-origen', text: 'Energéticos Secundarios', left: '43%', top: 80 },
+         { id: 'col-salidas-ep', text: 'Transformaciones', left: '26%', top: 80},
         // { id: 'col-transform', text: 'Transformaciones', left: '40%', top: 8 },
         // { id: 'col-origen-es', text: 'Origen ES', left: '52%', top: 8 },
         // { id: 'col-es', text: 'Energía Secundaria', left: '64%', top: 8 },
         // { id: 'col-ce', text: 'Centrales Eléctricas', left: '76%', top: 8 },
         // { id: 'col-ee', text: 'Energía Eléctrica', left: '84%', top: 8 },
         // { id: 'col-salidas-es', text: 'Salidas ES', left: '90%', top: 8 },
-        // { id: 'col-sectores', text: 'Sectores de Consumo', left: '96%', top: 8 },
+         { id: 'col-sectores', text: 'Usos Finales', left: '76%', top: 80 },
     ],
 };
