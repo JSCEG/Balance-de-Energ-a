@@ -93,11 +93,7 @@ window.sankeyConfig = {
     },
     // Configuración general del layout
     layoutConfig: {
-        nodeAlign: 'justify', // 'left' respeta mejor las posiciones Y manuales
-        nodeGap: 12, // Un poco más de espacio para evitar empalmes y facilitar el arrastre
-        nodeWidth: 22, // Nodos más delgados
-        layoutIterations: 0, // 0 = respeta tu orden manual completamente
-        curveness: 0.7 // Líneas menos curvas
+        nodeAlign: 'justify', nodeGap: 12, nodeWidth: 22, layoutIterations: 0, curveness: 0.7
     },
     columnas: [
         {
@@ -301,5 +297,18 @@ window.sankeyConfig = {
         // { source: "Oferta Interna Bruta EP", target: "Petróleo crudo" },
         // ...
         // Si no, se generan automáticos por flujo de datos
-    ]
+    ],
+    // Títulos/etiquetas de columnas (ajusta left en % y top en px)
+    columnLabels: [
+        { id: 'col-origen', text: 'Origen', left: '25%', top: 12 },
+        // { id: 'col-ep', text: 'Energía Primaria', left: '14%', top: 8 },
+        // { id: 'col-salidas-ep', text: 'Salidas EP', left: '28%', top: 8 },
+        // { id: 'col-transform', text: 'Transformaciones', left: '40%', top: 8 },
+        // { id: 'col-origen-es', text: 'Origen ES', left: '52%', top: 8 },
+        // { id: 'col-es', text: 'Energía Secundaria', left: '64%', top: 8 },
+        // { id: 'col-ce', text: 'Centrales Eléctricas', left: '76%', top: 8 },
+        // { id: 'col-ee', text: 'Energía Eléctrica', left: '84%', top: 8 },
+        // { id: 'col-salidas-es', text: 'Salidas ES', left: '90%', top: 8 },
+        // { id: 'col-sectores', text: 'Sectores de Consumo', left: '96%', top: 8 },
+    ],
 };

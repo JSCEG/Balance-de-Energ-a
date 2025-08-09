@@ -1174,6 +1174,266 @@
         .controls .tooltip-container:hover .tooltip {
             transform: translateX(-50%) translateY(6px);
         }
+
+        /* Overlay de etiquetas (no afecta layout ni eventos) */
+        #sankey-label-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 3;
+            /* sobre el canvas, debajo del header */
+        }
+
+        .label-chip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.96);
+            color: #333;
+            border: 1px solid rgba(106, 28, 50, 0.25);
+            border-radius: 10px;
+            padding: 4px 10px;
+            font: 600 12px 'Montserrat', 'Inter', sans-serif;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            white-space: nowrap;
+            transform-origin: left top;
+        }
+
+        /* Asegura que nada corte los tooltips */
+        .container,
+        #chart-container,
+        #chart-wrapper {
+            overflow: visible;
+        }
+
+        /* El gráfico y su overlay por debajo de los tooltips */
+        #sankey,
+        #sankey canvas {
+            position: relative;
+            z-index: 900;
+        }
+
+        #sankey-label-overlay {
+            position: absolute;
+            z-index: 950;
+            pointer-events: none;
+        }
+
+        /* Header por encima de todo (si así lo quieres) */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 3000;
+        }
+
+        /* CONTROLES y sus tooltips por encima del Sankey */
+        .controls {
+            position: relative;
+            z-index: 2500;
+        }
+
+        .controls .tooltip {
+            position: absolute;
+            z-index: 2600 !important;
+        }
+
+        /* Si usas .chart-tooltip u otras variantes para controles */
+        .chart-tooltip {
+            z-index: 2600 !important;
+        }
+
+        /* Portal global para tooltips de controles (siempre encima del canvas/título) */
+        #ui-tooltip-portal {
+            position: fixed;
+            z-index: 20000;
+            /* > header (10001) y > canvas */
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+
+        /* Oculta el tooltip embebido dentro de .controls; el portal mostrará el clon */
+        .controls .tooltip {
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        /* Portal global para tooltips de controles */
+        #ui-tooltip-portal {
+            position: fixed;
+            z-index: 20000;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+
+        /* En el portal, la flecha va ARRIBA (apunta hacia el control) */
+        #ui-tooltip-portal .tooltip {
+            position: relative;
+            /* importante para posicionar ::after respecto al tooltip */
+            margin: 0;
+        }
+
+        #ui-tooltip-portal .tooltip::after {
+            top: -5px;
+            /* flecha en la parte superior del tooltip */
+            bottom: auto;
+            border-color: transparent transparent var(--color-guinda) transparent;
+        }
+
+        /* ===== Tema minimal (overrides) ===== */
+        :root {
+            --primary-color: var(--color-guinda);
+            --neutral-900: #1f2937;
+            --neutral-700: #374151;
+            --neutral-600: #4b5563;
+            --neutral-500: #6b7280;
+            --neutral-300: #e5e7eb;
+            --neutral-200: #eef1f4;
+            --neutral-100: #f7f8fa;
+        }
+
+        /* Fondo limpio */
+        body {
+            background: #ffffff !important;
+            color: var(--neutral-900) !important;
+        }
+
+        /* Header limpio (blanco, borde sutil) */
+        header {
+            background: #ffffff !important;
+            color: var(--primary-color) !important;
+            box-shadow: none !important;
+            border-bottom: 1px solid var(--neutral-200) !important;
+            z-index: 3000 !important;
+        }
+
+        header::before,
+        header::after {
+            display: none !important;
+        }
+
+        header h1 {
+            color: var(--primary-color) !important;
+            text-shadow: none !important;
+            font-weight: 700;
+        }
+
+        header p {
+            color: var(--neutral-600) !important;
+        }
+
+        .header-logo,
+        .sener-logo {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        /* Contenedores y tarjetas sin glassmorphism */
+        .card {
+            background: #fff !important;
+            backdrop-filter: none !important;
+            border: 1px solid var(--neutral-200) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+            transform: none !important;
+        }
+
+        .card:hover {
+            transform: none !important;
+            box-shadow: 0 3px 16px rgba(0, 0, 0, 0.06) !important;
+            background: #fff !important;
+        }
+
+        /* Controles minimalistas */
+        .controls {
+            gap: 0.75rem !important;
+        }
+
+        .control-group label {
+            color: var(--neutral-700) !important;
+        }
+
+        .control-group select,
+        .control-group input {
+            width: 220px;
+            padding: 10px 12px 10px 36px !important;
+            background: #fff !important;
+            border: 1px solid var(--neutral-300) !important;
+            box-shadow: none !important;
+            transition: border-color .2s ease;
+        }
+
+        .control-group select:hover,
+        .control-group input:hover {
+            border-color: var(--neutral-500) !important;
+        }
+
+        .control-group select:focus,
+        .control-group input:focus {
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 3px rgba(106, 28, 50, 0.12) !important;
+            transform: none !important;
+        }
+
+        /* Botones sin gradientes */
+        .btn {
+            background: var(--primary-color) !important;
+            border: 1px solid var(--primary-color) !important;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 10px !important;
+            letter-spacing: .3px !important;
+            box-shadow: none !important;
+        }
+
+        .btn::before {
+            display: none !important;
+        }
+
+        .btn:hover {
+            filter: brightness(0.95);
+            box-shadow: 0 2px 10px rgba(106, 28, 50, 0.18) !important;
+        }
+
+        /* Tooltips sobrios */
+        .tooltip,
+        #ui-tooltip-portal .tooltip {
+            background: var(--primary-color) !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 10px 12px !important;
+            font-size: 0.85rem !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+            color: #fff !important;
+        }
+
+        .tooltip::after,
+        #ui-tooltip-portal .tooltip::after {
+            border-color: var(--primary-color) transparent transparent transparent !important;
+        }
+
+        /* Contenedor del gráfico limpio */
+        #chart-wrapper {
+            background: #fff !important;
+            border: 1px solid var(--neutral-200) !important;
+            border-radius: 12px !important;
+            padding: 8px !important;
+            overflow: auto !important;
+        }
+
+        /* Etiquetas de columnas (chips) minimalistas */
+        .label-chip {
+            background: #fff !important;
+            color: var(--neutral-700) !important;
+            border: 1px solid var(--neutral-300) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+            font: 600 12px 'Montserrat', sans-serif !important;
+            padding: 4px 10px !important;
+        }
+
+        /* Footer con guinda limpia */
+        footer {
+            background: var(--primary-color) !important;
+        }
     </style>
 </head>
 
@@ -1310,6 +1570,8 @@
     <div id="chart-container" class="">
         <div id="chart-wrapper">
             <div id="sankey"></div>
+            <!-- Overlay de etiquetas (no se reduce el sankey) -->
+            <div id="sankey-label-overlay" aria-hidden="true"></div>
         </div>
     </div>
 
@@ -1690,7 +1952,9 @@
                     title: {
                         text: `Flujo de Energía en México - ${year}`,
                         subtext: 'Valores en Petajoules (PJ)',
-                        left: 'center'
+                        left: 'center',
+                        textStyle: { color: '#1f2937', fontWeight: 700, fontSize: 18 },
+                        subtextStyle: { color: '#6b7280', fontSize: 12 }
                     },
                     tooltip: {
                         trigger: 'item',
@@ -1783,6 +2047,10 @@
                 focusedNodeIndex = null;
                 document.getElementById('node-details-container').style.display = 'none';
                 document.getElementById('sub-sankey-container').style.display = 'none';
+
+                // <<< AÑADIR: crear/actualizar etiquetas de columnas después de dibujar >>>
+                renderColumnLabels();
+                updateLabelOverlayPositions();
             }
 
             function populateDatalist(nodes) {
@@ -1900,6 +2168,9 @@
 
             yearSelector.value = years[0];
             updateChart(years[0]);
+            // <<< AÑADIR: render inicial de etiquetas y posicionarlas >>>
+            renderColumnLabels();
+            updateLabelOverlayPositions();
 
             yearSelector.addEventListener('change', (e) => {
                 currentZoomLevel = 1; // Restablecer zoom al cambiar de año
@@ -2386,10 +2657,81 @@
             const wrapper = document.getElementById('chart-wrapper');
             const sankeyDom = document.getElementById('sankey');
             sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
-            let scale = 1, panX = 0, panY = 0, isPanning = false, startX, startY;
+            let scale = 1,
+                panX = 0,
+                panY = 0,
+                isPanning = false,
+                startX,
+                startY;
+
+            /* ====== ETIQUETAS DE COLUMNA (overlay que sigue zoom/pan) ====== */
+            function renderColumnLabels() {
+                const overlay = document.getElementById('sankey-label-overlay');
+                if (!overlay) return;
+                overlay.innerHTML = '';
+                const labels = (window.sankeyConfig && window.sankeyConfig.columnLabels) || [];
+                const count = labels.length || 0;
+
+                labels.forEach((lbl, i) => {
+                    const el = document.createElement('div');
+                    el.className = 'label-chip';
+                    el.textContent = lbl.text || `Col ${i + 1}`;
+                    // Guardamos posición base en % y px
+                    const leftPct = typeof lbl.left === 'string' && lbl.left.endsWith('%')
+                        ? parseFloat(lbl.left)
+                        : (lbl.left != null ? Number(lbl.left) : Math.round(((i + 1) / (count + 1)) * 100));
+                    el.dataset.leftPct = leftPct; // porcentaje 0-100
+                    el.dataset.top = (lbl.top ?? 8); // px
+                    document.getElementById('sankey-label-overlay').appendChild(el);
+                });
+
+                updateLabelOverlayPositions();
+            }
+
+            // Helper: leer el transform actual del #sankey
+            function getSankeyTransform() {
+                const el = document.getElementById('sankey');
+                if (!el) return { scale: 1, tx: 0, ty: 0 };
+                const tr = getComputedStyle(el).transform;
+                if (!tr || tr === 'none') return { scale: 1, tx: 0, ty: 0 };
+
+                const m2d = tr.match(/matrix\(([^)]+)\)/);
+                if (m2d) {
+                    const v = m2d[1].split(',').map(parseFloat);
+                    return { scale: v[0] || 1, tx: v[4] || 0, ty: v[5] || 0 };
+                }
+                const m3d = tr.match(/matrix3d\(([^)]+)\)/);
+                if (m3d) {
+                    const v = m3d[1].split(',').map(parseFloat);
+                    return { scale: v[0] || 1, tx: v[12] || 0, ty: v[13] || 0 };
+                }
+                return { scale: 1, tx: 0, ty: 0 };
+            }
+
+            function updateLabelOverlayPositions() {
+                const overlay = document.getElementById('sankey-label-overlay');
+                const sankeyEl = document.getElementById('sankey');
+                if (!overlay || !sankeyEl) return;
+
+                const { scale, tx, ty } = getSankeyTransform();
+                const sankeyW = sankeyEl.clientWidth;
+
+                overlay.querySelectorAll('.label-chip').forEach(el => {
+                    const leftPct = parseFloat(el.dataset.leftPct || '0');
+                    const topPx = parseFloat(el.dataset.top || '0');
+
+                    // Seguir pan/zoom horizontal; mantener offset vertical fijo en px
+                    const x = tx + (leftPct / 100) * sankeyW * scale;
+                    const y = ty + topPx;
+
+                    // Sin escala inversa: tamaño constante
+                    el.style.transform = `translate(${x}px, ${y}px)`;
+                });
+            }
 
             function updateTransform() {
                 sankeyDom.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+                updateLabelOverlayPositions(); // sincroniza overlay
             }
 
             wrapper.addEventListener('wheel', e => {
@@ -2397,23 +2739,17 @@
                 e.preventDefault();
                 const delta = e.deltaY > 0 ? -0.1 : 0.1;
 
-                // Si se intenta alejar más allá del 100%, restablecer la vista
                 if (scale + delta < 1) {
                     scale = 1;
                     panX = 0;
                     panY = 0;
                 } else {
-                    const newScale = Math.min(Math.max(1, scale + delta), 4); // Límite de zoom 1x a 4x
-
-                    // Calcular el punto del cursor relativo al contenedor
+                    const newScale = Math.min(Math.max(1, scale + delta), 4);
                     const rect = wrapper.getBoundingClientRect();
                     const mouseX = e.clientX - rect.left;
                     const mouseY = e.clientY - rect.top;
-
-                    // Ajustar el paneo para que el zoom se centre en el cursor
                     panX = mouseX - (mouseX - panX) * (newScale / scale);
                     panY = mouseY - (mouseY - panY) * (newScale / scale);
-
                     scale = newScale;
                 }
                 updateTransform();
@@ -2445,13 +2781,7 @@
                 panX = 0;
                 panY = 0;
                 updateTransform();
-
-                // Resetear también el zoom interno de ECharts
-                sankeyChart.dispatchAction({
-                    type: 'restore'
-                });
-
-                // Asegurar que el cursor esté correcto
+                sankeyChart.dispatchAction({ type: 'restore' });
                 sankeyDom.style.cursor = zoomEnabled ? 'grab' : 'default';
             };
 
@@ -2520,6 +2850,8 @@
                 if (subSankeyChart) {
                     subSankeyChart.resize();
                 }
+                // <<< AÑADIR: reposicionar etiquetas en resize >>>
+                updateLabelOverlayPositions();
             });
 
             // --- Lógica para el Gráfico Histórico ---
@@ -2805,8 +3137,57 @@
                     a.click();
                 };
             }
-        });
 
+            // Portal para tooltips de controles
+            function setupControlTooltipsPortal() {
+                let portal = document.getElementById('ui-tooltip-portal');
+                if (!portal) {
+                    portal = document.createElement('div');
+                    portal.id = 'ui-tooltip-portal';
+                    document.body.appendChild(portal);
+                }
+
+                const attach = (tc) => {
+                    const tip = tc.querySelector('.tooltip');
+                    if (!tip) return;
+
+                    const show = () => {
+                        // Clonar contenido del tooltip embebido
+                        const clone = tip.cloneNode(true);
+                        // Normalizar estilos dentro del portal
+                        clone.style.position = 'static';
+                        clone.style.visibility = 'visible';
+                        clone.style.opacity = '1';
+                        clone.style.transform = 'none';
+                        portal.innerHTML = '';
+                        portal.appendChild(clone);
+
+                        // Calcular posición (debajo del control)
+                        const r = tc.getBoundingClientRect();
+                        // Forzar layout para conocer tamaño del clon
+                        const cr = clone.getBoundingClientRect();
+                        const left = Math.max(8, Math.min(r.left + r.width / 2 - cr.width / 2, window.innerWidth - cr.width - 8));
+                        const top = r.bottom + 10;
+
+                        portal.style.left = left + 'px';
+                        portal.style.top = top + 'px';
+                    };
+
+                    const hide = () => { portal.innerHTML = ''; };
+
+                    tc.addEventListener('mouseenter', show);
+                    tc.addEventListener('mouseleave', hide);
+                    window.addEventListener('scroll', hide, { passive: true });
+                    window.addEventListener('resize', hide);
+                };
+
+                document.querySelectorAll('.controls .tooltip-container').forEach(attach);
+            }
+
+            setupControlTooltipsPortal();
+
+            // ...existing code...
+        });
     </script>
 
 </body>
