@@ -530,33 +530,40 @@
         }
 
         @keyframes bounce {
-            0%, 100% { transform: scale(1.1) translateY(-2px); }
-            50% { transform: scale(1.15) translateY(-4px); }
+
+            0%,
+            100% {
+                transform: scale(1.1) translateY(-2px);
+            }
+
+            50% {
+                transform: scale(1.15) translateY(-4px);
+            }
         }
 
         /* Efectos de glow modernos */
         .btn-primary {
-            box-shadow: 
+            box-shadow:
                 0 4px 15px rgba(106, 28, 50, 0.2),
                 0 0 0 0 rgba(106, 28, 50, 0);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-primary:hover {
-            box-shadow: 
+            box-shadow:
                 0 8px 25px rgba(106, 28, 50, 0.3),
                 0 0 20px rgba(106, 28, 50, 0.2);
         }
 
         .btn-secondary {
-            box-shadow: 
+            box-shadow:
                 0 2px 8px rgba(0, 0, 0, 0.1),
                 0 0 0 0 rgba(106, 28, 50, 0);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .btn-secondary:hover {
-            box-shadow: 
+            box-shadow:
                 0 8px 25px rgba(0, 0, 0, 0.1),
                 0 0 15px rgba(106, 28, 50, 0.1);
         }
@@ -568,9 +575,17 @@
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(106, 28, 50, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(106, 28, 50, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(106, 28, 50, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(106, 28, 50, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(106, 28, 50, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(106, 28, 50, 0);
+            }
         }
 
         /* Efecto ripple al hacer clic */
@@ -608,7 +623,7 @@
                 width: 100%;
                 gap: 0.75rem;
             }
-            
+
             .btn {
                 width: 100%;
                 justify-content: center;
@@ -646,55 +661,98 @@
         }
 
         footer {
-            background: var(--color-guinda);
-            color: white;
-            padding: 2rem 0 0 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+            color: var(--color-gris-oscuro);
+            padding: 3rem 0 0 0;
             margin-top: auto;
             margin-bottom: 0;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid var(--color-bordes);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         }
 
         .footer-content {
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 200px 1fr 1fr 1fr;
-            gap: 2rem;
-            padding: 0 2rem 2rem 2rem;
+            grid-template-columns: 220px 1fr 1fr 1fr;
+            gap: 3rem;
+            padding: 0 3rem 3rem 3rem;
             align-items: start;
+            position: relative;
         }
 
         .footer-logo {
             display: flex;
             align-items: flex-start;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .footer-logo-img {
-            height: 60px;
+            height: 70px;
             width: auto;
             object-fit: contain;
+            filter: brightness(1.1);
         }
 
         .footer-section h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0 0 1rem 0;
-            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+            color: var(--color-gris-oscuro);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+            border-radius: 1px;
         }
 
         .footer-section h5 {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
-            margin: 1.5rem 0 0.5rem 0;
-            color: white;
+            margin: 2rem 0 0.75rem 0;
+            color: var(--color-gris-oscuro);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .footer-section p {
-            font-size: 0.85rem;
-            line-height: 1.4;
-            margin: 0 0 1rem 0;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0 0 1.5rem 0;
+            color: #6b7280;
+            font-weight: 400;
         }
 
         .footer-section ul {
@@ -708,61 +766,115 @@
         }
 
         .footer-section ul li a {
-            color: rgba(255, 255, 255, 0.9);
+            color: #6b7280;
             text-decoration: none;
-            font-size: 0.85rem;
-            transition: color 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.25rem 0;
+            display: inline-block;
+        }
+
+        .footer-section ul li a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: width 0.3s ease;
         }
 
         .footer-section ul li a:hover {
-            color: white;
-            text-decoration: underline;
+            color: var(--color-guinda);
+            transform: translateX(4px);
+        }
+
+        .footer-section ul li a:hover::before {
+            width: 100%;
         }
 
         .footer-email {
-            color: white;
+            color: var(--color-guinda);
             text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
+            font-weight: 600;
+            font-size: 1rem;
+            background: rgba(106, 28, 50, 0.1);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 0.5rem;
+            border: 1px solid rgba(106, 28, 50, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .footer-email:hover {
-            text-decoration: underline;
+            background: rgba(106, 28, 50, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(106, 28, 50, 0.2);
         }
 
         .social-links {
             display: flex;
-            gap: 0.75rem;
-            margin-top: 0.5rem;
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
         .social-link {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            color: white;
+            width: 44px;
+            height: 44px;
+            background: rgba(106, 28, 50, 0.1);
+            border-radius: 12px;
+            color: var(--color-guinda);
             text-decoration: none;
-            transition: background-color 0.3s ease;
-            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+            border: 1px solid rgba(106, 28, 50, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .social-link:hover::before {
+            left: 100%;
         }
 
         .social-link:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(106, 28, 50, 0.15);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(106, 28, 50, 0.3);
+            border-color: rgba(106, 28, 50, 0.4);
+        }
+
+        .social-link i {
+            position: relative;
+            z-index: 2;
         }
 
         .footer-pattern {
-            height: 60px;
-            background: #8b2635;
-            background-image: repeating-linear-gradient(45deg,
-                    transparent,
-                    transparent 10px,
-                    rgba(255, 255, 255, 0.05) 10px,
-                    rgba(255, 255, 255, 0.05) 20px);
+            height: 80px;
+            background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
             position: relative;
+            overflow: hidden;
         }
 
         .footer-pattern::before {
@@ -772,7 +884,32 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20c0 11.046-8.954 20-20 20s-20-8.954-20-20 8.954-20 20-20 20 8.954 20 20zm-20-18c-9.941 0-18 8.059-18 18s8.059 18 18 18 18-8.059 18-18-8.059-18-18-18z'/%3E%3C/g%3E%3C/svg%3E");
+            background:
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: patternShift 20s ease-in-out infinite;
+        }
+
+        .footer-pattern::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        @keyframes patternShift {
+
+            0%,
+            100% {
+                background-position: 0% 0%, 100% 100%;
+            }
+
+            50% {
+                background-position: 100% 100%, 0% 0%;
+            }
         }
 
         /* Z-index hierarchy */
@@ -788,21 +925,43 @@
             z-index: 1;
         }
 
-        /* Responsive footer */
+        /* Responsive footer elegante */
         @media (max-width: 768px) {
+            footer {
+                padding: 2rem 0 0 0;
+            }
+
             .footer-content {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
-                padding: 0 1rem 2rem 1rem;
+                gap: 2rem;
+                padding: 0 1.5rem 2rem 1.5rem;
                 text-align: center;
             }
 
             .footer-logo {
                 justify-content: center;
+                margin: 0 auto;
+                max-width: 200px;
+            }
+
+            .footer-section h4::after {
+                left: 50%;
+                transform: translateX(-50%);
             }
 
             .social-links {
                 justify-content: center;
+            }
+
+            .footer-email {
+                display: block;
+                text-align: center;
+                max-width: 280px;
+                margin: 0.5rem auto;
+            }
+
+            .footer-pattern {
+                height: 60px;
             }
         }
 
@@ -1637,10 +1796,7 @@
             padding: 3px 8px !important;
         }
 
-        /* Footer con guinda limpia */
-        footer {
-            background: var(--primary-color) !important;
-        }
+        /* Footer con diseño minimalista */
     </style>
 </head>
 
@@ -1688,9 +1844,11 @@
                 <div class="buttons">
                     <div class="tooltip-container">
                         <button id="zoom-reset-btn" class="btn btn-secondary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
+                                <path
+                                    d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
                             </svg>
                             Restaurar Vista
                         </button>
@@ -1700,9 +1858,12 @@
                     </div>
                     <div class="tooltip-container">
                         <button id="exportar" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                viewBox="0 0 16 16">
+                                <path
+                                    d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                                <path
+                                    d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
                             </svg>
                             Exportar Gráfico
                         </button>
@@ -1715,8 +1876,10 @@
             <div class="control-group tooltip-container">
                 <div class="toggle-container">
                     <label class="toggle-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
-                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                            <path
+                                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
                         </svg>
                         <span class="toggle-text">Mostrar Alertas</span>
                         <div class="toggle-switch">
@@ -1733,9 +1896,11 @@
             <div class="control-group tooltip-container">
                 <div class="toggle-container">
                     <label class="toggle-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
-                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                            <path
+                                d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
                         </svg>
                         <span class="toggle-text">Ver Descripciones</span>
                         <div class="toggle-switch">
@@ -1751,10 +1916,14 @@
             <div class="control-group tooltip-container">
                 <div class="toggle-container">
                     <label class="toggle-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
-                            <path d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
-                            <path d="M10.344 11.742c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1 6.538 6.538 0 0 1-1.398 1.4z"/>
-                            <path d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                            <path
+                                d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z" />
+                            <path
+                                d="M10.344 11.742c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1 6.538 6.538 0 0 1-1.398 1.4z" />
+                            <path
+                                d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5z" />
                         </svg>
                         <span class="toggle-text">Habilitar Zoom</span>
                         <div class="toggle-switch">
@@ -1772,8 +1941,10 @@
             <div class="control-group tooltip-container">
                 <div class="toggle-container">
                     <label class="toggle-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
-                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                            <path
+                                d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
                         </svg>
                         <span class="toggle-text">Fijar foco</span>
                         <div class="toggle-switch">
@@ -1848,8 +2019,10 @@
             <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
             <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                    <path
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                    <path
+                        d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
                 </svg>
                 Descargar selección del Sankey
             </button>
@@ -1948,17 +2121,17 @@
         // Inicializar efectos modernos para botones
         function initializeModernButtons() {
             const buttons = document.querySelectorAll('.btn');
-            
+
             buttons.forEach(button => {
                 // Efecto de sonido visual al hacer clic
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     // Crear efecto ripple personalizado
                     const ripple = document.createElement('span');
                     const rect = button.getBoundingClientRect();
                     const size = Math.max(rect.width, rect.height);
                     const x = e.clientX - rect.left - size / 2;
                     const y = e.clientY - rect.top - size / 2;
-                    
+
                     ripple.style.cssText = `
                         position: absolute;
                         width: ${size}px;
@@ -1972,9 +2145,9 @@
                         pointer-events: none;
                         z-index: 1;
                     `;
-                    
+
                     button.appendChild(ripple);
-                    
+
                     // Remover el ripple después de la animación
                     setTimeout(() => {
                         ripple.remove();
@@ -1982,11 +2155,11 @@
                 });
 
                 // Efecto de hover mejorado
-                button.addEventListener('mouseenter', function() {
+                button.addEventListener('mouseenter', function () {
                     this.style.transform = 'translateY(-2px) scale(1.02)';
                 });
 
-                button.addEventListener('mouseleave', function() {
+                button.addEventListener('mouseleave', function () {
                     this.style.transform = 'translateY(0) scale(1)';
                 });
             });
