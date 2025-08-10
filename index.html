@@ -2568,6 +2568,11 @@
                 document.getElementById('node-details-container').style.display = 'none';
                 document.getElementById('sub-sankey-container').style.display = 'none';
 
+                // Actualizar sistema de partículas con nuevos datos
+                if (particleSystem && animationEnabled) {
+                    particleSystem.updateTransform();
+                }
+
                 // <<< AÑADIR: crear/actualizar etiquetas de columnas después de dibujar >>>
                 renderColumnLabels();
                 updateLabelOverlayPositions();
@@ -3252,6 +3257,11 @@
             function updateTransform() {
                 sankeyDom.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
                 updateLabelOverlayPositions(); // sincroniza overlay
+                
+                // Sincronizar partículas con transformaciones de zoom/pan
+                if (particleSystem && animationEnabled) {
+                    particleSystem.updateTransform();
+                }
             }
 
             wrapper.addEventListener('wheel', e => {
