@@ -10,7 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="echarts-minimal.js"></script>
+    <script src="particle-animation.js"></script>
 
     <style>
         *,
@@ -1797,6 +1798,31 @@
         }
 
         /* Footer con diseño minimalista */
+
+        /* ===== Particle Animation Styles ===== */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            /* Por encima del sankey pero debajo de las etiquetas */
+        }
+
+        /* Estilos para partículas individuales */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            transition: none;
+            /* Sin transición CSS, usaremos animaciones por JS */
+            width: 4px;
+            height: 4px;
+            opacity: 0.8;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -1958,6 +1984,25 @@
                     de detalles.
                 </div>
             </div>
+
+            <div class="control-group tooltip-container">
+                <div class="toggle-container">
+                    <label class="toggle-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                            <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                        </svg>
+                        <span class="toggle-text">Animación de Flujo</span>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="animation-switch">
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+                <div class="tooltip">
+                    Activa partículas animadas que muestran el flujo de energía a través de los enlaces, respetando los colores de los energéticos.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1966,6 +2011,8 @@
             <div id="sankey"></div>
             <!-- Overlay de etiquetas (no se reduce el sankey) -->
             <div id="sankey-label-overlay" aria-hidden="true"></div>
+            <!-- Canvas para partículas animadas -->
+            <canvas id="particle-canvas" aria-hidden="true"></canvas>
         </div>
     </div>
 
@@ -2195,6 +2242,13 @@
             const chartDom = document.getElementById('sankey');
             let sankeyChart = echarts.init(chartDom, null, { renderer: 'canvas' });
             let currentZoomLevel = 1; // Variable para gestionar el zoom
+            
+            // Inicializar sistema de partículas
+            let particleSystem = null;
+            if (window.ParticleAnimationSystem) {
+                particleSystem = new window.ParticleAnimationSystem(sankeyChart);
+            }
+            
             const yearSelector = document.getElementById('year-selector');
             const searchInput = document.getElementById('search-input');
             const nodeDatalist = document.getElementById('node-list');
@@ -2204,6 +2258,10 @@
             const focusSwitch = document.getElementById('focus-switch');
             let focusMode = focusSwitch.checked;
             let focusedNodeIndex = null;
+            
+            // Control de animación de partículas
+            const animationSwitch = document.getElementById('animation-switch');
+            let animationEnabled = animationSwitch.checked;
 
 
             let energyData = window.energyData;
@@ -2509,6 +2567,11 @@
                 focusedNodeIndex = null;
                 document.getElementById('node-details-container').style.display = 'none';
                 document.getElementById('sub-sankey-container').style.display = 'none';
+
+                // Actualizar sistema de partículas con nuevos datos
+                if (particleSystem && animationEnabled) {
+                    particleSystem.updateTransform();
+                }
 
                 // <<< AÑADIR: crear/actualizar etiquetas de columnas después de dibujar >>>
                 renderColumnLabels();
@@ -3194,6 +3257,11 @@
             function updateTransform() {
                 sankeyDom.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
                 updateLabelOverlayPositions(); // sincroniza overlay
+                
+                // Sincronizar partículas con transformaciones de zoom/pan
+                if (particleSystem && animationEnabled) {
+                    particleSystem.updateTransform();
+                }
             }
 
             wrapper.addEventListener('wheel', e => {
@@ -3304,6 +3372,21 @@
                     chartContainer.style.borderRadius = 'var(--border-radius)';
                 } else {
                     chartContainer.style.border = 'none';
+                }
+            });
+
+            // Event listener para el control de animación de partículas
+            animationSwitch.addEventListener('change', () => {
+                animationEnabled = animationSwitch.checked;
+                
+                if (particleSystem) {
+                    if (animationEnabled) {
+                        particleSystem.start();
+                        console.log('Animación de partículas ACTIVADA');
+                    } else {
+                        particleSystem.stop();
+                        console.log('Animación de partículas DESACTIVADA');
+                    }
                 }
             });
 
