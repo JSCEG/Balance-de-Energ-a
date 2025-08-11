@@ -116,6 +116,18 @@ window.sankeyConfig = {
         layoutIterations: 0,
         curveness: 0.7
     },
+    // Parámetros de comportamiento/legibilidad
+    colorBy: 'child',               // 'child' | 'parent' | 'category'
+    categoryColors: {               // usado cuando colorBy === 'category'
+        'Primarios': '#1f77b4',
+        'Secundarios': '#ff7f0e',
+        'Transformación': '#2ca02c',
+        'Demanda': '#d62728'
+    },
+    linkMinValue: 0,                // no mostrar enlaces menores a este valor
+    flowPolicy: 'bySign',           // 'bySign' | 'fixedParentToChild'
+    normalizeBy: 'year',            // 'global' | 'year'
+    curvenessAuto: false,           // ajusta la curvatura según distancia de columnas
     columnas: [
         {
             // Columna 1: Padres principales

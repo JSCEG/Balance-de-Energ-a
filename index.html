@@ -1833,10 +1833,15 @@
                         placeholder="Buscar energético (ESC para limpiar)">
                     <datalist id="node-list"></datalist>
                 </div>
+                <button id="clear-search" style="margin-left:4px">Limpiar</button>
                 <div class="tooltip">
                     Busca cualquier energético y se mantendrá resaltado de forma fija. Activa automáticamente el modo
                     focus. Presiona ESC para limpiar.
                 </div>
+            </div>
+
+            <div class="control-group" id="legend-container" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <!-- Leyenda interactiva -->
             </div>
 
 
@@ -1870,6 +1875,18 @@
                         <div class="tooltip">
                             Descarga el diagrama actual como imagen PNG para usar en reportes y presentaciones.
                         </div>
+                    </div>
+                    <div class="tooltip-container">
+                        <button id="export-png2" class="btn btn-secondary">PNG 2x</button>
+                    </div>
+                    <div class="tooltip-container">
+                        <button id="export-png4" class="btn btn-secondary">PNG 4x</button>
+                    </div>
+                    <div class="tooltip-container">
+                        <button id="export-svg" class="btn btn-secondary">SVG</button>
+                    </div>
+                    <div class="tooltip-container">
+                        <button id="export-csv" class="btn btn-secondary">CSV</button>
                     </div>
                 </div>
             </div>
@@ -2200,6 +2217,10 @@
             const nodeDatalist = document.getElementById('node-list');
             const zoomSwitch = document.getElementById('zoom-switch');
             let zoomEnabled = zoomSwitch.checked;
+            const legendContainer = document.getElementById('legend-container');
+            const activeCategories = {};
+            Object.keys(window.sankeyConfig.categoryColors || {}).forEach(c => activeCategories[c] = true);
+            const clearSearchBtn = document.getElementById('clear-search');
 
             const focusSwitch = document.getElementById('focus-switch');
             let focusMode = focusSwitch.checked;
@@ -2223,6 +2244,43 @@
                 const b = parseInt(hex.slice(5, 7), 16);
                 return `rgba(${r}, ${g}, ${b}, ${alpha})`;
             };
+
+            function renderLegend() {
+                if (!legendContainer) return;
+                legendContainer.innerHTML = '';
+                Object.entries(window.sankeyConfig.categoryColors || {}).forEach(([cat, color]) => {
+                    const btn = document.createElement('button');
+                    btn.textContent = cat;
+                    btn.style.background = activeCategories[cat] ? color : '#ccc';
+                    btn.style.border = 'none';
+                    btn.style.padding = '4px 8px';
+                    btn.style.cursor = 'pointer';
+                    btn.onclick = () => {
+                        activeCategories[cat] = !activeCategories[cat];
+                        btn.style.background = activeCategories[cat] ? color : '#ccc';
+                        updateChart(yearSelector.value);
+                    };
+                    legendContainer.appendChild(btn);
+                });
+            }
+
+            function applyLegendFilter(nodes, links) {
+                const filtered = links.filter(lk => {
+                    const sc = allNodes.get(lk.source);
+                    const tc = allNodes.get(lk.target);
+                    return sc && tc && activeCategories[sc.category] && activeCategories[tc.category];
+                });
+                const connected = new Set();
+                filtered.forEach(lk => { connected.add(lk.source); connected.add(lk.target); });
+                nodes.forEach(n => {
+                    if (!n.esEspaciador) {
+                        const active = activeCategories[n.category] && connected.has(n.name);
+                        n.itemStyle = n.itemStyle || {};
+                        n.itemStyle.opacity = active ? 1 : 0.2;
+                    }
+                });
+                return filtered;
+            }
 
             // Función para mostrar información del nodo en modo focus
 
@@ -2403,7 +2461,10 @@
                     }
                 });
 
-                if (currentLinks.length === 0) {
+                const filteredLinks = applyLegendFilter(nodes, currentLinks);
+                currentLinks = filteredLinks;
+
+                if (filteredLinks.length === 0) {
                     sankeyChart.clear();
                     sankeyChart.showLoading({ text: `No hay datos de flujo para el año ${year}.` });
                     return;
@@ -2422,44 +2483,29 @@
                         trigger: 'item',
                         triggerOn: 'mousemove',
                         formatter: function (params) {
-                            // Verificación simple y directa para nodos espaciadores
-                            if (params.name && params.name.includes('SPACER')) {
-                                return null; // null previene el tooltip completamente
-                            }
-
-                            // Verificar por propiedades del nodo
+                            if (params.name && params.name.includes('SPACER')) return null;
                             const nodeInfo = allNodes.get(params.name);
-                            if (nodeInfo && nodeInfo.esEspaciador) {
-                                return null;
-                            }
+                            if (nodeInfo && nodeInfo.esEspaciador) return null;
 
                             if (params.dataType === 'edge') {
-                                return `${params.data.source} → ${params.data.target}: ${formatNumber(params.value)}`;
+                                const sourceInfo = allNodes.get(params.data.source);
+                                const pct = sourceInfo && sourceInfo.outflow ? (params.data.value / sourceInfo.outflow * 100).toFixed(2) : '0.00';
+                                return `${params.data.source} → ${params.data.target}: ${formatNumber(params.data.value)} (${pct}%)`;
                             }
-                            let tooltipText = `<b>${params.name}</b><br/>`;
 
                             if (nodeInfo) {
-                                const nodeColor = nodeInfo.itemStyle && nodeInfo.itemStyle.color ? nodeInfo.itemStyle.color : '#888';
-                                const balance = nodeInfo.inflow - nodeInfo.outflow;
-
-                                if (nodeInfo.flow === 'source') {
-                                    tooltipText += `Salida: ${formatNumber(nodeInfo.outflow)}`;
-                                } else if (nodeInfo.flow === 'sink') {
-                                    tooltipText += `Entrada: ${formatNumber(nodeInfo.inflow)}`;
-                                } else { // Default or intermediate node
-                                    tooltipText += `Entrada: ${formatNumber(nodeInfo.inflow)}<br/>`;
-                                    tooltipText += `Salida: ${formatNumber(nodeInfo.outflow)}<br/>`;
-                                    tooltipText += `<span style="color:${nodeColor}; font-weight:bold;">Balance: ${formatNumber(balance)}</span>`;
+                                const inflowPct = nodeInfo.value ? (nodeInfo.inflow / nodeInfo.value * 100).toFixed(2) : '0.00';
+                                const outflowPct = nodeInfo.value ? (nodeInfo.outflow / nodeInfo.value * 100).toFixed(2) : '0.00';
+                                let text = `<b>${params.name}</b><br/>Valor: ${formatNumber(nodeInfo.value)}<br/>`;
+                                text += `Entrada: ${formatNumber(nodeInfo.inflow)} (${inflowPct}%)<br/>`;
+                                text += `Salida: ${formatNumber(nodeInfo.outflow)} (${outflowPct}%)`;
+                                const showDescription = document.getElementById('description-switch').checked;
+                                if (showDescription && nodeInfo.description) {
+                                    text += `<br/><hr style="margin: 5px 0;"/><i>${nodeInfo.description}</i>`;
                                 }
-                            } else {
-                                tooltipText += `Total: ${formatNumber(params.value)}`;
+                                return text;
                             }
-
-                            const showDescription = document.getElementById('description-switch').checked;
-                            if (showDescription && nodeInfo && nodeInfo.description) {
-                                tooltipText += `<br/><hr style="margin: 5px 0;"/><i>${nodeInfo.description}</i>`;
-                            }
-                            return tooltipText;
+                            return `<b>${params.name}</b><br/>Valor: ${formatNumber(params.value)}`;
                         },
                         extraCssText: 'max-width:400px; white-space: normal;'
                     },
@@ -2471,7 +2517,7 @@
                         draggable: focusMode || !zoomEnabled,
 
                         data: nodes,
-                        links: currentLinks,
+                        links: filteredLinks,
                         label: {
                             fontSize: 8,
                             fontWeight: 'normal'
@@ -2531,89 +2577,21 @@
             }
 
             function handleSearch() {
-                const searchTerm = searchInput.value.trim();
-
-                // Limpiar cualquier selección previa
-                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                const term = searchInput.value.trim().toLowerCase();
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                focusedNodeIndex = null;
-                hideFocusNodeInfo();
-
-                if (searchTerm) {
-                    // Buscar el nodo en los datos actuales
-                    const currentOption = sankeyChart.getOption();
-                    const nodes = currentOption.series[0].data;
-                    const foundNodeIndex = nodes.findIndex(node =>
-                        node.name && node.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-                        !node.name.startsWith('SPACER')
-                    );
-
-                    if (foundNodeIndex !== -1) {
-                        const foundNode = nodes[foundNodeIndex];
-
-                        // Activar focus mode automáticamente si no está activado
-                        if (!focusMode) {
-                            focusSwitch.checked = true;
-                            focusMode = true;
-
-                            // Aplicar estilos de focus mode
-                            const chartContainer = document.getElementById('chart-container');
-                            chartContainer.style.border = '2px solid var(--color-guinda)';
-                            chartContainer.style.borderRadius = 'var(--border-radius)';
-
-                            sankeyChart.setOption({
-                                series: [{
-                                    draggable: true,
-                                    emphasis: {
-                                        focus: 'adjacency',
-                                        blurScope: 'coordinateSystem',
-                                        itemStyle: {
-                                            borderWidth: 4,
-                                            borderColor: '#6a1c32',
-                                            shadowBlur: 15,
-                                            shadowColor: 'rgba(106, 28, 50, 0.5)'
-                                        }
-                                    },
-                                    blur: {
-                                        itemStyle: {
-                                            opacity: 0.08
-                                        },
-                                        lineStyle: {
-                                            opacity: 0.05
-                                        }
-                                    }
-                                }]
-                            });
-                        }
-
-                        // Establecer el foco persistente en el nodo encontrado
-                        focusedNodeIndex = foundNodeIndex;
-
-                        // Aplicar el foco visual
-                        sankeyChart.dispatchAction({
-                            type: 'focusNodeAdjacency',
-                            seriesIndex: 0,
-                            dataIndex: foundNodeIndex
-                        });
-
-                        sankeyChart.dispatchAction({
-                            type: 'highlight',
-                            seriesIndex: 0,
-                            dataIndex: foundNodeIndex
-                        });
-
-                        // Mostrar información del nodo
-                        showFocusNodeInfo(foundNode, foundNodeIndex);
-
-                        console.log('Nodo encontrado y fijado:', foundNode.name);
-                    } else {
-                        console.log('No se encontró el energético:', searchTerm);
-                        // Opcional: mostrar mensaje de "no encontrado"
-                    }
-                } else {
-                    // Si se borra la búsqueda, limpiar todo
-                    console.log('Búsqueda limpiada');
-                }
+                if (!term) return;
+                const option = sankeyChart.getOption();
+                const nodes = option.series[0].data;
+                const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
+                if (idx === -1) return;
+                const name = nodes[idx].name;
+                const neighbors = new Set();
+                currentLinks.forEach(l => {
+                    if (l.source === name) neighbors.add(l.target);
+                    if (l.target === name) neighbors.add(l.source);
+                });
+                sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
+                nodes.forEach((n,i) => { if (neighbors.has(n.name)) sankeyChart.dispatchAction({ type:'highlight', seriesIndex:0, dataIndex:i }); });
             }
 
             // --- Inicialización ---
@@ -2630,6 +2608,7 @@
 
             yearSelector.value = years[0];
             updateChart(years[0]);
+            renderLegend();
             // <<< AÑADIR: render inicial de etiquetas y posicionarlas >>>
             renderColumnLabels();
             updateLabelOverlayPositions();
@@ -2771,8 +2750,43 @@
                         sankeyChart = originalChart;
                     }
 
-                    document.body.removeChild(modal);
-                };
+                document.body.removeChild(modal);
+            };
+        };
+
+            document.getElementById('export-png2').onclick = function () {
+                const url = sankeyChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sankey_${yearSelector.value}_2x.png`;
+                a.click();
+            };
+            document.getElementById('export-png4').onclick = function () {
+                const url = sankeyChart.getDataURL({ type: 'png', pixelRatio: 4, backgroundColor: '#fff' });
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sankey_${yearSelector.value}_4x.png`;
+                a.click();
+            };
+            document.getElementById('export-svg').onclick = function () {
+                const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sankey_${yearSelector.value}.svg`;
+                a.click();
+            };
+            document.getElementById('export-csv').onclick = function () {
+                const rows = currentLinks.map(l => {
+                    const cat = allNodes.get(l.source) ? allNodes.get(l.source).category : '';
+                    return `${l.source},${l.target},${l.rawValue || l.value},${yearSelector.value},${cat},${l.lineStyle.color}`;
+                });
+                const csv = 'source,target,value,year,category,color\n' + rows.join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `sankey_${yearSelector.value}.csv`;
+                a.click();
+                URL.revokeObjectURL(a.href);
             };
 
             let subSankeyChart = null; // Variable para el gráfico hijo
@@ -3058,6 +3072,10 @@
             });
 
             searchInput.addEventListener('input', handleSearch);
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+            });
 
             // Agregar funcionalidad para limpiar búsqueda con Escape
             searchInput.addEventListener('keydown', (e) => {

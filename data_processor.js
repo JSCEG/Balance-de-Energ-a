@@ -1,4 +1,25 @@
 window.dataProcessor = {
+    // Determina si un color hexadecimal es claro
+    isLight(hex) {
+        if (!hex) return false;
+        const c = hex.replace('#','');
+        const r = parseInt(c.substr(0,2),16);
+        const g = parseInt(c.substr(2,2),16);
+        const b = parseInt(c.substr(4,2),16);
+        // Perceived luminance
+        const l = 0.299*r + 0.587*g + 0.114*b;
+        return l > 186; // umbral típico
+    },
+
+    // Categoría básica para leyenda
+    getCategory(nodeData) {
+        if (!nodeData || !nodeData.tipo) return 'Primarios';
+        const t = nodeData.tipo.toLowerCase();
+        if (t.includes('primaria')) return 'Primarios';
+        if (t.includes('secundaria')) return 'Secundarios';
+        if (t.includes('transform') || t.includes('central')) return 'Transformación';
+        return 'Demanda';
+    },
     // Determina si un nombre corresponde a un energético específico (no contenedor)
     isSpecificEnergetic(nodeName) {
         const containerKeywords = [
@@ -12,8 +33,16 @@ window.dataProcessor = {
         return !containerKeywords.some((k) => nodeName && nodeName.includes(k));
     },
 
-    // Color correcto por energético (con degradado a genérico si no hay match)
-    getEnergeticColor(nodeName, nodeData, config) {
+    // Color correcto según configuración
+    getNodeColor(nodeName, nodeData, config, parentNode) {
+        if (config.colorBy === 'parent' && parentNode && parentNode.itemStyle) {
+            return parentNode.itemStyle.color;
+        }
+        if (config.colorBy === 'category') {
+            const cat = this.getCategory(nodeData);
+            return (config.categoryColors && config.categoryColors[cat]) || '#888';
+        }
+        // colorBy child (default)
         if (this.isSpecificEnergetic(nodeName) && config.energeticColors[nodeName]) {
             return config.energeticColors[nodeName];
         }
@@ -28,7 +57,6 @@ window.dataProcessor = {
     processSankeyData(data, year, config) {
         const y = String(year);
         const nodes = new Map();
-        const links = [];
 
         // 1) Registrar nodos definidos en la config (soporta espaciadores)
         config.columnas.forEach((col, colIdx) => {
@@ -49,7 +77,7 @@ window.dataProcessor = {
                 if (!nodes.has(nodo.nombre)) {
                     const nodeData = this.findNodeData(data, nodo.nombre, nodo.tipo);
                     const nodeConfig = {
-                        ...(nodeData || {}), // <- FIX: spread correcto (antes había un error de sintaxis)
+                        ...(nodeData || {}),
                         name: nodo.nombre,
                         description: nodeData ? nodeData.descripcion : "",
                         tipo: nodeData ? nodeData.tipo : nodo.tipo,
@@ -68,7 +96,15 @@ window.dataProcessor = {
                             value: nodo.valorEspaciador || 0.1, // ocupa espacio vertical
                         });
                     } else {
-                        nodeConfig.itemStyle = { color: this.getEnergeticColor(nodo.nombre, nodeData, config) };
+                        const color = this.getNodeColor(nodo.nombre, nodeData, config);
+                        const light = this.isLight(color);
+                        nodeConfig.category = this.getCategory(nodeData);
+                        nodeConfig.itemStyle = {
+                            color,
+                            borderColor: light ? '#333' : '#fff',
+                            borderWidth: light ? 1 : 0
+                        };
+                        nodeConfig.label = { color: light ? '#000' : '#fff' };
                     }
 
                     nodes.set(nodo.nombre, nodeConfig);
@@ -76,7 +112,8 @@ window.dataProcessor = {
             });
         });
 
-        // 2) Construir enlaces a partir de los datos (respeta dirección por source/sink y signos)
+        // 2) Construir enlaces a partir de los datos
+        const allLinks = [];
         (data.Datos || []).forEach((padre) => {
             const padreNode = nodes.get(padre["Nodo Padre"]);
             if (!padreNode) return;
@@ -88,23 +125,42 @@ window.dataProcessor = {
                 if (!value || Number.isNaN(value) || value === 0) return;
 
                 let source, target;
-                if (value < 0 || (padreNode && padreNode.flow === "sink")) {
-                    source = hijo["Nodo Hijo"]; // entra al padre
+                if (config.flowPolicy === 'fixedParentToChild') {
+                    source = padre["Nodo Padre"];
+                    target = hijo["Nodo Hijo"];
+                } else if (value < 0 || (padreNode && padreNode.flow === "sink")) {
+                    source = hijo["Nodo Hijo"];
                     target = padre["Nodo Padre"];
                 } else {
-                    source = padre["Nodo Padre"]; // sale del padre
+                    source = padre["Nodo Padre"];
                     target = hijo["Nodo Hijo"];
                 }
 
-                const energeticName = hijo["Nodo Hijo"];
-                const energeticColor = this.getEnergeticColor(energeticName, hijo, config);
+                const childNode = nodes.get(hijo["Nodo Hijo"]);
+                const linkColor = this.getNodeColor(hijo["Nodo Hijo"], hijo, config, padreNode);
 
-                links.push({
+                const link = {
                     source,
                     target,
+                    rawValue: value,
                     value: Math.abs(value),
-                    lineStyle: { color: energeticColor, opacity: 0.7 },
-                });
+                    sourceCategory: padreNode ? padreNode.category : undefined,
+                    targetCategory: childNode ? childNode.category : undefined,
+                    lineStyle: { color: linkColor, opacity: 0.7 }
+                };
+
+                if (config.curvenessAuto) {
+                    const sc = nodes.get(source);
+                    const tc = nodes.get(target);
+                    if (sc && tc) {
+                        const diff = Math.abs((sc.columna||0) - (tc.columna||0));
+                        if (diff > 1) {
+                            link.lineStyle.curveness = Math.max(0.1, config.layoutConfig.curveness - 0.15*(diff-1));
+                        }
+                    }
+                }
+
+                allLinks.push(link);
             });
         });
 
@@ -112,7 +168,7 @@ window.dataProcessor = {
         const nodeInflow = new Map();
         const nodeOutflow = new Map();
 
-        links.forEach((lk) => {
+        allLinks.forEach((lk) => {
             nodeInflow.set(lk.target, (nodeInflow.get(lk.target) || 0) + lk.value);
             nodeOutflow.set(lk.source, (nodeOutflow.get(lk.source) || 0) + lk.value);
         });
@@ -130,7 +186,9 @@ window.dataProcessor = {
             node.outflow = outflow;
         });
 
-        return { nodes: Array.from(nodes.values()), links };
+        const visibleLinks = allLinks.filter(lk => lk.value >= (config.linkMinValue || 0));
+
+        return { nodes: Array.from(nodes.values()), links: visibleLinks };
     },
 
     findNodeData(data, nodeName, nodeType) {
