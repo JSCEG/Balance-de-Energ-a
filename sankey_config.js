@@ -1,89 +1,106 @@
 // Configuración flexible para el Sankey
 // Puedes modificar columnas, nodos, filtros, posiciones y enlaces
 window.sankeyConfig = {
+    // === Colores por energético — optimizados para fondo blanco ===
     energeticColors: {
-        "Carbón mineral": "#36454F",
-        "Petróleo crudo": "#772F1A",
-        "Condensados": "#58508D",
-        "Gas natural": "#15616D",
-        "Energía Nuclear": "#8C564B",
-        "Energía Hidráulica": "#00A1DB",
-        "Geoenergía": "#E377C2",
-        "Energía solar": "#FFD700",
-        "Energía eólica": "#2ca02c",
-        "Bagazo de caña": "#A07E5F",
-        "Leña": "#6B4226",
-        "Biogás": "#BC987E",
-        "Coque de carbón": "#000000",
-        "Coque de petróleo": "#231F20",
-        "Gas licuado de petróleo": "#F4A261",
-        "Gasolinas y naftas": "#FF7F0E",
-        "Querosenos": "#FFBF00",
-        "Diesel": "#D62728",
-        "Combustóleo": "#A22C29",
-        "Otros energéticos": "#BDB76B",
-        "Gas natural seco": "#2A9D8F",
-        "Energía eléctrica": "#FCEE0C",
-        "Producción": "#4CAF50",
-        "Importación EP": "#2196F3",
-        "Importación ES": "#03A9F4",
-        "Variación de Inventarios EP (+)": "#FFC107",
-        "Variación de Inventarios ES (+)": "#FFD54F",
-        "Exportación EP": "#F44336",
-        "Exportación ES": "#E57373",
-        "Energía No Aprovechada EP": "#9C27B0",
-        "Energía No Aprovechada ES": "#BA68C8",
-        "Consumo Propio del Sector EP": "#607D8B",
-        "Consumo Propio del Sector ES": "#90A4AE",
-        "Diferencia Estadística EP (+)": "#795548",
-        "Diferencia Estadística ES (+)": "#A1887F",
-        "Pérdidas técnicas por transporte, transmisión y distribución EP": "#FF9800",
-        "Pérdidas técnicas por transporte, transmisión y distribución ES": "#FFB74D",
-        "Oferta Interna Bruta EP": "#59A14F",
-        "Oferta Interna Bruta ES": "#4E79A7",
-        "Variación de Inventarios EP (-)": "#FF8C00",
-        "Diferencia Estadística EP (-)": "#8B4513",
-        "Variación de Inventarios ES (-)": "#FFA07A",
-        "Diferencia Estadística ES (-)": "#CD853F",
-        "Coquizadoras y Hornos": "#696969",
-        "Plantas de Gas y Fraccionadoras": "#808080",
-        "Refinerías y Despuntadoras": "#A9A9A9",
-        "Centrales Eléctricas": "#CCCC00",
-        "Industrial": "#4682B4",
-        "Transporte": "#DC143C",
-        "Agropecuario": "#228B22",
-        "Comercial": "#FF4500",
-        "Público": "#8A2BE2",
-        "Residencial": "#FF69B4",
+        // Primarios fósiles
+        "Carbón mineral": "#475569",         // slate 600 (gris azulado, alta legibilidad)
+        "Petróleo crudo": "#6E2C2C",        // marrón petróleo profundo
+        "Condensados": "#6B5FA8",           // púrpura petróleo/condensados
+        "Gas natural": "#1F7A8C",           // teal profundo (gas)
+
+        // Primarios no fósiles
+        "Energía Nuclear": "#7D3C98",       // púrpura nuclear
+        "Energía Hidráulica": "#1E88E5",    // azul hidráulica
+        "Geoenergía": "#C2185B",            // magenta geotermia
+        "Energía solar": "#F59E0B",         // ámbar solar (más oscuro que amarillo puro)
+        "Energía eólica": "#2BAE66",        // verde-azulado eólico
+        "Bagazo de caña": "#A47149",        // marrón bagazo
+        "Leña": "#6B4226",                  // café madera
+        "Biogás": "#7CB342",                // verde biogás
+
+        // Sólidos/Coques
+        "Coque de carbón": "#111827",       // casi negro
+        "Coque de petróleo": "#2C2C2C",     // gris muy oscuro
+
+        // Secundarios derivados del petróleo/gas
+        "Gas licuado de petróleo": "#FB8C00", // naranja LPG
+        "Gasolinas y naftas": "#F97316",      // naranja vivo gasolinas
+        "Querosenos": "#D97706",              // ámbar queroseno
+        "Diesel": "#DC2626",                  // rojo diésel
+        "Combustóleo": "#7F1D1D",            // rojo vino pesado
+        "Gas natural seco": "#2A9D8F",       // teal gas procesado
+
+        // Electricidad (con borde recomendado, ver sección 2)
+        "Energía eléctrica": "#FFD60A",      // amarillo eléctrico legible con borde oscuro
+
+        // Contenedores / flujos sistémicos (neutros coherentes)
+        "Producción": "#22A06B",
+        "Importación EP": "#1D4ED8",
+        "Importación ES": "#2563EB",
+        "Variación de Inventarios EP (+)": "#B45309",
+        "Variación de Inventarios ES (+)": "#D97706",
+        "Exportación EP": "#E11D48",
+        "Exportación ES": "#F43F5E",
+        "Energía No Aprovechada EP": "#8E44AD",
+        "Energía No Aprovechada ES": "#9B59B6",
+        "Consumo Propio del Sector EP": "#546E7A",
+        "Consumo Propio del Sector ES": "#78909C",
+        "Diferencia Estadística EP (+)": "#6D4C41",
+        "Diferencia Estadística ES (+)": "#8D6E63",
+        "Pérdidas técnicas por transporte, transmisión y distribución EP": "#FB923C",
+        "Pérdidas técnicas por transporte, transmisión y distribución ES": "#FDBA74",
+        "Oferta Interna Bruta EP": "#2E7D32",
+        "Oferta Interna Bruta ES": "#1E3A8A",
+        "Variación de Inventarios EP (-)": "#EA580C",
+        "Diferencia Estadística EP (-)": "#8B5E3C",
+        "Variación de Inventarios ES (-)": "#F97316",
+        "Diferencia Estadística ES (-)": "#A47149",
+
+        // Transformación — plantas (escala de grises-amarillos técnica, homogénea)
+        "Coquizadoras y Hornos": "#6B7280",
+        "Plantas de Gas y Fraccionadoras": "#737373",
+        "Refinerías y Despuntadoras": "#525252",
+        "Centrales Eléctricas": "#A3A21E",
+        "Carboeléctrica": "#4B5563",
+        "Térmica Convencional": "#615D5D",
+        "Combustión Interna": "#7C7C7C",
+        "Turbogás": "#5B5B5B",
+        "Ciclo Combinado": "#3F3F46",
+        "Nucleoeléctrica": "#6B21A8",
+        "Cogeneración": "#0EA5E9",
+        "Geotérmica": "#B91C1C",
+        "Eólica": "#22C55E",
+        "Solar Fotovoltaica": "#F59E0B",
+
+        // Demanda por sectores
+        "Industrial": "#1F77B4",
+        "Transporte": "#D62728",
+        "Agropecuario": "#2E7D32",
+        "Comercial": "#F97316",
+        "Público": "#7C3AED",
+        "Residencial": "#EC4899",
         "Petroquímica PEMEX": "#8B0000",
         "Otras ramas económicas": "#6A5ACD",
-        "Oferta Total": "#666666",
-        "Exportación": "#666666",
-        "Energía No Aprovechada": "#666666",
-        "Total Transformación": "#666666",
-        "Carboeléctrica": "#666666",
-        "Térmica Convencional": "#666666",
-        "Combustión Interna": "#666666",
-        "Turbogás": "#666666",
-        "Ciclo Combinado": "#666666",
-        "Nucleoeléctrica": "#666666",
-        "Cogeneración": "#666666",
-        "Geotérmica": "#666666",
-        "Eólica": "#666666",
-        "Solar Fotovoltaica": "#666666",
-        "Total Consumo del Sector": "#666666",
-        "Consumo final total": "#666666",
-        "Consumo final no energético": "#666666",
-        "Consumo final energético": "#666666",
-        "Producción bruta energía secundaria": "#666666",
-        "Pérdidas en transporte y transmisión por energético": "#666666",
-        "Pérdidas en distribución por energético": "#666666",
-        "Pérdidas no técnicas por energético": "#666666",
-        "Diferencia Estadística": "#666666",
-        "Pérdidas ES": "#666666",
-        "Pérdidas EP": "#666666",
-        "V.I. y Dif. Est. EP": "#666666",
-        "V.I. y Dif. Est. ES": "#666666",
+
+        // Totales y agregados (neutros discretos)
+        "Oferta Total": "#6B7280",
+        "Exportación": "#6B7280",
+        "Energía No Aprovechada": "#6B7280",
+        "Total Transformación": "#6B7280",
+        "Total Consumo del Sector": "#6B7280",
+        "Consumo final total": "#6B7280",
+        "Consumo final no energético": "#6B7280",
+        "Consumo final energético": "#6B7280",
+        "Producción bruta energía secundaria": "#6B7280",
+        "Pérdidas en transporte y transmisión por energético": "#9CA3AF",
+        "Pérdidas en distribución por energético": "#A8A29E",
+        "Pérdidas no técnicas por energético": "#9E9E9E",
+        "Diferencia Estadística": "#8D8D8D",
+        "Pérdidas ES": "#8D8D8D",
+        "Pérdidas EP": "#8D8D8D",
+        "V.I. y Dif. Est. EP": "#8D8D8D",
+        "V.I. y Dif. Est. ES": "#8D8D8D",
     },
     // Colores para indicadores de eficiencia
     efficiencyColors: {
@@ -93,7 +110,11 @@ window.sankeyConfig = {
     },
     // Configuración general del layout
     layoutConfig: {
-        nodeAlign: 'justify', nodeGap: 12, nodeWidth: 22, layoutIterations: 0, curveness: 0.7
+        nodeAlign: 'justify',
+        nodeGap: 10,
+        nodeWidth: 22,
+        layoutIterations: 0,
+        curveness: 0.7
     },
     columnas: [
         {
@@ -300,16 +321,16 @@ window.sankeyConfig = {
     ],
     // Títulos/etiquetas de columnas (ajusta left en % y top en px)
     columnLabels: [
-     { id: 'col-ep', text: 'FEP', left: '5%', top: 80 },
+        { id: 'col-ep', text: 'FEP', left: '5%', top: 80 },
         { id: 'col-origen', text: 'Energéticos Primarios', left: '10%', top: 80 },
         { id: 'col-origen', text: 'Energéticos Secundarios', left: '43%', top: 80 },
-         { id: 'col-salidas-ep', text: 'Transformaciones', left: '26%', top: 80},
+        { id: 'col-salidas-ep', text: 'Transformaciones', left: '26%', top: 80 },
         // { id: 'col-transform', text: 'Transformaciones', left: '40%', top: 8 },
         // { id: 'col-origen-es', text: 'Origen ES', left: '52%', top: 8 },
         // { id: 'col-es', text: 'Energía Secundaria', left: '64%', top: 8 },
         // { id: 'col-ce', text: 'Centrales Eléctricas', left: '76%', top: 8 },
         // { id: 'col-ee', text: 'Energía Eléctrica', left: '84%', top: 8 },
         // { id: 'col-salidas-es', text: 'Salidas ES', left: '90%', top: 8 },
-         { id: 'col-sectores', text: 'Usos Finales', left: '76%', top: 80 },
+        { id: 'col-sectores', text: 'Usos Finales', left: '76%', top: 80 },
     ],
 };
