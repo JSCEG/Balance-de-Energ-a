@@ -111,7 +111,7 @@ window.sankeyConfig = {
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'justify',
-        nodeGap: 10,
+        nodeGap: 16,
         nodeWidth: 22,
         layoutIterations: 0,
         curveness: 0.7
@@ -119,10 +119,14 @@ window.sankeyConfig = {
     // Parámetros de comportamiento/legibilidad
     colorBy: 'child',               // 'child' | 'parent' | 'category'
     categoryColors: {               // usado cuando colorBy === 'category'
-        'Primarios': '#1f77b4',
-        'Secundarios': '#ff7f0e',
-        'Transformación': '#2ca02c',
-        'Demanda': '#d62728'
+        'Fuentes Primarias': '#2E7D32',        // Verde oscuro para fuentes primarias
+        'Fuentes Secundarias': '#1565C0',      // Azul para fuentes secundarias  
+        'Energéticos Primarios': '#388E3C',    // Verde medio para energéticos primarios
+        'Energéticos Secundarios': '#1976D2',  // Azul medio para energéticos secundarios
+        'Transformación': '#F57C00',           // Naranja para transformación
+        'Sectores de Consumo': '#D32F2F',      // Rojo para sectores de consumo
+        'Pérdidas y Exportaciones': '#7B1FA2', // Púrpura para pérdidas y exportaciones
+        'Otros': '#616161'                     // Gris para otros
     },
     linkMinValue: 0,                // no mostrar enlaces menores a este valor
     flowPolicy: 'bySign',           // 'bySign' | 'fixedParentToChild'

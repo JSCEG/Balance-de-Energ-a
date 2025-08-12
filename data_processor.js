@@ -11,14 +11,52 @@ window.dataProcessor = {
         return l > 186; // umbral típico
     },
 
-    // Categoría básica para leyenda
-    getCategory(nodeData) {
-        if (!nodeData || !nodeData.tipo) return 'Primarios';
-        const t = nodeData.tipo.toLowerCase();
-        if (t.includes('primaria')) return 'Primarios';
-        if (t.includes('secundaria')) return 'Secundarios';
-        if (t.includes('transform') || t.includes('central')) return 'Transformación';
-        return 'Demanda';
+    // Categoría mejorada para filtros más específicos
+    getCategory(nodeData, nodeName) {
+        if (!nodeData && !nodeName) return 'Otros';
+        
+        // Categorías por nombre de nodo (nodos padre principales)
+        if (nodeName) {
+            // Fuentes de energía primaria
+            if (nodeName.includes('Importación EP') || nodeName.includes('Producción') || 
+                nodeName.includes('V.I. y Dif. Est. EP')) {
+                return 'Fuentes Primarias';
+            }
+            
+            // Fuentes de energía secundaria  
+            if (nodeName.includes('Importación ES') || nodeName.includes('V.I. y Dif. Est. ES')) {
+                return 'Fuentes Secundarias';
+            }
+            
+            // Transformaciones
+            if (nodeName.includes('Coquizadoras') || nodeName.includes('Plantas de Gas') || 
+                nodeName.includes('Refinerías') || nodeName.includes('Centrales Eléctricas')) {
+                return 'Transformación';
+            }
+            
+            // Sectores de consumo
+            if (nodeName.includes('Industrial') || nodeName.includes('Transporte') || 
+                nodeName.includes('Agropecuario') || nodeName.includes('Comercial') || 
+                nodeName.includes('Público') || nodeName.includes('Residencial') ||
+                nodeName.includes('Consumo final')) {
+                return 'Sectores de Consumo';
+            }
+            
+            // Pérdidas y ajustes
+            if (nodeName.includes('Pérdidas') || nodeName.includes('Exportación') || 
+                nodeName.includes('Energía No Aprovechada')) {
+                return 'Pérdidas y Exportaciones';
+            }
+        }
+        
+        // Categorías por tipo de energético (nodos hijo)
+        if (nodeData && nodeData.tipo) {
+            const t = nodeData.tipo.toLowerCase();
+            if (t.includes('primaria')) return 'Energéticos Primarios';
+            if (t.includes('secundaria')) return 'Energéticos Secundarios';
+        }
+        
+        return 'Otros';
     },
     // Determina si un nombre corresponde a un energético específico (no contenedor)
     isSpecificEnergetic(nodeName) {
@@ -98,13 +136,13 @@ window.dataProcessor = {
                     } else {
                         const color = this.getNodeColor(nodo.nombre, nodeData, config);
                         const light = this.isLight(color);
-                        nodeConfig.category = this.getCategory(nodeData);
+                        nodeConfig.category = this.getCategory(nodeData, nodo.nombre);
                         nodeConfig.itemStyle = {
                             color,
                             borderColor: light ? '#333' : '#fff',
                             borderWidth: light ? 1 : 0
                         };
-                        nodeConfig.label = { color: light ? '#000' : '#fff' };
+                        nodeConfig.label = { color: '#000' };
                     }
 
                     nodes.set(nodo.nombre, nodeConfig);
