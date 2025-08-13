@@ -2813,6 +2813,61 @@
 
                     console.log('Mostrando valores PJ para nodo principal:', nodeName, 'y', connectedNodes.size - 1, 'nodos conectados');
                 }
+                
+                // Mostrar también las etiquetas de enlaces conectados
+                showLinkLabels(nodeName);
+            }
+
+            // Función para mostrar etiquetas en enlaces conectados a un nodo específico
+            function showLinkLabels(nodeName) {
+                // Obtener enlaces conectados al nodo especificado
+                const connectedLinks = currentLinks.filter(link => 
+                    link.source === nodeName || link.target === nodeName
+                );
+
+                if (connectedLinks.length > 0) {
+                    // Actualizar la configuración de la serie para mostrar edgeLabel
+                    sankeyChart.setOption({
+                        series: [{
+                            edgeLabel: {
+                                show: true,
+                                color: '#000',
+                                fontSize: 10,
+                                fontWeight: 'bold',
+                                formatter: function (params) {
+                                    // Solo mostrar etiqueta si el enlace está conectado al nodo en focus
+                                    if (params.data.source === nodeName || params.data.target === nodeName) {
+                                        return formatNumber(params.data.value);
+                                    }
+                                    return '';
+                                },
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                borderColor: 'rgba(106, 28, 50, 0.3)',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                                padding: [2, 6, 2, 6],
+                                shadowBlur: 4,
+                                shadowColor: 'rgba(0, 0, 0, 0.15)',
+                                shadowOffsetX: 0,
+                                shadowOffsetY: 1
+                            }
+                        }]
+                    });
+
+                    console.log('Mostrando etiquetas en', connectedLinks.length, 'enlaces conectados a:', nodeName);
+                }
+            }
+
+            // Función para ocultar etiquetas de enlaces
+            function hideLinkLabels() {
+                sankeyChart.setOption({
+                    series: [{
+                        edgeLabel: {
+                            show: false
+                        }
+                    }]
+                });
+                console.log('Ocultando todas las etiquetas de enlaces');
             }
 
             // Función para ocultar información del nodo
@@ -2850,6 +2905,9 @@
                         }]
                     });
                 }
+                
+                // Ocultar también las etiquetas de enlaces
+                hideLinkLabels();
             }
 
             // Nueva función de filtros mejorada
@@ -3134,11 +3192,21 @@
             function handleSearch() {
                 const term = searchInput.value.trim().toLowerCase();
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                if (!term) return;
+                
+                // Si no hay término de búsqueda, ocultar etiquetas de enlaces
+                if (!term) {
+                    hideLinkLabels();
+                    return;
+                }
+                
                 const option = sankeyChart.getOption();
                 const nodes = option.series[0].data;
                 const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
-                if (idx === -1) return;
+                if (idx === -1) {
+                    hideLinkLabels();
+                    return;
+                }
+                
                 const name = nodes[idx].name;
                 const neighbors = new Set();
                 currentLinks.forEach(l => {
@@ -3147,6 +3215,9 @@
                 });
                 sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
                 nodes.forEach((n, i) => { if (neighbors.has(n.name)) sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i }); });
+                
+                // Mostrar etiquetas de enlaces para el nodo encontrado
+                showLinkLabels(name);
             }
 
             // --- Inicialización ---
@@ -3644,6 +3715,7 @@
             clearSearchBtn.addEventListener('click', () => {
                 searchInput.value = '';
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                hideLinkLabels(); // Ocultar etiquetas de enlaces al limpiar búsqueda
             });
 
             // Agregar funcionalidad para limpiar búsqueda con Escape
