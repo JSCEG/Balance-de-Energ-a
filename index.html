@@ -258,6 +258,16 @@
             z-index: 1;
         }
 
+        .card .controls {
+            margin-bottom: 1.5rem;
+            padding: 0;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: none;
+        }
+
         .card::before {
             content: '';
             position: absolute;
@@ -2267,20 +2277,12 @@
 
 
 
-    <div class="container">
+    <div id="color-legend-container" class="card" style="margin-bottom: 1rem;">
         <div class="controls">
             <!-- Datos -->
             <div class="control-section compact">
-                <div class="control-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                        viewBox="0 0 16 16">
-                        <path
-                            d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
-                    </svg>
-                    Datos
-                </div>
                 <div class="control-group tooltip-container">
-                    <label for="year-selector">Año:</label>
+                    <label for="year-selector" style="display: block; margin-bottom: 0.5rem;">Año:</label>
                     <div class="input-wrapper year-selector">
                         <select id="year-selector"></select>
                     </div>
@@ -2290,20 +2292,12 @@
 
             <!-- Búsqueda -->
             <div class="control-section compact">
-                <div class="control-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                        viewBox="0 0 16 16">
-                        <path
-                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                    </svg>
-                    Buscar
-                </div>
-                <div class="control-group tooltip-container">
+                <div class="control-group tooltip-container" style="display: flex; align-items: center;">
                     <div class="input-wrapper search-input">
                         <input type="text" id="search-input" list="node-list" placeholder="Buscar energético">
                         <datalist id="node-list"></datalist>
                     </div>
-                    <button id="clear-search" class="btn btn-secondary">
+                    <button id="clear-search" class="btn btn-secondary" style="margin-left: 0.5rem;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
@@ -2316,16 +2310,8 @@
 
             <!-- Controles -->
             <div class="control-section compact">
-                <div class="control-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                        viewBox="0 0 16 16">
-                        <path
-                            d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z" />
-                    </svg>
-                    Vista
-                </div>
                 <div class="control-group">
-                    <div class="toggle-container tooltip-container">
+                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Zoom</span>
                             <div class="toggle-switch">
@@ -2335,7 +2321,7 @@
                         </label>
                         <div class="tooltip">Zoom y arrastre</div>
                     </div>
-                    <div class="toggle-container tooltip-container">
+                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Foco</span>
                             <div class="toggle-switch">
@@ -2345,7 +2331,7 @@
                         </label>
                         <div class="tooltip">Mantener selección</div>
                     </div>
-                    <div class="toggle-container tooltip-container">
+                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Alertas</span>
                             <div class="toggle-switch">
@@ -2355,7 +2341,7 @@
                         </label>
                         <div class="tooltip">Indicadores de eficiencia</div>
                     </div>
-                    <div class="toggle-container tooltip-container">
+                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Info</span>
                             <div class="toggle-switch">
@@ -2363,6 +2349,9 @@
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
+                        <div class="tooltip">Descripciones detalladas</div>
+                    </div>
+                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Patrones</span>
                             <div class="toggle-switch">
@@ -2387,29 +2376,11 @@
 
             <!-- Exportar -->
             <div class="control-section compact">
-                <div class="control-section-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                        viewBox="0 0 16 16">
-                        <path
-                            d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                        <path
-                            d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
-                    </svg>
-                    Exportar
-                </div>
-                <div class="control-group">
+                <div class="control-group" style="display: flex; flex-direction: column; align-items: center;">
                     <div class="buttons export-buttons">
                         <div class="tooltip-container">
                             <button id="exportar" class="btn btn-primary">PNG</button>
                             <div class="tooltip">Imagen PNG estándar</div>
-                        </div>
-                        <div class="tooltip-container">
-                            <button id="export-png2" class="btn btn-secondary">2x</button>
-                            <div class="tooltip">PNG alta resolución</div>
-                        </div>
-                        <div class="tooltip-container">
-                            <button id="export-png4" class="btn btn-secondary">4x</button>
-                            <div class="tooltip">PNG muy alta resolución</div>
                         </div>
                         <div class="tooltip-container">
                             <button id="export-svg" class="btn btn-secondary">SVG</button>
@@ -2436,44 +2407,11 @@
                 <div class="tooltip">Mostrar/ocultar panel de filtros de energéticos</div>
             </div>
         </div>
-    </div>
-
-    <!-- Panel lateral flotante para filtros -->
-    <div id="filters-panel" class="filters-panel">
-        <div class="filters-panel-header">
-            <div class="filters-panel-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z" />
-                </svg>
-                Filtros de Energéticos
-            </div>
-            <button id="close-filters-btn" class="filters-panel-close">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                </svg>
-            </button>
-        </div>
-        <div class="filters-panel-content">
-            <p class="filters-panel-description">Haz clic en cualquier energético para filtrarlo en el diagrama. Los
-                filtros activos se muestran resaltados.</p>
-            <div id="legend-container">
-                <!-- Filtros interactivos de energéticos -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Overlay para cerrar el panel -->
-    <div id="filters-overlay" class="filters-overlay"></div>
-
-    <!-- Leyenda de Colores - Ahora arriba del Sankey -->
-    <div id="color-legend-container" class="card" style="margin-bottom: 1rem;">
         <h3 style="margin-bottom: 1rem; color: var(--color-guinda); font-size: 1.1rem;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
                 <path d="M8.235 1.559a.5.5 0 0 0-.47 0L1.732 4.058a.5.5 0 0 0 0 .884l6.033 2.499a.5.5 0 0 0 .47 0l6.033-2.499a.5.5 0 0 0 0-.884L8.235 1.559zM7.5 9.983V15.5a.5.5 0 0 0 .235.424l6.033 2.499a.5.5 0 0 0 .732-.424V11.983l-6.5 2.683a.5.5 0 0 1-.47 0l-6.5-2.683V17.5a.5.5 0 0 0 .732.424l6.033-2.499A.5.5 0 0 0 8.5 15.5V9.983z"/>
             </svg>
-            Leyenda de Colores por Energético
+            Balance Energético por Tipo
         </h3>
         <div id="color-legend-content" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; justify-content: space-between;">
             <!-- Se llenará dinámicamente -->
@@ -3454,7 +3392,7 @@
                                     color: var(--color-gris-oscuro);
                                     font-weight: 500;
                                     line-height: 1.2;
-                                ">${energetico}</span>
+                                ">${truncateText(energetico, 25)}</span>
                                 <div class="legend-actions">
                                     <i class="fas fa-info-circle legend-info-btn" data-energetico="${energetico}"></i>
                                     <i class="fas fa-download legend-export-btn" data-energetico="${energetico}"></i>
@@ -3504,50 +3442,52 @@
 
             // Función para exportar gráfico con leyenda
             function exportChartWithLegend(format = 'png', pixelRatio = 3) {
-                // Obtener la imagen del gráfico
-                const chartUrl = sankeyChart.getDataURL({ 
-                    type: format, 
-                    pixelRatio: pixelRatio, 
-                    backgroundColor: '#fff' 
-                });
+                setTimeout(() => {
+                    // Obtener la imagen del gráfico
+                    const chartUrl = sankeyChart.getDataURL({ 
+                        type: format, 
+                        pixelRatio: pixelRatio, 
+                        backgroundColor: '#fff' 
+                    });
 
-                // Crear un canvas para combinar gráfico y leyenda
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Crear imagen del gráfico
-                const chartImg = new Image();
-                chartImg.onload = function() {
-                    // Configurar dimensiones del canvas
-                    const chartWidth = chartImg.width;
-                    const chartHeight = chartImg.height;
-                    const legendHeight = 200 * pixelRatio; // Altura para la leyenda
-                    const padding = 20 * pixelRatio;
+                    // Crear un canvas para combinar gráfico y leyenda
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
                     
-                    canvas.width = chartWidth;
-                    canvas.height = chartHeight + legendHeight + padding;
-                    
-                    // Fondo blanco
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Dibujar el gráfico
-                    ctx.drawImage(chartImg, 0, 0);
-                    
-                    // Dibujar la leyenda
-                    drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio);
+                    // Crear imagen del gráfico
+                    const chartImg = new Image();
+                    chartImg.onload = function() {
+                        // Configurar dimensiones del canvas
+                        const chartWidth = chartImg.width;
+                        const chartHeight = chartImg.height;
+                        const legendHeight = 200 * pixelRatio; // Altura para la leyenda
+                        const padding = 20 * pixelRatio;
+                        
+                        canvas.width = chartWidth;
+                        canvas.height = chartHeight + legendHeight + padding;
+                        
+                        // Fondo blanco
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Dibujar el gráfico
+                        ctx.drawImage(chartImg, 0, 0);
+                        
+                        // Dibujar la leyenda
+                        drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio);
 
-                    // Detectar y ajustar solapamiento de etiquetas
-                    adjustLabelOverlaps(ctx, pixelRatio);
-                    
-                    // Descargar la imagen combinada
-                    const finalUrl = canvas.toDataURL('image/png');
-                    const a = document.createElement('a');
-                    a.href = finalUrl;
-                    a.download = `balance-energia-${yearSelector.value}-con-leyenda.png`;
-                    a.click();
-                };
-                chartImg.src = chartUrl;
+                        // Detectar y ajustar solapamiento de etiquetas
+                        adjustLabelOverlaps(ctx, pixelRatio);
+                        
+                        // Descargar la imagen combinada
+                        const finalUrl = canvas.toDataURL('image/png');
+                        const a = document.createElement('a');
+                        a.href = finalUrl;
+                        a.download = `balance-energia-${yearSelector.value}-con-leyenda.png`;
+                        a.click();
+                    };
+                    chartImg.src = chartUrl;
+                }, 500);
             }
 
             function adjustLabelOverlaps(ctx, pixelRatio) {
@@ -3584,6 +3524,13 @@
                 }
             }
 
+            function truncateText(text, maxLength) {
+                if (text.length <= maxLength) {
+                    return text;
+                }
+                return text.substr(0, maxLength) + '...';
+            }
+
             // Función para dibujar la leyenda en el canvas
             function drawLegendOnCanvas(ctx, x, y, width, height, pixelRatio) {
                 const colors = window.sankeyConfig.energeticColors;
@@ -3605,7 +3552,7 @@
                 // Título de la leyenda
                 ctx.fillStyle = '#6a1c32';
                 ctx.font = `bold ${fontSize + 2}px Arial`;
-                ctx.fillText('Leyenda de Colores por Energético', startX, y + 20 * pixelRatio);
+                ctx.fillText('Leyenda', startX, y + 20 * pixelRatio);
 
                 // Dibujar elementos de la leyenda
                 ctx.font = `${fontSize}px Arial`;
@@ -3841,12 +3788,6 @@
                 };
             };
 
-            document.getElementById('export-png2').onclick = function () {
-                exportChartWithLegend('png', 2);
-            };
-            document.getElementById('export-png4').onclick = function () {
-                exportChartWithLegend('png', 4);
-            };
             document.getElementById('export-svg').onclick = function () {
                 const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
                 const a = document.createElement('a');
@@ -3881,7 +3822,7 @@
                     if (option && option.series && option.series[0] && option.series[0].data) {
                         const focusedNode = option.series[0].data[focusedNodeIndex];
                         if (focusedNode && !focusedNode.name.includes('SPACER')) {
-                            fileName = `${baseType}_${focusedNode.name.replace(/[^a-zA-Z0-9]/g, '_')}_${year}`;
+                            fileName = `BNE-${year}-${focusedNode.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
                         }
                     }
                 }
@@ -3894,7 +3835,7 @@
                         if (nodeNameElement && nodeNameElement.textContent) {
                             const nodeName = nodeNameElement.textContent.trim();
                             if (nodeName) {
-                                fileName = `${baseType}_${nodeName.replace(/[^a-zA-Z0-9]/g, '_')}_${year}`;
+                                fileName = `BNE-${year}-${nodeName.replace(/[^a-zA-Z0-9]/g, '_')}`;
                             }
                         }
                     }
@@ -3905,13 +3846,13 @@
                     const searchInput = document.getElementById('search-input');
                     if (searchInput && searchInput.value.trim()) {
                         const searchTerm = searchInput.value.trim();
-                        fileName = `${baseType}_${searchTerm.replace(/[^a-zA-Z0-9]/g, '_')}_${year}`;
+                        fileName = `BNE-${year}-${searchTerm.replace(/[^a-zA-Z0-9]/g, '_')}`;
                     }
                 }
                 
                 // Nombre por defecto si no hay filtros ni selecciones
                 if (!fileName) {
-                    fileName = `Balance_Nacional_de_Energia_${year}`;
+                    fileName = `BNE-${year}`;
                 }
                 
                 return `${fileName}.${extension}`;
@@ -4966,7 +4907,8 @@
                             shadowBlur: 3,
                             shadowColor: 'rgba(0, 0, 0, 0.1)',
                             shadowOffsetX: 0,
-                            shadowOffsetY: 1
+                            shadowOffsetY: 1,
+                            opacity: 1
                         },
                         labelLayout: function (params) {
                             if (params.dataType === 'edge') {
