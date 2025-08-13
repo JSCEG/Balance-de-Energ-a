@@ -2795,6 +2795,8 @@
                                     fontWeight: 'normal',
                                     color: '#333',
                                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    borderColor: 'rgba(106, 28, 50, 0.3)',
+                                    borderWidth: 1,
                                     borderRadius: 4,
                                     padding: [4, 8],
                                     shadowBlur: 2,
@@ -2831,25 +2833,29 @@
                         series: [{
                             edgeLabel: {
                                 show: true,
-                                color: '#000',
-                                fontSize: 10,
-                                fontWeight: 'bold',
                                 formatter: function (params) {
                                     // Solo mostrar etiqueta si el enlace está conectado al nodo en focus
                                     if (params.data.source === nodeName || params.data.target === nodeName) {
-                                        return formatNumber(params.data.value);
+                                        return '{connected|' + formatNumber(params.data.value) + '}';
                                     }
                                     return '';
                                 },
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                borderColor: 'rgba(106, 28, 50, 0.3)',
-                                borderWidth: 1,
-                                borderRadius: 4,
-                                padding: [2, 6, 2, 6],
-                                shadowBlur: 4,
-                                shadowColor: 'rgba(0, 0, 0, 0.15)',
-                                shadowOffsetX: 0,
-                                shadowOffsetY: 1
+                                rich: {
+                                    connected: {
+                                        color: '#000',
+                                        fontSize: 8,
+                                        fontWeight: 'italic',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                        borderColor: 'rgba(106, 28, 50, 0.3)',
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                        padding: [2, 6, 2, 6],
+                                        shadowBlur: 4,
+                                        shadowColor: 'rgba(0, 0, 0, 0.15)',
+                                        shadowOffsetX: 0,
+                                        shadowOffsetY: 1
+                                    }
+                                }
                             }
                         }]
                     });
@@ -3191,7 +3197,10 @@
 
             function handleSearch() {
                 const term = searchInput.value.trim().toLowerCase();
+                
+                // Primero limpiar cualquier highlight previo
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 
                 // Si no hay término de búsqueda, ocultar etiquetas de enlaces
                 if (!term) {
@@ -3202,19 +3211,29 @@
                 const option = sankeyChart.getOption();
                 const nodes = option.series[0].data;
                 const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
+                
                 if (idx === -1) {
                     hideLinkLabels();
                     return;
                 }
                 
                 const name = nodes[idx].name;
-                const neighbors = new Set();
-                currentLinks.forEach(l => {
-                    if (l.source === name) neighbors.add(l.target);
-                    if (l.target === name) neighbors.add(l.source);
+                
+                // Primero hacer focus en el nodo y sus adyacentes
+                sankeyChart.dispatchAction({ 
+                    type: 'focusNodeAdjacency', 
+                    seriesIndex: 0, 
+                    dataIndex: idx 
                 });
-                sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
-                nodes.forEach((n, i) => { if (neighbors.has(n.name)) sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i }); });
+                
+                // Luego hacer highlight específico del nodo encontrado para mayor visibilidad
+                setTimeout(() => {
+                    sankeyChart.dispatchAction({ 
+                        type: 'highlight', 
+                        seriesIndex: 0, 
+                        dataIndex: idx 
+                    });
+                }, 100);
                 
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
@@ -3715,6 +3734,7 @@
             clearSearchBtn.addEventListener('click', () => {
                 searchInput.value = '';
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 hideLinkLabels(); // Ocultar etiquetas de enlaces al limpiar búsqueda
             });
 
@@ -3722,7 +3742,9 @@
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     searchInput.value = '';
-                    handleSearch(); // Esto limpiará la selección
+                    sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                    sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                    hideLinkLabels();
                     searchInput.blur(); // Quitar foco del input
                 }
             });
