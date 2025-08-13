@@ -3222,11 +3222,13 @@
                         sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i });
                     }
                 });
+
                 currentLinks.forEach((l, i) => {
                     if (l.source === name || l.target === name) {
                         sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i, dataType: 'edge' });
                     }
                 });
+
 
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
