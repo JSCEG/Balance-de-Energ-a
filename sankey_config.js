@@ -3,65 +3,66 @@
 window.sankeyConfig = {
     // === Colores por energético — optimizados para fondo blanco ===
     energeticColors: {
-        // Primarios fósiles
-        "Carbón mineral": "#475569",         // slate 600 (gris azulado, alta legibilidad)
-        "Petróleo crudo": "#6E2C2C",        // marrón petróleo profundo
-        "Condensados": "#6B5FA8",           // púrpura petróleo/condensados
-        "Gas natural": "#1F7A8C",           // teal profundo (gas)
+        // Primarios fósiles (paleta Pantone - tonos oscuros para fósiles)
+        "Carbón mineral": "#171B1E",         // Neutral Black C - apropiado para carbón
+        "Petróleo crudo": "#621333",         // Pantone 7421 C - rojo oscuro para petróleo
+        "Condensados": "#9C2348",            // Pantone 7420 C - rojo vino para condensados
+        "Gas natural": "#002F2A",            // Pantone 627 C - verde muy oscuro para gas
 
-        // Primarios no fósiles
-        "Energía Nuclear": "#7D3C98",       // púrpura nuclear
-        "Energía Hidráulica": "#1E88E5",    // azul hidráulica
-        "Geoenergía": "#C2185B",            // magenta geotermia
-        "Energía solar": "#F59E0B",         // ámbar solar (más oscuro que amarillo puro)
-        "Energía eólica": "#2BAE66",        // verde-azulado eólico
-        "Bagazo de caña": "#A47149",        // marrón bagazo
-        "Leña": "#6B4226",                  // café madera
-        "Biogás": "#7CB342",                // verde biogás
+        // Primarios no fósiles (paleta Pantone - tonos más claros para renovables)
+        "Energía Nuclear": "#98989A",        // Cool Gray 7 C - gris neutro para nuclear
+        "Energía Hidráulica": "#1E5B4F",     // Pantone 626 C - verde oscuro para hidráulica
+        "Geoenergía": "#9C2348",             // Pantone 7420 C - rojo vino para geotermia
+        "Energía solar": "#E7D295",          // Pantone 7402 C - beige claro para solar
+        "Energía eólica": "#002F2A",         // Pantone 627 C - verde muy oscuro para eólica
+        "Bagazo de caña": "#A6802D",         // Pantone 1255 C - dorado para bagazo
+        "Leña": "#621333",                   // Pantone 7421 C - rojo oscuro para leña
+        "Biogás": "#1E5B4F",                 // Pantone 626 C - verde oscuro para biogás
 
-        // Sólidos/Coques
-        "Coque de carbón": "#111827",       // casi negro
-        "Coque de petróleo": "#2C2C2C",     // gris muy oscuro
+        // Sólidos/Coques (paleta Pantone - tonos muy oscuros)
+        "Coque de carbón": "#171B1E",        // Neutral Black C - negro para coque de carbón
+        "Coque de petróleo": "#002F2A",      // Pantone 627 C - verde muy oscuro para coque de petróleo
 
-        // Secundarios derivados del petróleo/gas
-        "Gas licuado de petróleo": "#FB8C00", // naranja LPG
-        "Gasolinas y naftas": "#F97316",      // naranja vivo gasolinas
-        "Querosenos": "#D97706",              // ámbar queroseno
-        "Diesel": "#DC2626",                  // rojo diésel
-        "Combustóleo": "#7F1D1D",            // rojo vino pesado
-        "Gas natural seco": "#2A9D8F",       // teal gas procesado
+        // Secundarios derivados del petróleo/gas (paleta Pantone)
+        "Gas licuado de petróleo": "#A6802D", // Pantone 1255 C - dorado para LPG
+        "Gasolinas y naftas": "#E7D295",      // Pantone 7402 C - beige claro para gasolinas
+        "Querosenos": "#98989A",              // Cool Gray 7 C - gris para querosenos
+        "Diesel": "#9C2348",                  // Pantone 7420 C - rojo vino para diesel
+        "Combustóleo": "#621333",             // Pantone 7421 C - rojo oscuro para combustóleo
+        "Gas natural seco": "#1E5B4F",       // Pantone 626 C - verde oscuro para gas procesado
+        "Otros energéticos": "#002F2A",      // Pantone 627 C - verde muy oscuro para otros
 
-        // Electricidad (con borde recomendado, ver sección 2)
-        "Energía eléctrica": "#FFD60A",      // amarillo eléctrico legible con borde oscuro
+        // Electricidad (paleta Pantone - color distintivo)
+        "Energía eléctrica": "#E7D295",      // Pantone 7402 C - beige claro distintivo para electricidad
 
-        // Contenedores / flujos sistémicos (neutros coherentes)
-        "Producción": "#22A06B",
-        "Importación EP": "#1D4ED8",
-        "Importación ES": "#2563EB",
-        "Variación de Inventarios EP (+)": "#B45309",
-        "Variación de Inventarios ES (+)": "#D97706",
-        "Exportación EP": "#E11D48",
-        "Exportación ES": "#F43F5E",
-        "Energía No Aprovechada EP": "#8E44AD",
-        "Energía No Aprovechada ES": "#9B59B6",
-        "Consumo Propio del Sector EP": "#546E7A",
-        "Consumo Propio del Sector ES": "#78909C",
-        "Diferencia Estadística EP (+)": "#6D4C41",
-        "Diferencia Estadística ES (+)": "#8D6E63",
-        "Pérdidas técnicas por transporte, transmisión y distribución EP": "#FB923C",
-        "Pérdidas técnicas por transporte, transmisión y distribución ES": "#FDBA74",
-        "Oferta Interna Bruta EP": "#2E7D32",
-        "Oferta Interna Bruta ES": "#1E3A8A",
-        "Variación de Inventarios EP (-)": "#EA580C",
-        "Diferencia Estadística EP (-)": "#8B5E3C",
-        "Variación de Inventarios ES (-)": "#F97316",
-        "Diferencia Estadística ES (-)": "#A47149",
+        // Contenedores / flujos sistémicos (paleta Pantone)
+        "Producción": "#9C2348",                    // Pantone 7420 C (R 156, G 35, B 72)
+        "Importación EP": "#621333",               // Pantone 7421 C (R 98, G 19, B 51)
+        "Importación ES": "#A6802D",               // Pantone 1255 C (R 166, G 128, B 45)
+        "Variación de Inventarios EP (+)": "#E7D295", // Pantone 7402 C (R 231, G 210, B 149)
+        "Variación de Inventarios ES (+)": "#1E5B4F", // Pantone 626 C (R 30, G 91, B 79)
+        "Exportación EP": "#002F2A",               // Pantone 627 C (R 0, G 47, B 42)
+        "Exportación ES": "#98989A",               // Pantone Cool Gray 7 C (R 152, G 152, B 154)
+        "Energía No Aprovechada EP": "#171B1E",    // Pantone Neutral Black C (R 23, G 27, B 30)
+        "Energía No Aprovechada ES": "#9C2348",    // Pantone 7420 C
+        "Consumo Propio del Sector EP": "#621333", // Pantone 7421 C
+        "Consumo Propio del Sector ES": "#A6802D", // Pantone 1255 C
+        "Diferencia Estadística EP (+)": "#E7D295", // Pantone 7402 C
+        "Diferencia Estadística ES (+)": "#1E5B4F", // Pantone 626 C
+        "Pérdidas técnicas por transporte, transmisión y distribución EP": "#002F2A", // Pantone 627 C
+        "Pérdidas técnicas por transporte, transmisión y distribución ES": "#98989A", // Cool Gray 7 C
+        "Oferta Interna Bruta EP": "#171B1E",      // Neutral Black C
+        "Oferta Interna Bruta ES": "#9C2348",      // Pantone 7420 C
+        "Variación de Inventarios EP (-)": "#621333", // Pantone 7421 C
+        "Diferencia Estadística EP (-)": "#A6802D", // Pantone 1255 C
+        "Variación de Inventarios ES (-)": "#E7D295", // Pantone 7402 C
+        "Diferencia Estadística ES (-)": "#1E5B4F", // Pantone 626 C
 
-        // Transformación — plantas (escala de grises-amarillos técnica, homogénea)
-        "Coquizadoras y Hornos": "#6B7280",
-        "Plantas de Gas y Fraccionadoras": "#737373",
-        "Refinerías y Despuntadoras": "#525252",
-        "Centrales Eléctricas": "#A3A21E",
+        // Transformación — plantas (paleta Pantone)
+        "Coquizadoras y Hornos": "#002F2A",        // Pantone 627 C
+        "Plantas de Gas y Fraccionadoras": "#98989A", // Cool Gray 7 C
+        "Refinerías y Despuntadoras": "#171B1E",   // Neutral Black C
+        "Centrales Eléctricas": "#9C2348",         // Pantone 7420 C
         "Carboeléctrica": "#4B5563",
         "Térmica Convencional": "#615D5D",
         "Combustión Interna": "#7C7C7C",
@@ -73,34 +74,34 @@ window.sankeyConfig = {
         "Eólica": "#22C55E",
         "Solar Fotovoltaica": "#F59E0B",
 
-        // Demanda por sectores
-        "Industrial": "#1F77B4",
-        "Transporte": "#D62728",
-        "Agropecuario": "#2E7D32",
-        "Comercial": "#F97316",
-        "Público": "#7C3AED",
-        "Residencial": "#EC4899",
-        "Petroquímica PEMEX": "#8B0000",
-        "Otras ramas económicas": "#6A5ACD",
+        // Demanda por sectores (paleta Pantone)
+        "Industrial": "#621333",                   // Pantone 7421 C
+        "Transporte": "#A6802D",                   // Pantone 1255 C
+        "Agropecuario": "#E7D295",                 // Pantone 7402 C
+        "Comercial": "#1E5B4F",                    // Pantone 626 C
+        "Público": "#002F2A",                      // Pantone 627 C
+        "Residencial": "#98989A",                  // Cool Gray 7 C
+        "Petroquímica PEMEX": "#171B1E",           // Neutral Black C
+        "Otras ramas económicas": "#9C2348",       // Pantone 7420 C
 
-        // Totales y agregados (neutros discretos)
-        "Oferta Total": "#6B7280",
-        "Exportación": "#6B7280",
-        "Energía No Aprovechada": "#6B7280",
-        "Total Transformación": "#6B7280",
-        "Total Consumo del Sector": "#6B7280",
-        "Consumo final total": "#6B7280",
-        "Consumo final no energético": "#6B7280",
-        "Consumo final energético": "#6B7280",
-        "Producción bruta energía secundaria": "#6B7280",
-        "Pérdidas en transporte y transmisión por energético": "#9CA3AF",
-        "Pérdidas en distribución por energético": "#A8A29E",
-        "Pérdidas no técnicas por energético": "#9E9E9E",
-        "Diferencia Estadística": "#8D8D8D",
-        "Pérdidas ES": "#8D8D8D",
-        "Pérdidas EP": "#8D8D8D",
-        "V.I. y Dif. Est. EP": "#8D8D8D",
-        "V.I. y Dif. Est. ES": "#8D8D8D",
+        // Totales y agregados (paleta Pantone - tonos neutros)
+        "Oferta Total": "#98989A",                 // Cool Gray 7 C
+        "Exportación": "#171B1E",                  // Neutral Black C
+        "Energía No Aprovechada": "#002F2A",       // Pantone 627 C
+        "Total Transformación": "#1E5B4F",         // Pantone 626 C
+        "Total Consumo del Sector": "#A6802D",     // Pantone 1255 C
+        "Consumo final total": "#621333",          // Pantone 7421 C
+        "Consumo final no energético": "#9C2348", // Pantone 7420 C
+        "Consumo final energético": "#E7D295",     // Pantone 7402 C
+        "Producción bruta energía secundaria": "#98989A", // Cool Gray 7 C
+        "Pérdidas en transporte y transmisión por energético": "#171B1E", // Neutral Black C
+        "Pérdidas en distribución por energético": "#002F2A", // Pantone 627 C
+        "Pérdidas no técnicas por energético": "#1E5B4F", // Pantone 626 C
+        "Diferencia Estadística": "#A6802D",      // Pantone 1255 C
+        "Pérdidas ES": "#621333",                  // Pantone 7421 C
+        "Pérdidas EP": "#9C2348",                  // Pantone 7420 C
+        "V.I. y Dif. Est. EP": "#E7D295",          // Pantone 7402 C
+        "V.I. y Dif. Est. ES": "#98989A",          // Cool Gray 7 C
     },
     // Colores para indicadores de eficiencia
     efficiencyColors: {
