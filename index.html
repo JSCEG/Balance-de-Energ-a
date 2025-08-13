@@ -3420,7 +3420,7 @@
                                     searchInput.value = energetico;
                                     handleSearch();
                                     setTimeout(() => {
-                                        exportChartWithLegend('png', 4, 'element', energetico);
+                                        exportChartWithLegend('png', 4, 'element', energetico, energetico);
                                     }, 500);
                                 } else {
                                     const searchInput = document.getElementById('search-input');
@@ -3442,7 +3442,7 @@
             }
 
             // Función para exportar gráfico con leyenda
-            function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '') {
+            function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', focusedNodeName = null) {
                 setTimeout(() => {
                     // Obtener la imagen del gráfico
                     const chartUrl = sankeyChart.getDataURL({ 
@@ -3475,7 +3475,7 @@
                         ctx.drawImage(chartImg, 0, 0);
                         
                         // Dibujar la leyenda
-                        drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio);
+                        drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio, focusedNodeName);
 
                         // Detectar y ajustar solapamiento de etiquetas
                         adjustLabelOverlaps(ctx, pixelRatio);
@@ -3533,13 +3533,26 @@
             }
 
             // Función para dibujar la leyenda en el canvas
-            function drawLegendOnCanvas(ctx, x, y, width, height, pixelRatio) {
+            function drawLegendOnCanvas(ctx, x, y, width, height, pixelRatio, focusedNodeName = null) {
                 const colors = window.sankeyConfig.energeticColors;
                 const currentNodes = sankeyChart.getOption().series[0].data;
-                const activeEnergeticos = currentNodes
+                let activeEnergeticos = currentNodes
                     .filter(node => !node.esEspaciador && colors[node.name])
                     .map(node => node.name)
                     .sort();
+
+                if (focusedNodeName) {
+                    const connectedNodes = new Set([focusedNodeName]);
+                    currentLinks.forEach(link => {
+                        if (link.source === focusedNodeName) {
+                            connectedNodes.add(link.target);
+                        }
+                        if (link.target === focusedNodeName) {
+                            connectedNodes.add(link.source);
+                        }
+                    });
+                    activeEnergeticos = activeEnergeticos.filter(name => connectedNodes.has(name));
+                }
 
                 // Configuración de la leyenda
                 const fontSize = 12 * pixelRatio;
@@ -3548,7 +3561,7 @@
                 const colorBoxSize = 14 * pixelRatio;
                 const cols = Math.floor(width / itemWidth);
                 const startX = x + 20 * pixelRatio;
-                const startY = y + 30 * pixelRatio;
+                const startY = y + 50 * pixelRatio;
 
                 // Título de la leyenda
                 ctx.fillStyle = '#6a1c32';
@@ -4591,10 +4604,10 @@
                         },
                         blur: {
                             itemStyle: {
-                                opacity: focusMode ? 0.08 : 0.15 // Más transparente en focus mode
+                                opacity: focusMode ? 0.1 : 0.1 // Más transparente en focus mode
                             },
                             lineStyle: {
-                                opacity: focusMode ? 0.05 : 0.1 // Enlaces más transparentes en focus mode
+                                opacity: focusMode ? 0.1 : 0.1 // Enlaces más transparentes en focus mode
                             }
                         }
                     }]
@@ -4939,16 +4952,7 @@
 
                 // Botón de descarga para el gráfico hijo
                 document.getElementById('export-sub-sankey').onclick = function () {
-                    const background = getComputedStyle(subSankeyContainer).backgroundColor;
-                    const url = subSankeyChart.getDataURL({
-                        type: 'png',
-                        pixelRatio: 3,
-                        backgroundColor: background
-                    });
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = generateFileName('element', 'png');
-                    a.click();
+                    exportChartWithLegend('png', 3, 'element', centerNodeName, centerNodeName);
                 };
             }
 
