@@ -2419,6 +2419,19 @@
     <!-- Overlay para cerrar el panel -->
     <div id="filters-overlay" class="filters-overlay"></div>
 
+    <!-- Leyenda de Colores - Ahora arriba del Sankey -->
+    <div id="color-legend-container" class="card" style="margin-bottom: 1rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--color-guinda); font-size: 1.1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                <path d="M8.235 1.559a.5.5 0 0 0-.47 0L1.732 4.058a.5.5 0 0 0 0 .884l6.033 2.499a.5.5 0 0 0 .47 0l6.033-2.499a.5.5 0 0 0 0-.884L8.235 1.559zM7.5 9.983V15.5a.5.5 0 0 0 .235.424l6.033 2.499a.5.5 0 0 0 .732-.424V11.983l-6.5 2.683a.5.5 0 0 1-.47 0l-6.5-2.683V17.5a.5.5 0 0 0 .732.424l6.033-2.499A.5.5 0 0 0 8.5 15.5V9.983z"/>
+            </svg>
+            Leyenda de Colores por Energético
+        </h3>
+        <div id="color-legend-content" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; justify-content: space-between;">
+            <!-- Se llenará dinámicamente -->
+        </div>
+    </div>
+
     <div id="chart-container" class="">
         <div id="chart-wrapper">
             <div id="sankey"></div>
@@ -2440,19 +2453,6 @@
             </svg>
             Descargar selección del Sankey
         </button>
-    </div>
-
-    <!-- Leyenda de Colores -->
-    <div id="color-legend-container" class="card" style="margin-top: 1rem;">
-        <h3 style="margin-bottom: 1rem; color: var(--color-guinda); font-size: 1.1rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
-                <path d="M8.235 1.559a.5.5 0 0 0-.47 0L1.732 4.058a.5.5 0 0 0 0 .884l6.033 2.499a.5.5 0 0 0 .47 0l6.033-2.499a.5.5 0 0 0 0-.884L8.235 1.559zM7.5 9.983V15.5a.5.5 0 0 0 .235.424l6.033 2.499a.5.5 0 0 0 .732-.424V11.983l-6.5 2.683a.5.5 0 0 1-.47 0l-6.5-2.683V17.5a.5.5 0 0 0 .732.424l6.033-2.499A.5.5 0 0 0 8.5 15.5V9.983z"/>
-            </svg>
-            Leyenda de Colores por Energético
-        </h3>
-        <div id="color-legend-content" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; justify-content: space-between;">
-            <!-- Se llenará dinámicamente -->
-        </div>
     </div>
 
     <div id="node-details-container" class="container" style="display: none;">
