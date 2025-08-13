@@ -129,48 +129,8 @@ window.sankeyConfig = {
         'Pérdidas y Exportaciones': '#7B1FA2', // Púrpura para pérdidas y exportaciones
         'Otros': '#616161'                     // Gris para otros
     },
-    // Configuración de patrones decal para accesibilidad
-    decalPatterns: {
-        // Patrones para energéticos primarios fósiles
-        'Carbón mineral': 0,        // Rectángulos diagonales
-        'Petróleo crudo': 1,        // Círculos
-        'Condensados': 2,           // Líneas diagonales
-        'Gas natural': 3,           // Triángulos
-        
-        // Patrones para energéticos primarios no fósiles
-        'Energía Nuclear': 4,       // Diamantes
-        'Energía Hidráulica': 5,    // Rectángulos inversos
-        'Geoenergía': 6,            // Líneas verticales
-        'Energía solar': 7,         // Círculos pequeños
-        'Energía eólica': 0,        // Rectángulos diagonales
-        'Bagazo de caña': 1,        // Círculos
-        'Leña': 2,                  // Líneas diagonales
-        'Biogás': 3,                // Triángulos
-        
-        // Patrones para energéticos secundarios
-        'Coque de carbón': 4,       // Diamantes
-        'Coque de petróleo': 5,     // Rectángulos inversos
-        'Gas licuado de petróleo': 6, // Líneas verticales
-        'Gasolinas y naftas': 7,    // Círculos pequeños
-        'Querosenos': 0,            // Rectángulos diagonales
-        'Diesel': 1,                // Círculos
-        'Combustóleo': 2,           // Líneas diagonales
-        'Gas natural seco': 3,      // Triángulos
-        'Otros energéticos': 4,     // Diamantes
-        'Energía eléctrica': 5,     // Rectángulos inversos
-        
-        // Patrones para nodos padre/contenedores
-        'Producción': 6,            // Líneas verticales
-        'Importación EP': 7,        // Círculos pequeños
-        'Importación ES': 0,        // Rectángulos diagonales
-        'Exportación EP': 1,        // Círculos
-        'Exportación ES': 2,        // Líneas diagonales
-        'Centrales Eléctricas': 3,  // Triángulos
-        'Refinerías y Despuntadoras': 4, // Diamantes
-        'Industrial': 5,            // Rectángulos inversos
-        'Transporte': 6,            // Líneas verticales
-        'Residencial': 7            // Círculos pequeños
-    },
+    // Configuración de patrones decal para accesibilidad (patrón uniforme de rayas diagonales)
+    decalEnabled: true,             // Controla si se muestran los patrones decal
     linkMinValue: 0,                // no mostrar enlaces menores a este valor
     flowPolicy: 'bySign',           // 'bySign' | 'fixedParentToChild'
     normalizeBy: 'year',            // 'global' | 'year'

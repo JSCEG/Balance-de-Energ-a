@@ -2427,6 +2427,21 @@
         </div>
     </div>
 
+    <!-- Sub-Sankey inmediatamente después del Sankey principal -->
+    <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 1rem;">
+        <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
+        <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
+        <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path
+                    d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path
+                    d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+            </svg>
+            Descargar selección del Sankey
+        </button>
+    </div>
+
     <!-- Leyenda de Colores -->
     <div id="color-legend-container" class="card" style="margin-top: 1rem;">
         <h3 style="margin-bottom: 1rem; color: var(--color-guinda); font-size: 1.1rem;">
@@ -2484,20 +2499,6 @@
             </div>
         </div>
         <div id="node-details-values"></div>
-
-        <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 2rem;">
-            <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
-            <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
-            <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                    <path
-                        d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
-                </svg>
-                Descargar selección del Sankey
-            </button>
-        </div>
     </div>
 
     <!-- Modal para el Gráfico Histórico -->
@@ -3049,13 +3050,22 @@
                         node.itemStyle.shadowBlur = 3; // Resplandor sutil por defecto
                         node.itemStyle.shadowColor = 'rgba(0, 0, 0, 0.2)'; // Color de resplandor sutil
                         
-                        // Asignar patrón decal para accesibilidad
-                        if (window.sankeyConfig.decalPatterns && window.sankeyConfig.decalPatterns[node.name] !== undefined) {
+                        // Aplicar patrón decal de rayas diagonales si está activado
+                        const decalSwitch = document.getElementById('decal-switch');
+                        if (decalSwitch && decalSwitch.checked) {
                             node.itemStyle.decal = {
-                                symbol: 'rect', // Se sobrescribirá por la configuración aria
-                                decalIndex: window.sankeyConfig.decalPatterns[node.name]
+                                symbol: 'line',
+                                symbolSize: 1,
+                                symbolKeepAspect: true,
+                                color: 'rgba(0, 0, 0, 0.3)',
+                                backgroundColor: 'transparent',
+                                dashArrayX: [3, 3],
+                                dashArrayY: [3, 3],
+                                rotation: Math.PI / 4
                             };
                         }
+                        
+
 
                         // Lógica de indicadores visuales por pérdida de energía
                         const showAlerts = document.getElementById('alert-switch').checked;
@@ -3138,91 +3148,9 @@
                         },
                         extraCssText: 'max-width:400px; white-space: normal;'
                     },
-                    // Configuración de accesibilidad y patrones decal
+                    // Configuración de accesibilidad
                     aria: {
-                        enabled: document.getElementById('decal-switch').checked,
-                        decal: {
-                            show: document.getElementById('decal-switch').checked,
-                            decals: [
-                                {
-                                    symbol: 'rect',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [1, 0],
-                                    dashArrayY: [2, 5],
-                                    rotation: Math.PI / 6
-                                },
-                                {
-                                    symbol: 'circle',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [2, 2],
-                                    dashArrayY: [2, 2]
-                                },
-                                {
-                                    symbol: 'line',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [5, 5],
-                                    dashArrayY: [5, 5],
-                                    rotation: Math.PI / 4
-                                },
-                                {
-                                    symbol: 'triangle',
-                                    symbolSize: 1.2,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.25)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [3, 3],
-                                    dashArrayY: [3, 3]
-                                },
-                                {
-                                    symbol: 'diamond',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [4, 2],
-                                    dashArrayY: [2, 4],
-                                    rotation: Math.PI / 3
-                                },
-                                {
-                                    symbol: 'rect',
-                                    symbolSize: 0.8,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.15)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [6, 2],
-                                    dashArrayY: [2, 6],
-                                    rotation: -Math.PI / 6
-                                },
-                                {
-                                    symbol: 'line',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.25)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [1, 1],
-                                    dashArrayY: [8, 2],
-                                    rotation: Math.PI / 2
-                                },
-                                {
-                                    symbol: 'circle',
-                                    symbolSize: 0.6,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [3, 6],
-                                    dashArrayY: [3, 6]
-                                }
-                            ]
-                        }
+                        enabled: true
                     },
                     series: [{
                         type: 'sankey',
@@ -4099,32 +4027,39 @@
                 }
 
                 // Actualizar información del nodo
-                document.getElementById('node-name').textContent = nodeName;
-                document.getElementById('node-value').textContent = formatNumber(nodeInfo.value);
-                document.getElementById('node-inflow').textContent = formatNumber(nodeInfo.inflow);
-                document.getElementById('node-outflow').textContent = formatNumber(nodeInfo.outflow);
+                document.getElementById('node-details-name').innerHTML = `<span style="display:inline-block; width:15px; height:15px; background-color:${nodeInfo.itemStyle.color}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${nodeInfo.name}`;
+                document.getElementById('node-details-type').textContent = nodeInfo.tipo || 'N/A';
+                document.getElementById('node-details-description').textContent = nodeInfo.description || 'No hay descripción disponible.';
+                document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
+                document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
+                document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
 
                 // Calcular y mostrar eficiencia
-                const efficiencySpan = document.getElementById('node-efficiency');
-                if (nodeInfo.inflow > 0) {
+                const efficiencySpan = document.getElementById('node-details-efficiency');
+                const alertInfoContainer = document.getElementById('alert-info-container');
+                efficiencySpan.innerHTML = '';
+                alertInfoContainer.style.display = 'none';
+
+                const showAlerts = document.getElementById('alert-switch').checked;
+                const transformationNodes = [
+                    "Coquizadoras y Hornos",
+                    "Plantas de Gas y Fraccionadoras",
+                    "Refinerías y Despuntadoras",
+                    "Centrales Eléctricas"
+                ];
+
+                if (showAlerts && nodeInfo.inflow > 0 && nodeInfo.outflow > 0 && !transformationNodes.includes(nodeInfo.name)) {
+                    alertInfoContainer.style.display = 'block';
                     const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
                     const efficiency = 1 - lossPercentage;
                     let message = '';
 
                     if (lossPercentage >= 0.05) {
-                        message = `🚨 <strong style="color:${window.sankeyConfig.efficiencyColors.critical};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
+                        message = `🚨 <strong style="color:${window.sankeyConfig.efficiencyColors.critical};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica: >5%)</strong>`;
                     } else if (lossPercentage >= 0.03) {
-                        message = `⚠️ <strong style="color:${window.sankeyConfig.efficiencyColors.warning};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
+                        message = `⚠️ <strong style="color:${window.sankeyConfig.efficiencyColors.warning};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta: 3%-5%)</strong>`;
                     } else {
                         message = `✅ <strong style="color:${window.sankeyConfig.efficiencyColors.efficient};">Eficiencia: ${(efficiency * 100).toFixed(2)}%</strong>`;
-                    }
-                    efficiencySpan.innerHTML = message;
-                } else {
-                    let message = '';
-                    if (nodeInfo.outflow > 0) {
-                        message = `🔋 <strong style="color:${window.sankeyConfig.efficiencyColors.efficient};">Fuente de Energía</strong>`;
-                    } else {
-                        message = `🎯 <strong style="color:${window.sankeyConfig.efficiencyColors.warning};">Sumidero de Energía</strong>`;
                     }
                     efficiencySpan.innerHTML = message;
                 }
@@ -4718,11 +4653,30 @@
                 const totalFlow = centerNodeInfo.inflow > 0 ? centerNodeInfo.inflow : centerNodeInfo.outflow;
                 const scaleFactor = totalFlow > 0 ? (subChartDom.clientHeight * 0.6) / totalFlow : 0;
 
+                // Función para crear itemStyle con patrón decal si está activado
+                const createItemStyle = (color) => {
+                    const itemStyle = { color: color };
+                    const decalSwitch = document.getElementById('decal-switch');
+                    if (decalSwitch && decalSwitch.checked) {
+                        itemStyle.decal = {
+                            symbol: 'line',
+                            symbolSize: 1,
+                            symbolKeepAspect: true,
+                            color: 'rgba(0, 0, 0, 0.3)',
+                            backgroundColor: 'transparent',
+                            dashArrayX: [3, 3],
+                            dashArrayY: [3, 3],
+                            rotation: Math.PI / 4
+                        };
+                    }
+                    return itemStyle;
+                };
+
                 // Registrar nodo central
                 nodeMap.set(centerNodeName, {
                     name: centerNodeName,
                     value: totalFlow,
-                    itemStyle: { color: centerNodeInfo.itemStyle.color }
+                    itemStyle: createItemStyle(centerNodeInfo.itemStyle.color)
                 });
 
                 // Registrar nodos de entrada y enlaces
@@ -4731,7 +4685,7 @@
                     nodeMap.set(link.source, {
                         name: link.source,
                         value: link.value,
-                        itemStyle: { color: sourceNode.itemStyle.color }
+                        itemStyle: createItemStyle(sourceNode.itemStyle.color)
                     });
                     links.push({
                         source: link.source,
@@ -4750,7 +4704,7 @@
                     nodeMap.set(link.target, {
                         name: link.target,
                         value: link.value,
-                        itemStyle: { color: targetNode.itemStyle.color }
+                        itemStyle: createItemStyle(targetNode.itemStyle.color)
                     });
                     links.push({
                         source: centerNodeName,
@@ -4764,91 +4718,9 @@
                 });
 
                 const option = {
-                    // Configuración de accesibilidad y patrones decal para sub-sankey
+                    // Configuración de accesibilidad para sub-sankey
                     aria: {
-                        enabled: document.getElementById('decal-switch').checked,
-                        decal: {
-                            show: document.getElementById('decal-switch').checked,
-                            decals: [
-                                {
-                                    symbol: 'rect',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [1, 0],
-                                    dashArrayY: [2, 5],
-                                    rotation: Math.PI / 6
-                                },
-                                {
-                                    symbol: 'circle',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [2, 2],
-                                    dashArrayY: [2, 2]
-                                },
-                                {
-                                    symbol: 'line',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [5, 5],
-                                    dashArrayY: [5, 5],
-                                    rotation: Math.PI / 4
-                                },
-                                {
-                                    symbol: 'triangle',
-                                    symbolSize: 1.2,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.25)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [3, 3],
-                                    dashArrayY: [3, 3]
-                                },
-                                {
-                                    symbol: 'diamond',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.2)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [4, 2],
-                                    dashArrayY: [2, 4],
-                                    rotation: Math.PI / 3
-                                },
-                                {
-                                    symbol: 'rect',
-                                    symbolSize: 0.8,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.15)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [6, 2],
-                                    dashArrayY: [2, 6],
-                                    rotation: -Math.PI / 6
-                                },
-                                {
-                                    symbol: 'line',
-                                    symbolSize: 1,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.25)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [1, 1],
-                                    dashArrayY: [8, 2],
-                                    rotation: Math.PI / 2
-                                },
-                                {
-                                    symbol: 'circle',
-                                    symbolSize: 0.6,
-                                    symbolKeepAspect: true,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                    backgroundColor: 'transparent',
-                                    dashArrayX: [3, 6],
-                                    dashArrayY: [3, 6]
-                                }
-                            ]
-                        }
+                        enabled: true
                     },
                     tooltip: {
                         trigger: 'item',
