@@ -3191,22 +3191,26 @@
 
             function handleSearch() {
                 const term = searchInput.value.trim().toLowerCase();
+
+                // Limpiar cualquier foco previo y etiquetas personalizadas
+                hideFocusNodeInfo();
+                focusedNodeIndex = null;
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                
-                // Si no hay término de búsqueda, ocultar etiquetas de enlaces
+                hideLinkLabels();
+
+                // Si no hay término de búsqueda después de limpiar, no hacer nada más
                 if (!term) {
-                    hideLinkLabels();
                     return;
                 }
-                
+
                 const option = sankeyChart.getOption();
                 const nodes = option.series[0].data;
                 const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
                 if (idx === -1) {
-                    hideLinkLabels();
                     return;
                 }
-                
+
                 const name = nodes[idx].name;
                 const neighbors = new Set();
                 currentLinks.forEach(l => {
@@ -3214,8 +3218,12 @@
                     if (l.target === name) neighbors.add(l.source);
                 });
                 sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
-                nodes.forEach((n, i) => { if (neighbors.has(n.name)) sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i }); });
-                
+                nodes.forEach((n, i) => {
+                    if (neighbors.has(n.name)) {
+                        sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i });
+                    }
+                });
+
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
             }
@@ -3714,8 +3722,7 @@
             searchInput.addEventListener('input', handleSearch);
             clearSearchBtn.addEventListener('click', () => {
                 searchInput.value = '';
-                sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                hideLinkLabels(); // Ocultar etiquetas de enlaces al limpiar búsqueda
+                handleSearch(); // Limpiar búsqueda y etiquetas asociadas
             });
 
             // Agregar funcionalidad para limpiar búsqueda con Escape
