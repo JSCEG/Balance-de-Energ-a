@@ -2315,6 +2315,13 @@
                                 <span class="toggle-slider"></span>
                             </div>
                         </label>
+                        <label class="toggle-label">
+                            <span class="toggle-text">Patrones</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="decal-switch">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
                         <div class="tooltip">Descripciones detalladas</div>
                     </div>
                     <button id="zoom-reset-btn" class="btn btn-secondary tooltip-container">
@@ -3041,6 +3048,14 @@
                         node.itemStyle = node.itemStyle || {};
                         node.itemStyle.shadowBlur = 3; // Resplandor sutil por defecto
                         node.itemStyle.shadowColor = 'rgba(0, 0, 0, 0.2)'; // Color de resplandor sutil
+                        
+                        // Asignar patrón decal para accesibilidad
+                        if (window.sankeyConfig.decalPatterns && window.sankeyConfig.decalPatterns[node.name] !== undefined) {
+                            node.itemStyle.decal = {
+                                symbol: 'rect', // Se sobrescribirá por la configuración aria
+                                decalIndex: window.sankeyConfig.decalPatterns[node.name]
+                            };
+                        }
 
                         // Lógica de indicadores visuales por pérdida de energía
                         const showAlerts = document.getElementById('alert-switch').checked;
@@ -3122,6 +3137,92 @@
                             return `<b>${params.name}</b><br/>Valor: ${formatNumber(params.value)}`;
                         },
                         extraCssText: 'max-width:400px; white-space: normal;'
+                    },
+                    // Configuración de accesibilidad y patrones decal
+                    aria: {
+                        enabled: document.getElementById('decal-switch').checked,
+                        decal: {
+                            show: document.getElementById('decal-switch').checked,
+                            decals: [
+                                {
+                                    symbol: 'rect',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [1, 0],
+                                    dashArrayY: [2, 5],
+                                    rotation: Math.PI / 6
+                                },
+                                {
+                                    symbol: 'circle',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [2, 2],
+                                    dashArrayY: [2, 2]
+                                },
+                                {
+                                    symbol: 'line',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.3)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [5, 5],
+                                    dashArrayY: [5, 5],
+                                    rotation: Math.PI / 4
+                                },
+                                {
+                                    symbol: 'triangle',
+                                    symbolSize: 1.2,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.25)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [3, 3],
+                                    dashArrayY: [3, 3]
+                                },
+                                {
+                                    symbol: 'diamond',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [4, 2],
+                                    dashArrayY: [2, 4],
+                                    rotation: Math.PI / 3
+                                },
+                                {
+                                    symbol: 'rect',
+                                    symbolSize: 0.8,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.15)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [6, 2],
+                                    dashArrayY: [2, 6],
+                                    rotation: -Math.PI / 6
+                                },
+                                {
+                                    symbol: 'line',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.25)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [1, 1],
+                                    dashArrayY: [8, 2],
+                                    rotation: Math.PI / 2
+                                },
+                                {
+                                    symbol: 'circle',
+                                    symbolSize: 0.6,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.3)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [3, 6],
+                                    dashArrayY: [3, 6]
+                                }
+                            ]
+                        }
                     },
                     series: [{
                         type: 'sankey',
@@ -3983,6 +4084,10 @@
                 // No es necesario redibujar todo el gráfico, ECharts actualizará los tooltips automáticamente.
             });
 
+            document.getElementById('decal-switch').addEventListener('change', () => {
+                updateChart(yearSelector.value);
+            });
+
             // Función para manejar clic en nodos (desde leyenda o diagrama)
             function handleNodeClick(nodeName) {
                 // Verificar si es un nodo energético válido
@@ -4659,6 +4764,92 @@
                 });
 
                 const option = {
+                    // Configuración de accesibilidad y patrones decal para sub-sankey
+                    aria: {
+                        enabled: document.getElementById('decal-switch').checked,
+                        decal: {
+                            show: document.getElementById('decal-switch').checked,
+                            decals: [
+                                {
+                                    symbol: 'rect',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [1, 0],
+                                    dashArrayY: [2, 5],
+                                    rotation: Math.PI / 6
+                                },
+                                {
+                                    symbol: 'circle',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [2, 2],
+                                    dashArrayY: [2, 2]
+                                },
+                                {
+                                    symbol: 'line',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.3)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [5, 5],
+                                    dashArrayY: [5, 5],
+                                    rotation: Math.PI / 4
+                                },
+                                {
+                                    symbol: 'triangle',
+                                    symbolSize: 1.2,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.25)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [3, 3],
+                                    dashArrayY: [3, 3]
+                                },
+                                {
+                                    symbol: 'diamond',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [4, 2],
+                                    dashArrayY: [2, 4],
+                                    rotation: Math.PI / 3
+                                },
+                                {
+                                    symbol: 'rect',
+                                    symbolSize: 0.8,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.15)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [6, 2],
+                                    dashArrayY: [2, 6],
+                                    rotation: -Math.PI / 6
+                                },
+                                {
+                                    symbol: 'line',
+                                    symbolSize: 1,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.25)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [1, 1],
+                                    dashArrayY: [8, 2],
+                                    rotation: Math.PI / 2
+                                },
+                                {
+                                    symbol: 'circle',
+                                    symbolSize: 0.6,
+                                    symbolKeepAspect: true,
+                                    color: 'rgba(0, 0, 0, 0.3)',
+                                    backgroundColor: 'transparent',
+                                    dashArrayX: [3, 6],
+                                    dashArrayY: [3, 6]
+                                }
+                            ]
+                        }
+                    },
                     tooltip: {
                         trigger: 'item',
                         triggerOn: 'mousemove',
