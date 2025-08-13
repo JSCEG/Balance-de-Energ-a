@@ -3021,8 +3021,8 @@
                 if (!energyData) return;
 
                 const processedData = window.dataProcessor.processSankeyData(energyData, year, window.sankeyConfig);
-                const { nodes } = processedData;
-                currentLinks = processedData.links; // Guardar los enlaces
+                const { nodes, links } = processedData;
+                currentLinks = links; // Guardar los enlaces
                 window.currentNodes = nodes; // Guardar los nodos para el conteo de filtros
 
                 // Actualizar conteos de filtros
@@ -3101,7 +3101,6 @@
                 });
 
                 const filteredLinks = applyLegendFilter(nodes, currentLinks);
-                currentLinks = filteredLinks;
 
                 if (filteredLinks.length === 0) {
                     sankeyChart.clear();
@@ -3688,7 +3687,7 @@
                     // Descargar el archivo
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `sankey_energia_mexico_${yearSelector.value}.${format}`;
+                    a.download = generateFileName('sankey', format);
                     a.click();
 
                     // Restaurar el renderizador original si fue cambiado
@@ -3713,7 +3712,7 @@
                 const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `sankey_${yearSelector.value}.svg`;
+                a.download = generateFileName('sankey', 'svg');
                 a.click();
             };
             document.getElementById('export-csv').onclick = function () {
@@ -3725,12 +3724,59 @@
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = `sankey_${yearSelector.value}.csv`;
+                a.download = generateFileName('datos', 'csv');
                 a.click();
                 URL.revokeObjectURL(a.href);
             };
 
             let subSankeyChart = null; // Variable para el gráfico hijo
+            
+            // Función para generar nombres de archivo dinámicos
+            function generateFileName(baseType = 'sankey', extension = 'png') {
+                const year = yearSelector.value;
+                let fileName = '';
+                
+                // Verificar si hay un nodo seleccionado (modo foco)
+                if (focusedNodeIndex !== null && focusMode) {
+                    const option = sankeyChart.getOption();
+                    if (option && option.series && option.series[0] && option.series[0].data) {
+                        const focusedNode = option.series[0].data[focusedNodeIndex];
+                        if (focusedNode && !focusedNode.name.includes('SPACER')) {
+                            fileName = `${baseType}_${focusedNode.name.replace(/[^a-zA-Z0-9]/g, '_')}_${year}`;
+                        }
+                    }
+                }
+                
+                // Verificar si hay un nodo con detalles mostrados
+                if (!fileName) {
+                    const nodeDetailsContainer = document.getElementById('node-details-container');
+                    if (nodeDetailsContainer && nodeDetailsContainer.style.display !== 'none') {
+                        const nodeNameElement = document.getElementById('node-details-name');
+                        if (nodeNameElement && nodeNameElement.textContent) {
+                            const nodeName = nodeNameElement.textContent.trim();
+                            if (nodeName) {
+                                fileName = `${baseType}_${nodeName.replace(/[^a-zA-Z0-9]/g, '_')}_${year}`;
+                            }
+                        }
+                    }
+                }
+                
+                // Verificar si hay filtro de búsqueda activo
+                if (!fileName) {
+                    const searchInput = document.getElementById('search-input');
+                    if (searchInput && searchInput.value.trim()) {
+                        const searchTerm = searchInput.value.trim();
+                        fileName = `${baseType}_${searchTerm.replace(/[^a-zA-Z0-9]/g, '_')}_${year}`;
+                    }
+                }
+                
+                // Nombre por defecto si no hay filtros ni selecciones
+                if (!fileName) {
+                    fileName = `Balance_Nacional_de_Energia_${year}`;
+                }
+                
+                return `${fileName}.${extension}`;
+            }
 
             sankeyChart.on('click', function (params) {
                 console.log('Click en Sankey:', params);
@@ -4815,7 +4861,7 @@
                     });
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `detalle_flujo_${centerNodeName}.png`;
+                    a.download = `detalle_flujo_${centerNodeName.replace(/[^a-zA-Z0-9]/g, '_')}_${yearSelector.value}.png`;
                     a.click();
                 };
             }
