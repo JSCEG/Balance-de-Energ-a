@@ -3383,13 +3383,16 @@
                                 legendItem.style.transform = 'translateY(0)';
                             });
                             
-                            // Agregar funcionalidad de búsqueda al hacer clic
+                            // Agregar funcionalidad de búsqueda y mostrar detalles al hacer clic
                             legendItem.addEventListener('click', () => {
                                 const searchInput = document.getElementById('search-input');
                                 if (searchInput) {
                                     searchInput.value = energetico;
                                     handleSearch();
                                 }
+                                
+                                // Simular clic en nodo para mostrar tablas y sub-sankey
+                                handleNodeClick(energetico);
                             });
                             
                             grupoContainer.appendChild(legendItem);
@@ -3979,6 +3982,206 @@
             document.getElementById('description-switch').addEventListener('change', () => {
                 // No es necesario redibujar todo el gráfico, ECharts actualizará los tooltips automáticamente.
             });
+
+            // Función para manejar clic en nodos (desde leyenda o diagrama)
+            function handleNodeClick(nodeName) {
+                // Verificar si es un nodo energético válido
+                const nodeInfo = allNodes.get(nodeName);
+                if (!nodeInfo || nodeInfo.esEspaciador) {
+                    console.log('Not an energetic node or spacer.');
+                    document.getElementById('node-details-container').style.display = 'none';
+                    return;
+                }
+
+                // Actualizar información del nodo
+                document.getElementById('node-name').textContent = nodeName;
+                document.getElementById('node-value').textContent = formatNumber(nodeInfo.value);
+                document.getElementById('node-inflow').textContent = formatNumber(nodeInfo.inflow);
+                document.getElementById('node-outflow').textContent = formatNumber(nodeInfo.outflow);
+
+                // Calcular y mostrar eficiencia
+                const efficiencySpan = document.getElementById('node-efficiency');
+                if (nodeInfo.inflow > 0) {
+                    const lossPercentage = (nodeInfo.inflow - nodeInfo.outflow) / nodeInfo.inflow;
+                    const efficiency = 1 - lossPercentage;
+                    let message = '';
+
+                    if (lossPercentage >= 0.05) {
+                        message = `🚨 <strong style="color:${window.sankeyConfig.efficiencyColors.critical};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
+                    } else if (lossPercentage >= 0.03) {
+                        message = `⚠️ <strong style="color:${window.sankeyConfig.efficiencyColors.warning};">Pérdida: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
+                    } else {
+                        message = `✅ <strong style="color:${window.sankeyConfig.efficiencyColors.efficient};">Eficiencia: ${(efficiency * 100).toFixed(2)}%</strong>`;
+                    }
+                    efficiencySpan.innerHTML = message;
+                } else {
+                    let message = '';
+                    if (nodeInfo.outflow > 0) {
+                        message = `🔋 <strong style="color:${window.sankeyConfig.efficiencyColors.efficient};">Fuente de Energía</strong>`;
+                    } else {
+                        message = `🎯 <strong style="color:${window.sankeyConfig.efficiencyColors.warning};">Sumidero de Energía</strong>`;
+                    }
+                    efficiencySpan.innerHTML = message;
+                }
+
+                const valuesContainer = document.getElementById('node-details-values');
+                valuesContainer.innerHTML = '<div class="loader"></div>'; // Mostrar preloader
+                document.getElementById('node-details-container').style.display = 'block';
+
+                // Usar setTimeout para permitir que el preloader se renderice antes de la carga pesada
+                setTimeout(() => {
+                    const selectedYear = yearSelector.value;
+                    const inflows = currentLinks.filter(link => link.target === nodeName);
+                    const outflows = currentLinks.filter(link => link.source === nodeName);
+
+                    let detailsHtml = '<div style="display: flex; flex-wrap: wrap; gap: 2rem;">';
+
+                    if (inflows.length > 0) {
+                        detailsHtml += '<div style="flex: 1; min-width: 300px;">';
+                        detailsHtml += '<h4>Flujos de Entrada</h4><div class="details-table-wrapper"><table id="inflow-table">';
+                        detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
+                        inflows.forEach((link, index) => {
+                            const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
+                            detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${nodeName}"></div></td></tr>`;
+                        });
+                        detailsHtml += `</tbody><tfoot>
+                        <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
+                        <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                        <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.inflow)}</td></tr>
+                        <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Salidas'</label></td></tr>
+                    </tfoot></table></div>`;
+                        detailsHtml += '</div>';
+                    } else {
+                        detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Entrada</h4><p>No hay flujos de entrada para este nodo.</p></div>';
+                    }
+
+                    if (outflows.length > 0) {
+                        detailsHtml += '<div style="flex: 1; min-width: 300px;">';
+                        detailsHtml += '<h4>Flujos de Salida</h4><div class="details-table-wrapper"><table id="outflow-table">';
+                        detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
+                        outflows.forEach((link, index) => {
+                            const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
+                            detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${nodeName}" data-target="${link.target}"></div></td></tr>`;
+                        });
+                        detailsHtml += `</tbody><tfoot>
+                        <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
+                        <tr><td colspan="2" style="font-weight: bold;">Subtotal Seleccionado</td><td style="font-weight: bold;" class="subtotal">0.00 PJ</td></tr>
+                        <tr><td colspan="2" style="font-weight: bold;">Total No Seleccionado</td><td style="font-weight: bold;" class="unselected-total">${formatNumber(nodeInfo.outflow)}</td></tr>
+                        <tr><td colspan="3"><label><input type="checkbox" class="cross-sum"> Sumar selección en 'Entradas'</label></td></tr>
+                    </tfoot></table></div>`;
+                        detailsHtml += '</div>';
+                    } else {
+                        detailsHtml += '<div style="flex: 1; min-width: 300px;"><h4>Flujos de Salida</h4><p>No hay flujos de salida para este nodo.</p></div>';
+                    }
+
+                    detailsHtml += '</div>';
+
+                    const parentNodesContainer = document.createElement('div');
+                    const parentTable = document.createElement('table');
+                    parentTable.innerHTML = '<thead><tr><th>Energético/Elemento</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody></tbody>';
+                    const tbody = parentTable.querySelector('tbody');
+                    let parentRows = 0;
+
+                    window.energyData.Datos.forEach((parentData, index) => {
+                        const parentName = parentData["Nodo Padre"];
+                        const childEnergetic = parentData["Nodos Hijo"].find(hijo => hijo["Nodo Hijo"] === nodeName);
+                        if (childEnergetic && childEnergetic[selectedYear] !== undefined && childEnergetic[selectedYear] !== null) {
+                            const parentColor = window.sankeyConfig.energeticColors[parentName] || '#888';
+                            const row = tbody.insertRow();
+                            row.innerHTML = `<td><span style="display:inline-block; width:15px; height:15px; background-color:${parentColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${parentName}</td><td>${formatNumber(childEnergetic[selectedYear])}</td><td><div id="sparkline-parent-${index}" class="sparkline-container" data-source="${parentName}" data-target="${nodeName}"></div></td>`;
+                            parentRows++;
+                        }
+                    });
+
+                    if (parentRows > 0) {
+                        parentNodesContainer.innerHTML = '<h4 style="margin-top: 1.5rem;">Participación del Energético en la Cadena de Valor</h4>';
+                        parentNodesContainer.appendChild(parentTable);
+                    }
+
+                    valuesContainer.innerHTML = detailsHtml;
+                    valuesContainer.insertAdjacentHTML('beforeend', '<div id="selected-balance-container" style="margin-top: 2rem; padding-top: 1rem; border-top: 2px dashed #ccc;"></div>');
+                    valuesContainer.insertAdjacentHTML('beforeend', parentNodesContainer.innerHTML);
+
+                    const inflowTable = document.getElementById('inflow-table');
+                    const outflowTable = document.getElementById('outflow-table');
+
+                    function updateAllSubtotals(nodeInfo) {
+                        let inflowSelectedSum = 0;
+                        if (inflowTable) {
+                            inflowTable.querySelectorAll('.flow-check:checked').forEach(cb => inflowSelectedSum += parseFloat(cb.dataset.value));
+                        }
+
+                        let outflowSelectedSum = 0;
+                        if (outflowTable) {
+                            outflowTable.querySelectorAll('.flow-check:checked').forEach(cb => outflowSelectedSum += parseFloat(cb.dataset.value));
+                        }
+
+                        const sumInflowToOutflow = inflowTable ? inflowTable.querySelector('.cross-sum').checked : false;
+                        const sumOutflowToInflow = outflowTable ? outflowTable.querySelector('.cross-sum').checked : false;
+
+                        const finalInflowSubtotal = (sumOutflowToInflow ? outflowSelectedSum : 0) + inflowSelectedSum;
+                        const finalOutflowSubtotal = (sumInflowToOutflow ? inflowSelectedSum : 0) + outflowSelectedSum;
+
+                        const totalInflowValue = parseFloat(nodeInfo.inflow);
+                        const totalOutflowValue = parseFloat(nodeInfo.outflow);
+
+                        if (inflowTable) {
+                            inflowTable.querySelector('.subtotal').textContent = formatNumber(finalInflowSubtotal);
+                            inflowTable.querySelector('.unselected-total').textContent = formatNumber(totalInflowValue - inflowSelectedSum);
+                        }
+                        if (outflowTable) {
+                            outflowTable.querySelector('.subtotal').textContent = formatNumber(finalOutflowSubtotal);
+                            outflowTable.querySelector('.unselected-total').textContent = formatNumber(totalOutflowValue - outflowSelectedSum);
+                        }
+
+                        const selectedBalanceContainer = document.getElementById('selected-balance-container');
+                        const selectedBalance = finalInflowSubtotal - finalOutflowSubtotal;
+                        let balanceHtml = `<h4>Análisis de la Selección</h4>
+                        <p><strong>Entrada Seleccionada:</strong> ${formatNumber(finalInflowSubtotal)}</p>
+                        <p><strong>Salida Seleccionada:</strong> ${formatNumber(finalOutflowSubtotal)}</p>
+                        <p><strong>Balance Seleccionado:</strong> ${formatNumber(selectedBalance)}</p>`;
+
+                        if (finalInflowSubtotal > 0) {
+                            const lossPercentage = (finalInflowSubtotal - finalOutflowSubtotal) / finalInflowSubtotal;
+                            const efficiency = 1 - lossPercentage;
+                            let message = '';
+
+                            if (lossPercentage >= 0.05) {
+                                message = `🚨 <strong style="color:${window.sankeyConfig.efficiencyColors.critical};">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Crítica)</strong>`;
+                            } else if (lossPercentage >= 0.03) {
+                                message = `⚠️ <strong style="color:${window.sankeyConfig.efficiencyColors.warning};">Pérdida en Selección: ${(lossPercentage * 100).toFixed(2)}% (Alerta)</strong>`;
+                            } else {
+                                message = `✅ <strong style="color:${window.sankeyConfig.efficiencyColors.efficient};">Eficiencia en Selección: ${(efficiency * 100).toFixed(2)}%</strong>`;
+                            }
+                            balanceHtml += `<p>${message}</p>`;
+                        }
+                        selectedBalanceContainer.innerHTML = balanceHtml;
+                    }
+
+                    function setupTableInteractivity(table) {
+                        if (!table) return;
+                        const selectAll = table.querySelector('.select-all');
+                        const checkboxes = table.querySelectorAll('.flow-check, .cross-sum');
+
+                        selectAll.addEventListener('change', function () {
+                            table.querySelectorAll('.flow-check').forEach(cb => cb.checked = this.checked);
+                            updateAllSubtotals(nodeInfo);
+                        });
+
+                        checkboxes.forEach(cb => cb.addEventListener('change', () => updateAllSubtotals(nodeInfo)));
+                    }
+
+                    setupTableInteractivity(inflowTable);
+                    setupTableInteractivity(outflowTable);
+
+                    renderSparklines();
+
+                    document.getElementById('node-details-container').style.display = 'block';
+
+                    // --- Lógica del Gráfico Hijo ---
+                    createSubSankey(nodeName, inflows, outflows, nodeInfo);
+                }, 50); // 50ms de retraso para asegurar el renderizado del loader
+            }
 
             searchInput.addEventListener('input', handleSearch);
             clearSearchBtn.addEventListener('click', () => {

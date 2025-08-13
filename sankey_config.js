@@ -111,8 +111,8 @@ window.sankeyConfig = {
     // Configuración general del layout
     layoutConfig: {
         nodeAlign: 'justify',
-        nodeGap: 16,
-        nodeWidth: 22,
+        nodeGap: 20,
+        nodeWidth: 20,
         layoutIterations: 0,
         curveness: 0.7
     },
