@@ -3416,10 +3416,11 @@
                                 if (e.target.classList.contains('legend-info-btn')) {
                                     showNodeInfoModal(energetico);
                                 } else if (e.target.classList.contains('legend-export-btn')) {
+                                    const energetico = e.target.dataset.energetico;
                                     searchInput.value = energetico;
                                     handleSearch();
                                     setTimeout(() => {
-                                        exportChartWithLegend('png', 4);
+                                        exportChartWithLegend('png', 4, 'element', energetico);
                                     }, 500);
                                 } else {
                                     const searchInput = document.getElementById('search-input');
@@ -3441,7 +3442,7 @@
             }
 
             // Función para exportar gráfico con leyenda
-            function exportChartWithLegend(format = 'png', pixelRatio = 3) {
+            function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '') {
                 setTimeout(() => {
                     // Obtener la imagen del gráfico
                     const chartUrl = sankeyChart.getDataURL({ 
@@ -3483,7 +3484,7 @@
                         const finalUrl = canvas.toDataURL('image/png');
                         const a = document.createElement('a');
                         a.href = finalUrl;
-                        a.download = `balance-energia-${yearSelector.value}-con-leyenda.png`;
+                        a.download = generateFileName(exportType, 'png', elementName);
                         a.click();
                     };
                     chartImg.src = chartUrl;
@@ -3812,47 +3813,51 @@
             let subSankeyChart = null; // Variable para el gráfico hijo
             
             // Función para generar nombres de archivo dinámicos
-            function generateFileName(baseType = 'sankey', extension = 'png') {
+            function generateFileName(exportType = 'general', extension = 'png', elementName = '') {
                 const year = yearSelector.value;
-                let fileName = '';
-                
-                // Verificar si hay un nodo seleccionado (modo foco)
-                if (focusedNodeIndex !== null && focusMode) {
-                    const option = sankeyChart.getOption();
-                    if (option && option.series && option.series[0] && option.series[0].data) {
-                        const focusedNode = option.series[0].data[focusedNodeIndex];
-                        if (focusedNode && !focusedNode.name.includes('SPACER')) {
-                            fileName = `BNE-${year}-${focusedNode.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                        }
-                    }
-                }
-                
-                // Verificar si hay un nodo con detalles mostrados
-                if (!fileName) {
-                    const nodeDetailsContainer = document.getElementById('node-details-container');
-                    if (nodeDetailsContainer && nodeDetailsContainer.style.display !== 'none') {
-                        const nodeNameElement = document.getElementById('node-details-name');
-                        if (nodeNameElement && nodeNameElement.textContent) {
-                            const nodeName = nodeNameElement.textContent.trim();
-                            if (nodeName) {
-                                fileName = `BNE-${year}-${nodeName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                let fileName = `BNE-${year}`;
+
+                if (exportType === 'element' && elementName) {
+                    fileName += `-${elementName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                } else if (exportType === 'element') {
+                    let autoElementName = '';
+                    // Verificar si hay un nodo seleccionado (modo foco)
+                    if (focusedNodeIndex !== null && focusMode) {
+                        const option = sankeyChart.getOption();
+                        if (option && option.series && option.series[0] && option.series[0].data) {
+                            const focusedNode = option.series[0].data[focusedNodeIndex];
+                            if (focusedNode && !focusedNode.name.includes('SPACER')) {
+                                autoElementName = focusedNode.name.replace(/[^a-zA-Z0-9]/g, '_');
                             }
                         }
                     }
-                }
-                
-                // Verificar si hay filtro de búsqueda activo
-                if (!fileName) {
-                    const searchInput = document.getElementById('search-input');
-                    if (searchInput && searchInput.value.trim()) {
-                        const searchTerm = searchInput.value.trim();
-                        fileName = `BNE-${year}-${searchTerm.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                    
+                    // Verificar si hay un nodo con detalles mostrados
+                    if (!autoElementName) {
+                        const nodeDetailsContainer = document.getElementById('node-details-container');
+                        if (nodeDetailsContainer && nodeDetailsContainer.style.display !== 'none') {
+                            const nodeNameElement = document.getElementById('node-details-name');
+                            if (nodeNameElement && nodeNameElement.textContent) {
+                                const nodeName = nodeNameElement.textContent.trim();
+                                if (nodeName) {
+                                    autoElementName = nodeName.replace(/[^a-zA-Z0-9]/g, '_');
+                                }
+                            }
+                        }
                     }
-                }
-                
-                // Nombre por defecto si no hay filtros ni selecciones
-                if (!fileName) {
-                    fileName = `BNE-${year}`;
+                    
+                    // Verificar si hay filtro de búsqueda activo
+                    if (!autoElementName) {
+                        const searchInput = document.getElementById('search-input');
+                        if (searchInput && searchInput.value.trim()) {
+                            const searchTerm = searchInput.value.trim();
+                            autoElementName = searchTerm.replace(/[^a-zA-Z0-9]/g, '_');
+                        }
+                    }
+
+                    if (autoElementName) {
+                        fileName += `-${autoElementName}`;
+                    }
                 }
                 
                 return `${fileName}.${extension}`;
@@ -4942,7 +4947,7 @@
                     });
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `detalle_flujo_${centerNodeName.replace(/[^a-zA-Z0-9]/g, '_')}_${yearSelector.value}.png`;
+                    a.download = generateFileName('element', 'png');
                     a.click();
                 };
             }
