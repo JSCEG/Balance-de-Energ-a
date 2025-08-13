@@ -1327,6 +1327,26 @@
             z-index: 1;
         }
 
+        .legend-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .legend-info-btn,
+        .legend-export-btn {
+            cursor: pointer;
+            color: var(--color-gris-oscuro);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .legend-info-btn:hover,
+        .legend-export-btn:hover {
+            color: var(--color-guinda);
+            transform: scale(1.2);
+        }
+
         /* Responsive footer elegante */
         @media (max-width: 768px) {
             footer {
@@ -3435,6 +3455,10 @@
                                     font-weight: 500;
                                     line-height: 1.2;
                                 ">${energetico}</span>
+                                <div class="legend-actions">
+                                    <i class="fas fa-info-circle legend-info-btn" data-energetico="${energetico}"></i>
+                                    <i class="fas fa-download legend-export-btn" data-energetico="${energetico}"></i>
+                                </div>
                             `;
                             
                             // Agregar hover effect
@@ -3449,15 +3473,24 @@
                             });
                             
                             // Agregar funcionalidad de búsqueda y mostrar detalles al hacer clic
-                            legendItem.addEventListener('click', () => {
-                                const searchInput = document.getElementById('search-input');
-                                if (searchInput) {
+                            legendItem.addEventListener('click', (e) => {
+                                const energetico = e.currentTarget.querySelector('.legend-info-btn').dataset.energetico;
+                                if (e.target.classList.contains('legend-info-btn')) {
+                                    showNodeInfoModal(energetico);
+                                } else if (e.target.classList.contains('legend-export-btn')) {
                                     searchInput.value = energetico;
                                     handleSearch();
+                                    setTimeout(() => {
+                                        exportChartWithLegend('png', 4);
+                                    }, 500);
+                                } else {
+                                    const searchInput = document.getElementById('search-input');
+                                    if (searchInput) {
+                                        searchInput.value = energetico;
+                                        handleSearch();
+                                    }
+                                    handleNodeClick(energetico);
                                 }
-                                
-                                // Simular clic en nodo para mostrar tablas y sub-sankey
-                                handleNodeClick(energetico);
                             });
                             
                             grupoContainer.appendChild(legendItem);
@@ -3503,6 +3536,9 @@
                     
                     // Dibujar la leyenda
                     drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio);
+
+                    // Detectar y ajustar solapamiento de etiquetas
+                    adjustLabelOverlaps(ctx, pixelRatio);
                     
                     // Descargar la imagen combinada
                     const finalUrl = canvas.toDataURL('image/png');
@@ -3512,6 +3548,40 @@
                     a.click();
                 };
                 chartImg.src = chartUrl;
+            }
+
+            function adjustLabelOverlaps(ctx, pixelRatio) {
+                const labelLayouts = sankeyChart.getZr().storage.getDisplayList().filter(el => el.type === 'text');
+                const newLabelPositions = new Map();
+
+                for (let i = 0; i < labelLayouts.length; i++) {
+                    const label1 = labelLayouts[i];
+                    const rect1 = label1.getBoundingRect();
+
+                    for (let j = i + 1; j < labelLayouts.length; j++) {
+                        const label2 = labelLayouts[j];
+                        const rect2 = label2.getBoundingRect();
+
+                        if (rect1.intersect(rect2)) {
+                            // Simple strategy: move the second label down
+                            const newY = rect2.y + (rect1.height / 2);
+                            newLabelPositions.set(label2.dataIndex, { y: newY });
+                        }
+                    }
+                }
+
+                if (newLabelPositions.size > 0) {
+                    const option = sankeyChart.getOption();
+                    const series = option.series[0];
+                    series.data.forEach((node, index) => {
+                        const newPos = newLabelPositions.get(index);
+                        if (newPos) {
+                            node.label = node.label || {};
+                            node.label.y = newPos.y;
+                        }
+                    });
+                    sankeyChart.setOption({ series: [series] });
+                }
             }
 
             // Función para dibujar la leyenda en el canvas
@@ -3559,6 +3629,38 @@
                     ctx.fillStyle = '#333';
                     ctx.fillText(energetico, itemX + colorBoxSize + 8 * pixelRatio, itemY);
                 });
+            }
+
+            function showNodeInfoModal(nodeName) {
+                const nodeInfo = allNodes.get(nodeName);
+                if (!nodeInfo) return;
+
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+
+                const modalContent = document.createElement('div');
+                modalContent.className = 'modal-content';
+
+                const closeBtn = document.createElement('span');
+                closeBtn.className = 'modal-close-btn';
+                closeBtn.innerHTML = '&times;';
+                closeBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    document.body.removeChild(modal);
+                };
+
+                const title = document.createElement('h3');
+                title.textContent = nodeInfo.name;
+
+                const description = document.createElement('p');
+                description.textContent = nodeInfo.description || 'No hay descripción disponible.';
+
+                modalContent.appendChild(closeBtn);
+                modalContent.appendChild(title);
+                modalContent.appendChild(description);
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
             }
 
             // --- Inicialización ---
