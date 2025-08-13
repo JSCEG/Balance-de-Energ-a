@@ -2420,6 +2420,19 @@
         </div>
     </div>
 
+    <!-- Leyenda de Colores -->
+    <div id="color-legend-container" class="card" style="margin-top: 1rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--color-guinda); font-size: 1.1rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
+                <path d="M8.235 1.559a.5.5 0 0 0-.47 0L1.732 4.058a.5.5 0 0 0 0 .884l6.033 2.499a.5.5 0 0 0 .47 0l6.033-2.499a.5.5 0 0 0 0-.884L8.235 1.559zM7.5 9.983V15.5a.5.5 0 0 0 .235.424l6.033 2.499a.5.5 0 0 0 .732-.424V11.983l-6.5 2.683a.5.5 0 0 1-.47 0l-6.5-2.683V17.5a.5.5 0 0 0 .732.424l6.033-2.499A.5.5 0 0 0 8.5 15.5V9.983z"/>
+            </svg>
+            Leyenda de Colores por Energético
+        </h3>
+        <div id="color-legend-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
+            <!-- Se llenará dinámicamente -->
+        </div>
+    </div>
+
     <div id="node-details-container" class="container" style="display: none;">
         <h2>Detalles del Energético: <span id="node-details-name"></span></h2>
         <p><strong style="color: var(--primary-color);">Tipo:</strong> <span id="node-details-type"></span></p>
@@ -2896,7 +2909,7 @@
                                 borderWidth: 1,
                                 borderRadius: 4,
                                 padding: [2, 6, 2, 6],
-                                shadowBlur: 4,
+                                shadowBlur: 114,
                                 shadowColor: 'rgba(0, 0, 0, 0.1)',
                                 shadowOffsetX: 0,
                                 shadowOffsetY: 1
@@ -3239,6 +3252,175 @@
                 showLinkLabels(name);
             }
 
+            // Función para crear la leyenda des
+            function createColorLegend() {
+                const legendContainer = document.getElementById('color-legend-content');
+                if (!legendContainer) return;
+
+                const colors = window.sankeyConfig.energeticColors;
+                const usedColors = new Set();
+                
+                // Obtener solo los energéticos que aparecen en el gráfico actual
+                const currentNodes = sankeyChart.getOption().series[0].data;
+                const activeEnergeticos = currentNodes
+                    .filter(node => !node.esEspaciador && colors[node.name])
+                    .map(node => node.name)
+                    .sort();
+
+                legendContainer.innerHTML = '';
+
+                activeEnergeticos.forEach(energetico => {
+                    const color = colors[energetico];
+                    if (color && !usedColors.has(color)) {
+                        usedColors.add(color);
+                        
+                        const legendItem = document.createElement('div');
+                        legendItem.style.cssText = `
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                            padding: 0.25rem 0.5rem;
+                            border-radius: 4px;
+                            background: rgba(255, 255, 255, 0.5);
+                            border: 1px solid rgba(0, 0, 0, 0.1);
+                            transition: all 0.2s ease;
+                            cursor: pointer;
+                        `;
+                        
+                        legendItem.innerHTML = `
+                            <div style="
+                                width: 16px;
+                                height: 16px;
+                                background-color: ${color};
+                                border-radius: 3px;
+                                border: 1px solid rgba(0, 0, 0, 0.2);
+                                flex-shrink: 0;
+                            "></div>
+                            <span style="
+                                font-size: 0.8rem;
+                                color: var(--color-gris-oscuro);
+                                font-weight: 500;
+                                line-height: 1.2;
+                            ">${energetico}</span>
+                        `;
+                        
+                        // Agregar hover effect
+                        legendItem.addEventListener('mouseenter', () => {
+                            legendItem.style.background = 'rgba(106, 28, 50, 0.1)';
+                            legendItem.style.transform = 'translateY(-1px)';
+                        });
+                        
+                        legendItem.addEventListener('mouseleave', () => {
+                            legendItem.style.background = 'rgba(255, 255, 255, 0.5)';
+                            legendItem.style.transform = 'translateY(0)';
+                        });
+                        
+                        // Agregar funcionalidad de búsqueda al hacer clic
+                        legendItem.addEventListener('click', () => {
+                            const searchInput = document.getElementById('search-input');
+                            if (searchInput) {
+                                searchInput.value = energetico;
+                                handleSearch();
+                            }
+                        });
+                        
+                        legendContainer.appendChild(legendItem);
+                    }
+                });
+            }
+
+            // Función para exportar gráfico con leyenda
+            function exportChartWithLegend(format = 'png', pixelRatio = 3) {
+                // Obtener la imagen del gráfico
+                const chartUrl = sankeyChart.getDataURL({ 
+                    type: format, 
+                    pixelRatio: pixelRatio, 
+                    backgroundColor: '#fff' 
+                });
+
+                // Crear un canvas para combinar gráfico y leyenda
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Crear imagen del gráfico
+                const chartImg = new Image();
+                chartImg.onload = function() {
+                    // Configurar dimensiones del canvas
+                    const chartWidth = chartImg.width;
+                    const chartHeight = chartImg.height;
+                    const legendHeight = 200 * pixelRatio; // Altura para la leyenda
+                    const padding = 20 * pixelRatio;
+                    
+                    canvas.width = chartWidth;
+                    canvas.height = chartHeight + legendHeight + padding;
+                    
+                    // Fondo blanco
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Dibujar el gráfico
+                    ctx.drawImage(chartImg, 0, 0);
+                    
+                    // Dibujar la leyenda
+                    drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio);
+                    
+                    // Descargar la imagen combinada
+                    const finalUrl = canvas.toDataURL('image/png');
+                    const a = document.createElement('a');
+                    a.href = finalUrl;
+                    a.download = `balance-energia-${yearSelector.value}-con-leyenda.png`;
+                    a.click();
+                };
+                chartImg.src = chartUrl;
+            }
+
+            // Función para dibujar la leyenda en el canvas
+            function drawLegendOnCanvas(ctx, x, y, width, height, pixelRatio) {
+                const colors = window.sankeyConfig.energeticColors;
+                const currentNodes = sankeyChart.getOption().series[0].data;
+                const activeEnergeticos = currentNodes
+                    .filter(node => !node.esEspaciador && colors[node.name])
+                    .map(node => node.name)
+                    .sort();
+
+                // Configuración de la leyenda
+                const fontSize = 12 * pixelRatio;
+                const itemHeight = 20 * pixelRatio;
+                const itemWidth = 180 * pixelRatio;
+                const colorBoxSize = 14 * pixelRatio;
+                const cols = Math.floor(width / itemWidth);
+                const startX = x + 20 * pixelRatio;
+                const startY = y + 30 * pixelRatio;
+
+                // Título de la leyenda
+                ctx.fillStyle = '#6a1c32';
+                ctx.font = `bold ${fontSize + 2}px Arial`;
+                ctx.fillText('Leyenda de Colores por Energético', startX, y + 20 * pixelRatio);
+
+                // Dibujar elementos de la leyenda
+                ctx.font = `${fontSize}px Arial`;
+                activeEnergeticos.forEach((energetico, index) => {
+                    const color = colors[energetico];
+                    const col = index % cols;
+                    const row = Math.floor(index / cols);
+                    const itemX = startX + col * itemWidth;
+                    const itemY = startY + row * itemHeight;
+
+                    // Dibujar cuadro de color
+                    ctx.fillStyle = color;
+                    ctx.fillRect(itemX, itemY - colorBoxSize + 2, colorBoxSize, colorBoxSize);
+                    
+                    // Borde del cuadro
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(itemX, itemY - colorBoxSize + 2, colorBoxSize, colorBoxSize);
+
+                    // Texto del energético
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(energetico, itemX + colorBoxSize + 8 * pixelRatio, itemY);
+                });
+            }
+
             // --- Inicialización ---
             const years = Object.keys(energyData.Datos[0]["Nodos Hijo"][0])
                 .filter(key => !isNaN(key) && key.length === 4)
@@ -3257,6 +3439,8 @@
             renderLegendNew();
             // <<< AÑADIR: render inicial de etiquetas y posicionarlas >>>
             renderColumnLabels();
+            // Crear leyenda de colores inicial
+            createColorLegend();
             updateLabelOverlayPositions();
 
             // Función para actualizar el título con el año seleccionado
@@ -3277,6 +3461,8 @@
                 updateTitle(e.target.value); // Actualizar título con el año seleccionado
                 searchInput.value = ''; // Clear search input
                 document.getElementById('node-details-container').style.display = 'none'; // Hide details table
+                // Actualizar leyenda de colores
+                createColorLegend();
             });
 
             document.getElementById('exportar').onclick = function () {
@@ -3414,18 +3600,10 @@
             };
 
             document.getElementById('export-png2').onclick = function () {
-                const url = sankeyChart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#fff' });
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `sankey_${yearSelector.value}_2x.png`;
-                a.click();
+                exportChartWithLegend('png', 2);
             };
             document.getElementById('export-png4').onclick = function () {
-                const url = sankeyChart.getDataURL({ type: 'png', pixelRatio: 4, backgroundColor: '#fff' });
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `sankey_${yearSelector.value}_4x.png`;
-                a.click();
+                exportChartWithLegend('png', 4);
             };
             document.getElementById('export-svg').onclick = function () {
                 const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
