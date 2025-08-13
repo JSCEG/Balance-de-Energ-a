@@ -2820,51 +2820,50 @@
 
             // Función para mostrar etiquetas en enlaces conectados a un nodo específico
             function showLinkLabels(nodeName) {
-                // Obtener enlaces conectados al nodo especificado
-                const connectedLinks = currentLinks.filter(link => 
-                    link.source === nodeName || link.target === nodeName
-                );
-
-                if (connectedLinks.length > 0) {
-                    // Actualizar la configuración de la serie para mostrar edgeLabel
-                    sankeyChart.setOption({
-                        series: [{
-                            edgeLabel: {
-                                show: true,
-                                color: '#000',
-                                fontSize: 10,
-                                fontWeight: 'bold',
-                                formatter: function (params) {
-                                    // Solo mostrar etiqueta si el enlace está conectado al nodo en focus
-                                    if (params.data.source === nodeName || params.data.target === nodeName) {
-                                        return formatNumber(params.data.value);
-                                    }
-                                    return '';
-                                },
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                borderColor: 'rgba(106, 28, 50, 0.3)',
-                                borderWidth: 1,
-                                borderRadius: 4,
-                                padding: [2, 6, 2, 6],
-                                shadowBlur: 4,
-                                shadowColor: 'rgba(0, 0, 0, 0.15)',
-                                shadowOffsetX: 0,
-                                shadowOffsetY: 1
-                            }
-                        }]
-                    });
-
-                    console.log('Mostrando etiquetas en', connectedLinks.length, 'enlaces conectados a:', nodeName);
-                }
+                const links = currentLinks;
+                let count = 0;
+                links.forEach(link => {
+                    if (link.source === nodeName || link.target === nodeName) {
+                        link.label = {
+                            show: true,
+                            color: '#000',
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            formatter: () => formatNumber(link.value),
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            borderColor: 'rgba(106, 28, 50, 0.3)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            padding: [2, 6, 2, 6],
+                            shadowBlur: 4,
+                            shadowColor: 'rgba(0, 0, 0, 0.15)',
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 1
+                        };
+                        count++;
+                    } else {
+                        link.label = { show: false };
+                    }
+                });
+                sankeyChart.setOption({
+                    series: [{
+                        links: links
+                    }]
+                });
+                console.log('Mostrando etiquetas en', count, 'enlaces conectados a:', nodeName);
             }
 
             // Función para ocultar etiquetas de enlaces
             function hideLinkLabels() {
+                const links = currentLinks;
+                links.forEach(link => {
+                    if (link.label) {
+                        link.label.show = false;
+                    }
+                });
                 sankeyChart.setOption({
                     series: [{
-                        edgeLabel: {
-                            show: false
-                        }
+                        links: links
                     }]
                 });
                 console.log('Ocultando todas las etiquetas de enlaces');
@@ -3191,22 +3190,26 @@
 
             function handleSearch() {
                 const term = searchInput.value.trim().toLowerCase();
+
+                // Limpiar cualquier foco previo y etiquetas personalizadas
+                hideFocusNodeInfo();
+                focusedNodeIndex = null;
+                sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                
-                // Si no hay término de búsqueda, ocultar etiquetas de enlaces
+                hideLinkLabels();
+
+                // Si no hay término de búsqueda después de limpiar, no hacer nada más
                 if (!term) {
-                    hideLinkLabels();
                     return;
                 }
-                
+
                 const option = sankeyChart.getOption();
                 const nodes = option.series[0].data;
                 const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
                 if (idx === -1) {
-                    hideLinkLabels();
                     return;
                 }
-                
+
                 const name = nodes[idx].name;
                 const neighbors = new Set();
                 currentLinks.forEach(l => {
@@ -3214,8 +3217,17 @@
                     if (l.target === name) neighbors.add(l.source);
                 });
                 sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
-                nodes.forEach((n, i) => { if (neighbors.has(n.name)) sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i }); });
-                
+                nodes.forEach((n, i) => {
+                    if (neighbors.has(n.name)) {
+                        sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i });
+                    }
+                });
+                currentLinks.forEach((l, i) => {
+                    if (l.source === name || l.target === name) {
+                        sankeyChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: i, dataType: 'edge' });
+                    }
+                });
+
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
             }
@@ -3714,8 +3726,7 @@
             searchInput.addEventListener('input', handleSearch);
             clearSearchBtn.addEventListener('click', () => {
                 searchInput.value = '';
-                sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
-                hideLinkLabels(); // Ocultar etiquetas de enlaces al limpiar búsqueda
+                handleSearch(); // Limpiar búsqueda y etiquetas asociadas
             });
 
             // Agregar funcionalidad para limpiar búsqueda con Escape
