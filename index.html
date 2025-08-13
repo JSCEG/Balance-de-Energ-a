@@ -1493,7 +1493,7 @@
         }
 
         #node-details-container th {
-            background: linear-gradient(135deg, #d32f2f 0%, #b92b27 100%);
+            background: var(--color-guinda);
             font-weight: 700;
             font-size: 0.9rem;
             color: var(--color-blanco);
@@ -1533,6 +1533,34 @@
 
         #node-details-container tr:last-child td:first-child {
             border-bottom-left-radius: var(--border-radius-small);
+        }
+
+        #node-details-container td a {
+            background: linear-gradient(45deg, var(--color-guinda), var(--color-rojo-bandera));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        #node-details-container td a:hover {
+            filter: brightness(1.2);
+        }
+
+        #node-details-container td a {
+            background: linear-gradient(45deg, var(--color-guinda), var(--color-rojo-bandera));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        #node-details-container td a:hover {
+            filter: brightness(1.2);
         }
 
         #node-details-container tr:last-child td:last-child {
@@ -3303,6 +3331,9 @@
                         'Energía Nuclear', 'Energía Hidráulica', 'Geoenergía', 'Energía solar',
                         'Energía eólica', 'Bagazo de caña', 'Leña', 'Biogás'
                     ],
+                    'Salidas de Energía Primaria': [
+                        'Pérdidas EP'
+                    ],
                     'Transformaciones': [
                         'Coquizadoras y Hornos', 'Plantas de Gas y Fraccionadoras', 
                         'Refinerías y Despuntadoras', 'Centrales Eléctricas',
@@ -3310,10 +3341,16 @@
                         'Turbogás', 'Ciclo Combinado', 'Nucleoeléctrica', 'Cogeneración',
                         'Geotérmica', 'Eólica', 'Solar Fotovoltaica'
                     ],
+                    'Entradas de Energía Secundaria': [
+                        'Importación ES', 'V.I. y Dif. Est. ES'
+                    ],
                     'Energéticos Secundarios': [
                         'Coque de carbón', 'Coque de petróleo', 'Gas licuado de petróleo',
                         'Gasolinas y naftas', 'Querosenos', 'Diesel', 'Combustóleo',
                         'Gas natural seco', 'Energía eléctrica', 'Otros energéticos'
+                    ],
+                    'Salidas de Energía Secundaria': [
+                        'Pérdidas ES'
                     ],
                     'Usos Finales': [
                         'Industrial', 'Transporte', 'Agropecuario', 'Comercial',
@@ -3900,7 +3937,7 @@
                                 detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
                                 inflows.forEach((link, index) => {
                                     const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
-                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
+                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span><a href="#" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}">${link.source}</a></td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
                                 });
                                 detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
@@ -3919,7 +3956,7 @@
                                 detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
                                 outflows.forEach((link, index) => {
                                     const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
-                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
+                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span><a href="#" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}">${link.target}</a></td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
                                 });
                                 detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
