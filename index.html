@@ -2428,7 +2428,7 @@
             </svg>
             Leyenda de Colores por Energético
         </h3>
-        <div id="color-legend-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; font-size: 0.85rem;">
+        <div id="color-legend-content" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; justify-content: space-between;">
             <!-- Se llenará dinámicamente -->
         </div>
     </div>
@@ -3258,73 +3258,145 @@
                 if (!legendContainer) return;
 
                 const colors = window.sankeyConfig.energeticColors;
-                const usedColors = new Set();
                 
                 // Obtener solo los energéticos que aparecen en el gráfico actual
                 const currentNodes = sankeyChart.getOption().series[0].data;
                 const activeEnergeticos = currentNodes
                     .filter(node => !node.esEspaciador && colors[node.name])
-                    .map(node => node.name)
-                    .sort();
+                    .map(node => node.name);
+
+                // Definir grupos de energéticos
+                const grupos = {
+                    'FEP (Fuentes de Energía Primaria)': [
+                        'Producción', 'Importación EP', 'V.I. y Dif. Est. EP'
+                    ],
+                    'Energéticos Primarios': [
+                        'Petróleo crudo', 'Gas natural', 'Carbón mineral', 'Condensados',
+                        'Energía Nuclear', 'Energía Hidráulica', 'Geoenergía', 'Energía solar',
+                        'Energía eólica', 'Bagazo de caña', 'Leña', 'Biogás'
+                    ],
+                    'Transformaciones': [
+                        'Coquizadoras y Hornos', 'Plantas de Gas y Fraccionadoras', 
+                        'Refinerías y Despuntadoras', 'Centrales Eléctricas',
+                        'Carboeléctrica', 'Térmica Convencional', 'Combustión Interna',
+                        'Turbogás', 'Ciclo Combinado', 'Nucleoeléctrica', 'Cogeneración',
+                        'Geotérmica', 'Eólica', 'Solar Fotovoltaica'
+                    ],
+                    'Energéticos Secundarios': [
+                        'Coque de carbón', 'Coque de petróleo', 'Gas licuado de petróleo',
+                        'Gasolinas y naftas', 'Querosenos', 'Diesel', 'Combustóleo',
+                        'Gas natural seco', 'Energía eléctrica', 'Otros energéticos'
+                    ],
+                    'Usos Finales': [
+                        'Industrial', 'Transporte', 'Agropecuario', 'Comercial',
+                        'Público', 'Residencial', 'Petroquímica PEMEX', 'Otras ramas económicas',
+                        'Consumo final no energético'
+                    ]
+                };
 
                 legendContainer.innerHTML = '';
 
-                activeEnergeticos.forEach(energetico => {
-                    const color = colors[energetico];
-                    if (color && !usedColors.has(color)) {
-                        usedColors.add(color);
-                        
-                        const legendItem = document.createElement('div');
-                        legendItem.style.cssText = `
+                // Crear leyenda por grupos
+                Object.entries(grupos).forEach(([nombreGrupo, energeticosGrupo]) => {
+                    // Filtrar solo los energéticos activos de este grupo
+                    const energeticosActivos = energeticosGrupo.filter(e => 
+                        activeEnergeticos.includes(e) && colors[e]
+                    );
+
+                    if (energeticosActivos.length > 0) {
+                        // Crear columna completa para el grupo
+                        const grupoColumn = document.createElement('div');
+                        grupoColumn.style.cssText = `
+                            flex: 1;
+                            min-width: 200px;
+                            max-width: 250px;
                             display: flex;
-                            align-items: center;
-                            gap: 0.5rem;
-                            padding: 0.25rem 0.5rem;
-                            border-radius: 4px;
-                            background: rgba(255, 255, 255, 0.5);
-                            border: 1px solid rgba(0, 0, 0, 0.1);
-                            transition: all 0.2s ease;
-                            cursor: pointer;
+                            flex-direction: column;
                         `;
-                        
-                        legendItem.innerHTML = `
-                            <div style="
-                                width: 16px;
-                                height: 16px;
-                                background-color: ${color};
-                                border-radius: 3px;
-                                border: 1px solid rgba(0, 0, 0, 0.2);
-                                flex-shrink: 0;
-                            "></div>
-                            <span style="
-                                font-size: 0.8rem;
-                                color: var(--color-gris-oscuro);
-                                font-weight: 500;
-                                line-height: 1.2;
-                            ">${energetico}</span>
+
+                        // Crear título del grupo
+                        const grupoTitle = document.createElement('div');
+                        grupoTitle.style.cssText = `
+                            font-weight: 700;
+                            font-size: 0.85rem;
+                            color: var(--color-guinda);
+                            margin-bottom: 0.5rem;
+                            padding-bottom: 0.25rem;
+                            border-bottom: 2px solid var(--color-guinda);
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            text-align: center;
                         `;
-                        
-                        // Agregar hover effect
-                        legendItem.addEventListener('mouseenter', () => {
-                            legendItem.style.background = 'rgba(106, 28, 50, 0.1)';
-                            legendItem.style.transform = 'translateY(-1px)';
+                        grupoTitle.textContent = nombreGrupo;
+                        grupoColumn.appendChild(grupoTitle);
+
+                        // Crear contenedor para los elementos del grupo
+                        const grupoContainer = document.createElement('div');
+                        grupoContainer.style.cssText = `
+                            display: flex;
+                            flex-direction: column;
+                            gap: 0.3rem;
+                        `;
+
+                        // Agregar elementos del grupo
+                        energeticosActivos.forEach(energetico => {
+                            const color = colors[energetico];
+                            
+                            const legendItem = document.createElement('div');
+                            legendItem.style.cssText = `
+                                display: flex;
+                                align-items: center;
+                                gap: 0.5rem;
+                                padding: 0.25rem 0.5rem;
+                                border-radius: 4px;
+                                background: rgba(255, 255, 255, 0.5);
+                                border: 1px solid rgba(0, 0, 0, 0.1);
+                                transition: all 0.2s ease;
+                                cursor: pointer;
+                            `;
+                            
+                            legendItem.innerHTML = `
+                                <div style="
+                                    width: 14px;
+                                    height: 14px;
+                                    background-color: ${color};
+                                    border-radius: 3px;
+                                    border: 1px solid rgba(0, 0, 0, 0.2);
+                                    flex-shrink: 0;
+                                "></div>
+                                <span style="
+                                    font-size: 0.75rem;
+                                    color: var(--color-gris-oscuro);
+                                    font-weight: 500;
+                                    line-height: 1.2;
+                                ">${energetico}</span>
+                            `;
+                            
+                            // Agregar hover effect
+                            legendItem.addEventListener('mouseenter', () => {
+                                legendItem.style.background = 'rgba(106, 28, 50, 0.1)';
+                                legendItem.style.transform = 'translateY(-1px)';
+                            });
+                            
+                            legendItem.addEventListener('mouseleave', () => {
+                                legendItem.style.background = 'rgba(255, 255, 255, 0.5)';
+                                legendItem.style.transform = 'translateY(0)';
+                            });
+                            
+                            // Agregar funcionalidad de búsqueda al hacer clic
+                            legendItem.addEventListener('click', () => {
+                                const searchInput = document.getElementById('search-input');
+                                if (searchInput) {
+                                    searchInput.value = energetico;
+                                    handleSearch();
+                                }
+                            });
+                            
+                            grupoContainer.appendChild(legendItem);
                         });
-                        
-                        legendItem.addEventListener('mouseleave', () => {
-                            legendItem.style.background = 'rgba(255, 255, 255, 0.5)';
-                            legendItem.style.transform = 'translateY(0)';
-                        });
-                        
-                        // Agregar funcionalidad de búsqueda al hacer clic
-                        legendItem.addEventListener('click', () => {
-                            const searchInput = document.getElementById('search-input');
-                            if (searchInput) {
-                                searchInput.value = energetico;
-                                handleSearch();
-                            }
-                        });
-                        
-                        legendContainer.appendChild(legendItem);
+
+                        grupoColumn.appendChild(grupoContainer);
+                        legendContainer.appendChild(grupoColumn);
                     }
                 });
             }
