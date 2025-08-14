@@ -3415,6 +3415,11 @@
                                 const energetico = e.currentTarget.querySelector('.legend-info-btn').dataset.energetico;
                                 if (e.target.classList.contains('legend-info-btn')) {
                                     showNodeInfoModal(energetico);
+                                    // Actualizar el subtitulo del Sankey principal
+                                    const nodeInfo = allNodes.get(energetico);
+                                    if (nodeInfo) {
+                                        sankeyChart.setOption({ title: { subtext: `${nodeInfo.name} - Valores en Petajoules (PJ)` } });
+                                    }
                                 } else if (e.target.classList.contains('legend-export-btn')) {
                                     const energetico = e.target.dataset.energetico;
                                     searchInput.value = energetico;
@@ -3422,6 +3427,11 @@
                                     setTimeout(() => {
                                         exportChartWithLegend('png', 4, 'element', energetico, energetico);
                                     }, 500);
+                                    // Actualizar el subtitulo del Sankey principal
+                                    const nodeInfo = allNodes.get(energetico);
+                                    if (nodeInfo) {
+                                        sankeyChart.setOption({ title: { subtext: `${nodeInfo.name} - Valores en Petajoules (PJ)` } });
+                                    }
                                 } else {
                                     const searchInput = document.getElementById('search-input');
                                     if (searchInput) {
@@ -3895,6 +3905,9 @@
                             document.getElementById('node-details-container').style.display = 'none';
                             document.getElementById('sub-sankey-container').style.display = 'none';
 
+                            // Restaurar el subtitulo
+                            sankeyChart.setOption({ title: { subtext: 'Valores en Petajoules (PJ)' } });
+
                             console.log('Nodo deseleccionado');
                             return;
                         } else {
@@ -3913,6 +3926,12 @@
                             // Mostrar información del nodo
                             showFocusNodeInfo(params.name);
 
+                            // Actualizar el subtitulo
+                            const nodeInfo = allNodes.get(params.name);
+                            if (nodeInfo) {
+                                sankeyChart.setOption({ title: { subtext: `${params.name} - Valores en Petajoules (PJ)` } });
+                            }
+
                             console.log('Nodo seleccionado:', params.name, 'dataIndex:', params.dataIndex);
 
                             // En modo focus, continuar para mostrar también las tablas de detalles
@@ -3930,6 +3949,9 @@
                         // Ocultar también las tablas de detalles
                         document.getElementById('node-details-container').style.display = 'none';
                         document.getElementById('sub-sankey-container').style.display = 'none';
+
+                        // Restaurar el subtitulo
+                        sankeyChart.setOption({ title: { subtext: 'Valores en Petajoules (PJ)' } });
 
                         console.log('Deselección por click fuera');
                         return;
@@ -3998,7 +4020,7 @@
                                 detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Desde</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
                                 inflows.forEach((link, index) => {
                                     const sourceColor = window.sankeyConfig.energeticColors[link.source] || '#888';
-                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span><a href="#" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}">${link.source}</a></td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
+                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${sourceColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.source}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-in-${index}" class="sparkline-container" data-source="${link.source}" data-target="${clickedNodeName}"></div></td></tr>`;
                                 });
                                 detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Entradas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.inflow)}</td></tr>
@@ -4017,7 +4039,7 @@
                                 detailsHtml += '<thead><tr><th><input type="checkbox" class="select-all"></th><th>Hacia</th><th>Valor (PJ)</th><th>Historial</th></tr></thead><tbody>';
                                 outflows.forEach((link, index) => {
                                     const targetColor = window.sankeyConfig.energeticColors[link.target] || '#888';
-                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span><a href="#" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}">${link.target}</a></td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
+                                    detailsHtml += `<tr><td><input type="checkbox" class="flow-check" data-value="${link.value}"></td><td><span style="display:inline-block; width:15px; height:15px; background-color:${targetColor}; border-radius:3px; margin-right:5px; vertical-align:middle;"></span>${link.target}</td><td>${formatNumber(link.value)}</td><td><div id="sparkline-out-${index}" class="sparkline-container" data-source="${clickedNodeName}" data-target="${link.target}"></div></td></tr>`;
                                 });
                                 detailsHtml += `</tbody><tfoot>
                                 <tr><td colspan="2" style="font-weight: bold;">Total Salidas</td><td style="font-weight: bold;">${formatNumber(nodeInfo.outflow)}</td></tr>
@@ -4143,8 +4165,23 @@
                         document.getElementById('node-details-container').style.display = 'none';
                     }
                 } else {
-                    console.log('Clicked on edge or spacer node.');
+                    // Click fuera de un nodo válido, deseleccionar todo
+                    sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
+                    sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
+                    focusedNodeIndex = null;
+
+                    // Ocultar información del nodo
+                    hideFocusNodeInfo();
+
+                    // Ocultar también las tablas de detalles
                     document.getElementById('node-details-container').style.display = 'none';
+                    document.getElementById('sub-sankey-container').style.display = 'none';
+
+                    // Restaurar el subtitulo
+                    sankeyChart.setOption({ title: { subtext: 'Valores en Petajoules (PJ)' } });
+
+                    console.log('Deselección por click fuera');
+                    return;
                 }
             });
 
@@ -4177,6 +4214,9 @@
                 document.getElementById('node-details-inflow').textContent = formatNumber(nodeInfo.inflow);
                 document.getElementById('node-details-outflow').textContent = formatNumber(nodeInfo.outflow);
                 document.getElementById('node-details-balance').textContent = formatNumber(nodeInfo.inflow - nodeInfo.outflow);
+
+                // Actualizar el subtitulo del Sankey principal
+                sankeyChart.setOption({ title: { subtext: `${nodeInfo.name} - Valores en Petajoules (PJ)` } });
 
                 // Calcular y mostrar eficiencia
                 const efficiencySpan = document.getElementById('node-details-efficiency');
