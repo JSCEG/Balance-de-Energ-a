@@ -2998,15 +2998,11 @@
                                         color: '#000',
                                         fontSize: 8,
                                         fontStyle: 'italic',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                        borderColor: 'rgba(106, 28, 50, 0.5)',
+                                        backgroundColor: '#ffffff',
+                                        borderColor: 'rgba(0, 0, 0, 0.2)',
                                         borderWidth: 1,
-                                        borderRadius: 4,
-                                        padding: [3, 8, 3, 8],
-                                        shadowBlur: 6,
-                                        shadowColor: 'rgba(0, 0, 0, 0.25)',
-                                        shadowOffsetX: 0,
-                                        shadowOffsetY: 2
+                                        borderRadius: 3,
+                                        padding: [2, 4, 2, 4]
                                     }
                                 }
                             },
@@ -3372,14 +3368,14 @@
                             },
                             label: {
                                 show: true,
-                                fontSize: 9,
+                                fontSize: 8,
                                 fontWeight: 'bold',
                                 color: '#000',
-                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                borderColor: 'rgba(106, 28, 50, 0.5)',
+                                backgroundColor: '#ffffff',
+                                borderColor: 'rgba(0, 0, 0, 0.2)',
                                 borderWidth: 1,
-                                borderRadius: 4,
-                                padding: [3, 8, 3, 8],
+                                borderRadius: 3,
+                                padding: 4,
                                 formatter: function (params) {
                                     const nodeInfo = allNodes.get(params.name);
                                     if (nodeInfo) {
@@ -5581,17 +5577,13 @@
                                 return `${params.data.name}\n${formattedValue} PJ`;
                             },
                             color: '#000',
-                            fontSize: 12,
+                            fontSize: 8,
                             fontWeight: 'bold',
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                            borderColor: 'rgba(0, 0, 0, 0.1)',
+                            backgroundColor: '#ffffff',
+                            borderColor: 'rgba(0, 0, 0, 0.2)',
                             borderWidth: 1,
-                            borderRadius: 4,
-                            padding: [2, 6, 2, 6],
-                            shadowBlur: 4,
-                            shadowColor: 'rgba(0, 0, 0, 0.1)',
-                            shadowOffsetX: 0,
-                            shadowOffsetY: 1
+                            borderRadius: 3,
+                            padding: 4
                         },
                         edgeLabel: {
                             show: true,
@@ -5601,16 +5593,11 @@
                             formatter: function (params) {
                                 return formatNumber(params.data.value);
                             },
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                            borderColor: 'rgba(0, 0, 0, 0.1)',
+                            backgroundColor: '#ffffff',
+                            borderColor: 'rgba(0, 0, 0, 0.2)',
                             borderWidth: 1,
                             borderRadius: 3,
-                            padding: [1, 4, 1, 4],
-                            shadowBlur: 3,
-                            shadowColor: 'rgba(0, 0, 0, 0.1)',
-                            shadowOffsetX: 0,
-                            shadowOffsetY: 1,
-                            opacity: 1
+                            padding: [2, 4, 2, 4]
                         },
                         labelLayout: function (params) {
                             if (params.dataType === 'edge') {
