@@ -2966,6 +2966,7 @@
                     });
 
                     console.log('Mostrando valores PJ para nodo principal:', nodeName, 'y', connectedNodes.size - 1, 'nodos conectados');
+                    ensureProperLayering();
                 }
 
                 // Mostrar también las etiquetas de enlaces conectados
@@ -3092,6 +3093,7 @@
 
                 // Ocultar también las etiquetas de enlaces
                 hideLinkLabels();
+                ensureProperLayering();
             }
 
             // Nueva función de filtros mejorada
