@@ -3244,7 +3244,7 @@
                         const transformationNodes = [
                             "Coquizadoras y Hornos",
                             "Plantas de Gas y Fraccionadoras",
-                            "Refinerías y Despuntadoras",
+                            "Refinerías",
                             "Centrales Eléctricas"
                         ];
 
@@ -3402,6 +3402,7 @@
                         nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
                         layoutIterations: window.sankeyConfig.layoutConfig.layoutIterations,
                         lineStyle: {
+                            color: 'gradient',
                             curveness: window.sankeyConfig.layoutConfig.curveness,
                             opacity: 0.8
                         },
@@ -5518,7 +5519,7 @@
                         target: centerNodeName,
                         value: link.value,
                         lineStyle: {
-                            color: sourceNode.itemStyle.color || '#888',
+                            color: 'gradient',
                             opacity: 0.7
                         }
                     });
@@ -5537,7 +5538,7 @@
                         target: link.target,
                         value: link.value,
                         lineStyle: {
-                            color: centerNodeInfo.itemStyle.color || '#888',
+                            color: 'gradient',
                             opacity: 0.7
                         }
                     });
@@ -5623,6 +5624,7 @@
                             }
                         },
                         lineStyle: {
+                            color: 'gradient',
                             curveness: 0.5
                         },
                         emphasis: {

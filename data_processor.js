@@ -175,7 +175,12 @@ window.dataProcessor = {
                 }
 
                 const childNode = nodes.get(hijo["Nodo Hijo"]);
-                const linkColor = this.getNodeColor(hijo["Nodo Hijo"], hijo, config, padreNode);
+                const sourceNode = nodes.get(source);
+                const targetNode = nodes.get(target);
+                
+                // Obtener colores de los nodos origen y destino
+                const sourceColor = sourceNode && sourceNode.itemStyle ? sourceNode.itemStyle.color : this.getNodeColor(source, sourceNode, config, padreNode);
+                const targetColor = targetNode && targetNode.itemStyle ? targetNode.itemStyle.color : this.getNodeColor(target, targetNode, config, padreNode);
 
                 const link = {
                     source,
@@ -184,7 +189,10 @@ window.dataProcessor = {
                     value: Math.abs(value),
                     sourceCategory: padreNode ? padreNode.category : undefined,
                     targetCategory: childNode ? childNode.category : undefined,
-                    lineStyle: { color: linkColor, opacity: 0.7 }
+                    lineStyle: { 
+                        color: 'gradient',
+                        opacity: 0.7
+                    }
                 };
 
                 if (config.curvenessAuto) {
