@@ -2807,8 +2807,11 @@
 
             const formatNumber = (num) => {
                 const formatted = num.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' PJ';
-                console.log(`formatNumber(${num}) -> ${formatted}`);
                 return formatted;
+            };
+
+            const formatNumberForLabel = (num) => {
+                return num.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             };
 
             // Función auxiliar para convertir hex a rgba
@@ -2935,7 +2938,7 @@
                             if (nodeIndex !== -1) {
                                 nodes[nodeIndex].label = {
                                     show: true,
-                                    position: 'bottom',
+                                    position: 'right',
                                     distance: 2,
                                     formatter: function (params) {
                                         return `${params.name}\n${valueText}`;
@@ -2977,7 +2980,7 @@
                 );
 
                 if (connectedLinks.length > 0) {
-                    // Actualizar la configuración de la serie para mostrar edgeLabel
+                    // Actualizar la configuración de la serie para mostrar edgeLabel y mejorar visibilidad de enlaces
                     sankeyChart.setOption({
                         series: [{
                             edgeLabel: {
@@ -2993,17 +2996,35 @@
                                     connected: {
                                         color: '#000',
                                         fontSize: 8,
-                                        fontWeight: 'italic',
+                                        fontStyle: 'italic',
                                         backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                                        borderColor: 'rgba(106, 28, 50, 0.3)',
+                                        borderColor: 'rgba(106, 28, 50, 0.5)',
                                         borderWidth: 1,
                                         borderRadius: 4,
-                                        padding: [2, 6, 2, 6],
-                                        shadowBlur: 4,
-                                        shadowColor: 'rgba(0, 0, 0, 0.15)',
+                                        padding: [3, 8, 3, 8],
+                                        shadowBlur: 6,
+                                        shadowColor: 'rgba(0, 0, 0, 0.25)',
                                         shadowOffsetX: 0,
-                                        shadowOffsetY: 1
+                                        shadowOffsetY: 2
                                     }
+                                }
+                            },
+                            // Mejorar la visibilidad de los enlaces conectados
+                            lineStyle: {
+                                curveness: window.sankeyConfig.layoutConfig.curveness,
+                                opacity: function(params) {
+                                    // Enlaces conectados al nodo filtrado más visibles
+                                    if (params.data.source === nodeName || params.data.target === nodeName) {
+                                        return 0.9;
+                                    }
+                                    return 0.3; // Enlaces no conectados más tenues
+                                },
+                                width: function(params) {
+                                    // Enlaces conectados ligeramente más gruesos
+                                    if (params.data.source === nodeName || params.data.target === nodeName) {
+                                        return Math.max(1, Math.sqrt(params.data.value) * 0.8);
+                                    }
+                                    return Math.max(1, Math.sqrt(params.data.value) * 0.5);
                                 }
                             }
                         }]
@@ -3013,16 +3034,24 @@
                 }
             }
 
-            // Función para ocultar etiquetas de enlaces
+            // Función para ocultar etiquetas de enlaces y restaurar visibilidad normal
             function hideLinkLabels() {
                 sankeyChart.setOption({
                     series: [{
                         edgeLabel: {
                             show: false
+                        },
+                        // Restaurar visibilidad normal de enlaces
+                        lineStyle: {
+                            curveness: window.sankeyConfig.layoutConfig.curveness,
+                            opacity: 0.8,
+                            width: function(params) {
+                                return Math.max(1, Math.sqrt(params.data.value) * 0.6);
+                            }
                         }
                     }]
                 });
-                console.log('Ocultando todas las etiquetas de enlaces');
+                console.log('Ocultando todas las etiquetas de enlaces y restaurando visibilidad normal');
             }
 
             // Función para ocultar información del nodo
@@ -3302,26 +3331,21 @@
                         data: nodes,
                         links: filteredLinks,
                         label: {
-                            fontSize: 8,
-                            fontWeight: 'normal',
-                            color: '#000',
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                            borderColor: 'rgba(0, 0, 0, 0.1)',
-                            borderWidth: 1,
-                            borderRadius: 4,
-                            padding: [2, 6, 2, 6],
-                            shadowBlur: 4,
-                            shadowColor: 'rgba(0, 0, 0, 0.1)',
-                            shadowOffsetX: 0,
-                            shadowOffsetY: 1,
+                            show: true,
+                            position: 'right',
                             formatter: function (params) {
-                                const value = params.value || 0;
-                                const formattedValue = value.toLocaleString('es-MX', {
-                                    minimumFractionDigits: 1,
-                                    maximumFractionDigits: 1
-                                });
-                                return `${params.name}\n${formattedValue} PJ`;
-                            }
+                                const nodeInfo = allNodes.get(params.name);
+                                if (nodeInfo && (nodeInfo.value > 0.1 || params.name === "Coquizadoras y Hornos")) {
+                                     return `${params.name} ${formatNumberForLabel(params.value)} PJ`;
+                                }
+                                return '';
+                            },
+                            color: '#000',
+                            fontSize: 8,
+                            fontWeight: 'bold',
+                            backgroundColor: '#ffffff',
+                            borderRadius: 3,
+                            padding: 4
                         },
                         emphasis: {
                             focus: 'adjacency',
@@ -3337,14 +3361,38 @@
                                 },
                                 shadowBlur: 10,
                                 shadowColor: 'rgba(0,0,0,0.3)'
+                            },
+                            lineStyle: {
+                                opacity: 1,
+                                width: 4,
+                                shadowBlur: 8,
+                                shadowColor: 'rgba(0,0,0,0.3)'
+                            },
+                            label: {
+                                show: true,
+                                fontSize: 9,
+                                fontWeight: 'bold',
+                                color: '#000',
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                borderColor: 'rgba(106, 28, 50, 0.5)',
+                                borderWidth: 1,
+                                borderRadius: 4,
+                                padding: [3, 8, 3, 8],
+                                formatter: function (params) {
+                                    const nodeInfo = allNodes.get(params.name);
+                                    if (nodeInfo) {
+                                        return `${params.name}\n${formatNumberForLabel(nodeInfo.value)} PJ`;
+                                    }
+                                    return params.name;
+                                }
                             }
                         },
                         blur: {
                             itemStyle: {
-                                opacity: 0.15
+                                opacity: 0.02
                             },
                             lineStyle: {
-                                opacity: 0.1
+                                opacity: 0.02
                             }
                         },
                         nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
@@ -3352,8 +3400,24 @@
                         nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
                         layoutIterations: window.sankeyConfig.layoutConfig.layoutIterations,
                         lineStyle: {
-                            curveness: window.sankeyConfig.layoutConfig.curveness
-                        }
+                            curveness: window.sankeyConfig.layoutConfig.curveness,
+                            opacity: 0.8
+                        },
+                        // Configuración para mejorar la visibilidad de enlaces
+                        levels: [
+                            {
+                                depth: 0,
+                                itemStyle: {
+                                    borderWidth: 0
+                                },
+                                lineStyle: {
+                                    opacity: 0.8
+                                }
+                            }
+                        ],
+                        // Configuración de z-index para mejor layering
+                        zlevel: 0,
+                        z: 2
                     }]
                 };
                 sankeyChart.setOption(option, true);
@@ -3362,6 +3426,11 @@
                 focusedNodeIndex = null;
                 document.getElementById('node-details-container').style.display = 'none';
                 document.getElementById('sub-sankey-container').style.display = 'none';
+
+                // Asegurar el orden correcto de capas después del renderizado
+                setTimeout(() => {
+                    ensureProperLayering();
+                }, 100);
 
                 // <<< AÑADIR: crear/actualizar etiquetas de columnas después de dibujar >>>
                 renderColumnLabels();
@@ -3425,6 +3494,84 @@
 
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
+                
+                // Mejorar la visibilidad de elementos después del filtro
+                setTimeout(() => {
+                    improveFilteredVisibility(name);
+                }, 200);
+            }
+
+            // Función para mejorar la visibilidad después de aplicar filtros
+            function improveFilteredVisibility(focusedNodeName) {
+                // Obtener el canvas del gráfico para manipular z-index
+                const zr = sankeyChart.getZr();
+                const storage = zr.storage;
+                
+                // Obtener todos los elementos gráficos
+                const displayList = storage.getDisplayList();
+                
+                // Separar nodos, enlaces y etiquetas
+                const nodes = displayList.filter(el => el.type === 'rect' || el.type === 'circle');
+                const links = displayList.filter(el => el.type === 'bezierCurve' || el.type === 'line');
+                const labels = displayList.filter(el => el.type === 'text');
+                
+                // Reordenar z-index: enlaces primero, luego nodos, luego etiquetas
+                links.forEach((link, index) => {
+                    link.z = 1 + index * 0.001; // Enlaces en el fondo
+                });
+                
+                nodes.forEach((node, index) => {
+                    node.z = 100 + index * 0.001; // Nodos en el medio
+                });
+                
+                labels.forEach((label, index) => {
+                    label.z = 200 + index * 0.001; // Etiquetas arriba de todo
+                });
+                
+                // Forzar re-renderizado
+                zr.refresh();
+            }
+
+            // Función para asegurar el orden correcto de capas en el gráfico
+            function ensureProperLayering() {
+                try {
+                    const zr = sankeyChart.getZr();
+                    const storage = zr.storage;
+                    const displayList = storage.getDisplayList();
+                    
+                    // Clasificar elementos por tipo
+                    const links = [];
+                    const nodes = [];
+                    const labels = [];
+                    
+                    displayList.forEach(el => {
+                        if (el.type === 'bezierCurve' || el.type === 'line' || el.type === 'polygon') {
+                            links.push(el);
+                        } else if (el.type === 'rect' || el.type === 'circle') {
+                            nodes.push(el);
+                        } else if (el.type === 'text') {
+                            labels.push(el);
+                        }
+                    });
+                    
+                    // Asignar z-index apropiado
+                    nodes.forEach((node, index) => {
+                        node.z = 1 + index * 0.001;
+                    });
+
+                    links.forEach((link, index) => {
+                        link.z = 100 + index * 0.001;
+                    });
+                    
+                    labels.forEach((label, index) => {
+                        label.z = 200 + index * 0.001;
+                    });
+                    
+                    // Refresh para aplicar cambios
+                    zr.refresh();
+                } catch (error) {
+                    console.warn('Error al ajustar capas:', error);
+                }
             }
 
             // Función para crear la leyenda des
@@ -5414,8 +5561,8 @@
                             formatter: function (params) {
                                 const value = params.data.value || 0;
                                 const formattedValue = value.toLocaleString('es-MX', {
-                                    minimumFractionDigits: 1,
-                                    maximumFractionDigits: 1
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
                                 });
                                 return `${params.data.name}\n${formattedValue} PJ`;
                             },
@@ -5435,7 +5582,8 @@
                         edgeLabel: {
                             show: true,
                             color: '#000',
-                            fontSize: 11,
+                            fontSize: 8,
+                            fontStyle: 'italic',
                             formatter: function (params) {
                                 return formatNumber(params.data.value);
                             },

@@ -2,60 +2,60 @@ window.dataProcessor = {
     // Determina si un color hexadecimal es claro
     isLight(hex) {
         if (!hex) return false;
-        const c = hex.replace('#','');
-        const r = parseInt(c.substr(0,2),16);
-        const g = parseInt(c.substr(2,2),16);
-        const b = parseInt(c.substr(4,2),16);
+        const c = hex.replace('#', '');
+        const r = parseInt(c.substr(0, 2), 16);
+        const g = parseInt(c.substr(2, 2), 16);
+        const b = parseInt(c.substr(4, 2), 16);
         // Perceived luminance
-        const l = 0.299*r + 0.587*g + 0.114*b;
+        const l = 0.299 * r + 0.587 * g + 0.114 * b;
         return l > 186; // umbral típico
     },
 
     // Categoría mejorada para filtros más específicos
     getCategory(nodeData, nodeName) {
         if (!nodeData && !nodeName) return 'Otros';
-        
+
         // Categorías por nombre de nodo (nodos padre principales)
         if (nodeName) {
             // Fuentes de energía primaria
-            if (nodeName.includes('Importación EP') || nodeName.includes('Producción') || 
+            if (nodeName.includes('Importación EP') || nodeName.includes('Producción') ||
                 nodeName.includes('V.I. y Dif. Est. EP')) {
                 return 'Fuentes Primarias';
             }
-            
+
             // Fuentes de energía secundaria  
             if (nodeName.includes('Importación ES') || nodeName.includes('V.I. y Dif. Est. ES')) {
                 return 'Fuentes Secundarias';
             }
-            
+
             // Transformaciones
-            if (nodeName.includes('Coquizadoras') || nodeName.includes('Plantas de Gas') || 
+            if (nodeName.includes('Coquizadoras') || nodeName.includes('Plantas de Gas') ||
                 nodeName.includes('Refinerías') || nodeName.includes('Centrales Eléctricas')) {
                 return 'Transformación';
             }
-            
+
             // Sectores de consumo
-            if (nodeName.includes('Industrial') || nodeName.includes('Transporte') || 
-                nodeName.includes('Agropecuario') || nodeName.includes('Comercial') || 
+            if (nodeName.includes('Industrial') || nodeName.includes('Transporte') ||
+                nodeName.includes('Agropecuario') || nodeName.includes('Comercial') ||
                 nodeName.includes('Público') || nodeName.includes('Residencial') ||
                 nodeName.includes('Consumo final')) {
                 return 'Sectores de Consumo';
             }
-            
+
             // Pérdidas y ajustes
-            if (nodeName.includes('Pérdidas') || nodeName.includes('Exportación') || 
+            if (nodeName.includes('Pérdidas') || nodeName.includes('Exportación') ||
                 nodeName.includes('Energía No Aprovechada')) {
                 return 'Pérdidas y Exportaciones';
             }
         }
-        
+
         // Categorías por tipo de energético (nodos hijo)
         if (nodeData && nodeData.tipo) {
             const t = nodeData.tipo.toLowerCase();
             if (t.includes('primaria')) return 'Energéticos Primarios';
             if (t.includes('secundaria')) return 'Energéticos Secundarios';
         }
-        
+
         return 'Otros';
     },
     // Determina si un nombre corresponde a un energético específico (no contenedor)
@@ -191,9 +191,9 @@ window.dataProcessor = {
                     const sc = nodes.get(source);
                     const tc = nodes.get(target);
                     if (sc && tc) {
-                        const diff = Math.abs((sc.columna||0) - (tc.columna||0));
+                        const diff = Math.abs((sc.columna || 0) - (tc.columna || 0));
                         if (diff > 1) {
-                            link.lineStyle.curveness = Math.max(0.1, config.layoutConfig.curveness - 0.15*(diff-1));
+                            link.lineStyle.curveness = Math.max(0.1, config.layoutConfig.curveness - 0.15 * (diff - 1));
                         }
                     }
                 }
