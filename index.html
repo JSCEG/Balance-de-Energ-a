@@ -4300,13 +4300,24 @@
 
             let subSankeyChart = null; // Variable para el gráfico hijo
 
+            // Función para limpiar nombres de archivo preservando acentos
+            // Ejemplo: "Energía Eléctrica" → "Energía_Eléctrica"
+            // Ejemplo: "Petróleo/Gas" → "Petróleo_Gas"
+            function cleanFileName(text) {
+                return text
+                    .replace(/[<>:"/\\|?*]/g, '_') // Solo reemplazar caracteres realmente problemáticos para archivos
+                    .replace(/ /g, '_') // Espacios por guiones bajos
+                    .replace(/_+/g, '_') // Múltiples guiones bajos por uno solo
+                    .replace(/^_|_$/g, ''); // Quitar guiones bajos al inicio y final
+            }
+
             // Función para generar nombres de archivo dinámicos
             function generateFileName(exportType = 'general', extension = 'png', elementName = '') {
                 const year = yearSelector.value;
                 let fileName = `BNE-${year}`;
 
                 if (exportType === 'element' && elementName) {
-                    fileName += `-${elementName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                    fileName += `-${cleanFileName(elementName)}`;
                 } else if (exportType === 'element') {
                     let autoElementName = '';
                     // Verificar si hay un nodo seleccionado (modo foco)
@@ -4315,7 +4326,7 @@
                         if (option && option.series && option.series[0] && option.series[0].data) {
                             const focusedNode = option.series[0].data[focusedNodeIndex];
                             if (focusedNode && !focusedNode.name.includes('SPACER')) {
-                                autoElementName = focusedNode.name.replace(/[^a-zA-Z0-9]/g, '_');
+                                autoElementName = cleanFileName(focusedNode.name);
                             }
                         }
                     }
@@ -4328,7 +4339,7 @@
                             if (nodeNameElement && nodeNameElement.textContent) {
                                 const nodeName = nodeNameElement.textContent.trim();
                                 if (nodeName) {
-                                    autoElementName = nodeName.replace(/[^a-zA-Z0-9]/g, '_');
+                                    autoElementName = cleanFileName(nodeName);
                                 }
                             }
                         }
@@ -4339,7 +4350,7 @@
                         const searchInput = document.getElementById('search-input');
                         if (searchInput && searchInput.value.trim()) {
                             const searchTerm = searchInput.value.trim();
-                            autoElementName = searchTerm.replace(/[^a-zA-Z0-9]/g, '_');
+                            autoElementName = cleanFileName(searchTerm);
                         }
                     }
 
