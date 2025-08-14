@@ -1346,13 +1346,24 @@
         }
 
         .legend-info-btn,
-        .legend-export-btn {
+        .legend-export-btn,
+        .legend-main-export-btn {
             cursor: pointer;
             color: var(--color-gris-oscuro);
             transition: all 0.2s ease-in-out;
+            margin: 0 2px;
         }
 
-        .legend-info-btn:hover,
+        .legend-info-btn:hover {
+            color: var(--color-azul-enlaces);
+            transform: scale(1.2);
+        }
+
+        .legend-main-export-btn:hover {
+            color: var(--color-verde-bandera);
+            transform: scale(1.2);
+        }
+
         .legend-export-btn:hover {
             color: var(--color-guinda);
             transform: scale(1.2);
@@ -3556,8 +3567,9 @@
                                     line-height: 1.2;
                                 ">${truncateText(energetico, 25)}</span>
                                 <div class="legend-actions">
-                                    <i class="fas fa-info-circle legend-info-btn" data-energetico="${energetico}"></i>
-                                    <i class="fas fa-download legend-export-btn" data-energetico="${energetico}"></i>
+                                    <i class="fas fa-info-circle legend-info-btn" data-energetico="${energetico}" title="Ver información del energético"></i>
+                                    <i class="fas fa-chart-area legend-main-export-btn" data-energetico="${energetico}" title="Descargar Sankey principal filtrado"></i>
+                                    <i class="fas fa-download legend-export-btn" data-energetico="${energetico}" title="Exportar Sub-Sankey detallado"></i>
                                 </div>
                             `;
 
@@ -3582,13 +3594,57 @@
                                     if (nodeInfo) {
                                         sankeyChart.setOption({ title: { subtext: `${nodeInfo.name} - Valores en Petajoules (PJ)` } });
                                     }
-                                } else if (e.target.classList.contains('legend-export-btn')) {
+                                } else if (e.target.classList.contains('legend-main-export-btn')) {
                                     const energetico = e.target.dataset.energetico;
+                                    
+                                    // Mostrar indicador de carga
+                                    const originalIcon = e.target.className;
+                                    e.target.className = 'fas fa-spinner fa-spin legend-main-export-btn';
+                                    e.target.style.color = 'var(--color-verde-bandera)';
+                                    
                                     searchInput.value = energetico;
                                     handleSearch();
+                                    
+                                    // Descargar sankey principal filtrado después de aplicar el filtro
                                     setTimeout(() => {
-                                        exportChartWithLegend('png', 4, 'element', energetico, energetico);
+                                        exportChartWithLegend('png', 4, 'element', energetico, `Sankey-Principal-${energetico}-${yearSelector.value}`);
+                                        
+                                        // Restaurar icono original después de la descarga
+                                        setTimeout(() => {
+                                            e.target.className = originalIcon;
+                                            e.target.style.color = '';
+                                        }, 2000);
                                     }, 500);
+                                    
+                                    // Actualizar el subtitulo del Sankey principal
+                                    const nodeInfo = allNodes.get(energetico);
+                                    if (nodeInfo) {
+                                        sankeyChart.setOption({ title: { subtext: `${nodeInfo.name} - Valores en Petajoules (PJ)` } });
+                                    }
+                                } else if (e.target.classList.contains('legend-export-btn')) {
+                                    const energetico = e.target.dataset.energetico;
+                                    
+                                    // Mostrar indicador de carga
+                                    const originalIcon = e.target.className;
+                                    e.target.className = 'fas fa-spinner fa-spin legend-export-btn';
+                                    e.target.style.color = 'var(--color-guinda)';
+                                    
+                                    searchInput.value = energetico;
+                                    handleSearch();
+                                    
+                                    // Simular clic en nodo para mostrar detalles y sub-sankey
+                                    handleNodeClick(energetico);
+                                    
+                                    // Abrir modal de exportación después de que se cree el sub-sankey
+                                    setTimeout(() => {
+                                        // Restaurar icono original
+                                        e.target.className = originalIcon;
+                                        e.target.style.color = '';
+                                        
+                                        if (subSankeyChart) {
+                                            showExportModal();
+                                        }
+                                    }, 600);
                                     // Actualizar el subtitulo del Sankey principal
                                     const nodeInfo = allNodes.get(energetico);
                                     if (nodeInfo) {
@@ -3611,6 +3667,26 @@
                         legendContainer.appendChild(grupoColumn);
                     }
                 });
+
+                // Agregar explicación de iconos al final
+                const iconExplanation = document.createElement('div');
+                iconExplanation.style.cssText = `
+                    width: 100%;
+                    margin-top: 1rem;
+                    padding: 0.75rem;
+                    background: rgba(106, 28, 50, 0.05);
+                    border-radius: 6px;
+                    font-size: 0.8rem;
+                    color: var(--color-gris-oscuro);
+                    text-align: center;
+                `;
+                iconExplanation.innerHTML = `
+                    <strong>Acciones disponibles:</strong> 
+                    <i class="fas fa-info-circle" style="color: var(--color-azul-enlaces); margin: 0 3px;"></i> Ver información | 
+                    <i class="fas fa-chart-area" style="color: var(--color-verde-bandera); margin: 0 3px;"></i> Descargar Sankey filtrado | 
+                    <i class="fas fa-download" style="color: var(--color-guinda); margin: 0 3px;"></i> Exportar Sub-Sankey
+                `;
+                legendContainer.appendChild(iconExplanation);
             }
 
             // Función para exportar gráfico con leyenda
@@ -4439,6 +4515,12 @@
 
             function showExportModal() {
                 const previewContainer = document.getElementById('export-preview-container');
+                
+                // Verificar que el sub-sankey esté disponible
+                if (!subSankeyChart) {
+                    alert('Por favor, selecciona un energético primero para generar el sub-sankey.');
+                    return;
+                }
 
                 // Crear vista previa combinada
                 createExportPreview(previewContainer);
@@ -4457,7 +4539,18 @@
                 // Subtítulo
                 const subtitle = document.createElement('h3');
                 subtitle.textContent = document.getElementById('sub-sankey-subtitle').textContent;
-                subtitle.style.cssText = 'text-align: center; margin: 0 0 2rem 0; color: var(--color-gris-oscuro); font-size: 1.2rem; font-weight: 600;';
+                subtitle.style.cssText = 'text-align: center; margin: 0 0 1rem 0; color: var(--color-gris-oscuro); font-size: 1.2rem; font-weight: 600;';
+                
+                // Descripción del energético (si está disponible)
+                const description = document.createElement('p');
+                const energeticoName = document.getElementById('sub-sankey-subtitle').textContent.split(' - ')[0];
+                const nodeInfo = allNodes.get(energeticoName);
+                if (nodeInfo && nodeInfo.description) {
+                    description.textContent = nodeInfo.description;
+                    description.style.cssText = 'text-align: center; margin: 0 0 2rem 0; color: var(--color-gris-oscuro); font-size: 1rem; font-style: italic; max-width: 600px; margin-left: auto; margin-right: auto;';
+                } else {
+                    description.style.display = 'none';
+                }
 
                 // Contenedor del gráfico
                 const chartContainer = document.createElement('div');
@@ -4500,6 +4593,9 @@
                 // Ensamblar vista previa
                 container.appendChild(mainTitle);
                 container.appendChild(subtitle);
+                if (description.textContent) {
+                    container.appendChild(description);
+                }
                 container.appendChild(chartContainer);
                 legendContainer.appendChild(legendTitle);
                 legendContainer.appendChild(legendContent);
@@ -4532,7 +4628,9 @@
                 }).then(canvas => {
                     // Crear enlace de descarga
                     const link = document.createElement('a');
-                    link.download = `sub-sankey-${document.getElementById('sub-sankey-subtitle').textContent.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+                    const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
+                    const backgroundType = whiteBackground ? 'fondo-blanco' : 'fondo-transparente';
+                    link.download = `balance-energetico-${subtitleText.replace(/[^a-zA-Z0-9]/g, '_')}-${backgroundType}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 });
@@ -5335,10 +5433,7 @@
 
                 subSankeyChart.setOption(option);
 
-                // Botón de descarga para el gráfico hijo
-                document.getElementById('export-sub-sankey').onclick = function () {
-                    exportChartWithLegend('png', 3, 'element', centerNodeName, centerNodeName);
-                };
+                // El botón de descarga ahora abre el modal (manejado en otro lugar)
             }
 
             // Portal para tooltips de controles
