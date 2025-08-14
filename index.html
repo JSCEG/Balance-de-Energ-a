@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <style>
         *,
@@ -1703,6 +1704,71 @@
             background: #fff;
         }
 
+        /* Estilos para el modal de exportación */
+        .modal {
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: var(--glass-bg-strong);
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 12px;
+            box-shadow: var(--glass-shadow-hover);
+            border: 1px solid var(--glass-border);
+            width: 80%;
+            max-width: 1200px;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--color-guinda);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .close {
+            color: var(--color-gris-oscuro);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: var(--color-guinda);
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .card-inset h4 {
             margin-top: 0;
             color: var(--primary-color);
@@ -2436,7 +2502,13 @@
 
     <!-- Sub-Sankey inmediatamente después del Sankey principal -->
     <div id="sub-sankey-container" class="card-inset" style="display: none; margin-top: 1rem;">
-        <h4>Vista Detallada del Flujo (Nodos Arrastrables)</h4>
+        <div id="sub-sankey-title" style="text-align: center; margin-bottom: 1rem;">
+            <h3 id="sub-sankey-main-title" style="margin: 0; color: var(--color-guinda); font-size: 1.3rem;">Vista
+                Detallada del Flujo</h3>
+            <p id="sub-sankey-subtitle"
+                style="margin: 0.5rem 0 0 0; color: var(--color-gris-oscuro); font-size: 1rem; font-weight: 600;">
+                Energético Seleccionado</p>
+        </div>
         <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
         <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -2445,7 +2517,7 @@
                 <path
                     d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
             </svg>
-            Descargar selección del Sankey
+            Exportar Sub-Sankey con Leyenda
         </button>
     </div>
 
@@ -2565,6 +2637,30 @@
     </footer>
     </div>
     </div>
+
+    <!-- Modal para exportar Sub-Sankey con Leyenda -->
+    <div id="export-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 90vw; max-height: 90vh; overflow: auto;">
+            <div class="modal-header">
+                <h3>Exportar Sub-Sankey con Leyenda</h3>
+                <span class="close" id="close-export-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="export-preview-container" style="background: white; padding: 2rem; border-radius: 8px;">
+                    <!-- Aquí se generará la vista previa -->
+                </div>
+                <div class="export-options" style="margin-top: 1rem; text-align: center;">
+                    <button id="export-png-white" class="btn btn-primary" style="margin: 0.5rem;">
+                        Descargar PNG (Fondo Blanco)
+                    </button>
+                    <button id="export-png-transparent" class="btn btn-secondary" style="margin: 0.5rem;">
+                        Descargar PNG (Fondo Transparente)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="sankey_config.js"></script>
     <script src="data_processor.js"></script>
     <script src="datos.js"></script>
@@ -2680,7 +2776,21 @@
             let focusedNodeIndex = null;
 
 
-            let energyData = window.energyData;
+            // Verificar que los datos estén cargados
+            function waitForData() {
+                return new Promise((resolve) => {
+                    const checkData = () => {
+                        if (window.energyData && window.energyData.Datos) {
+                            resolve(window.energyData);
+                        } else {
+                            setTimeout(checkData, 100);
+                        }
+                    };
+                    checkData();
+                });
+            }
+
+            let energyData = null;
             let allNodes = new Map(); // Para guardar la info completa de los nodos
             let currentLinks = []; // Para guardar los enlaces actuales
 
@@ -2948,6 +3058,12 @@
             function renderLegendNew() {
                 if (!legendContainer) return;
 
+                // Verificar que el gráfico esté inicializado
+                if (!sankeyChart) {
+                    console.warn('Sankey chart not ready for legend rendering');
+                    return;
+                }
+
                 // Contar elementos por categoría
                 Object.keys(categoryCounts).forEach(cat => categoryCounts[cat] = 0);
                 if (window.currentNodes) {
@@ -3025,7 +3141,10 @@
             }
 
             function updateChart(year) {
-                if (!energyData) return;
+                if (!energyData || !energyData.Datos) {
+                    console.warn('energyData no está disponible');
+                    return;
+                }
 
                 const processedData = window.dataProcessor.processSankeyData(energyData, year, window.sankeyConfig);
                 const { nodes, links } = processedData;
@@ -3033,7 +3152,11 @@
                 window.currentNodes = nodes; // Guardar los nodos para el conteo de filtros
 
                 // Actualizar conteos de filtros
-                renderLegendNew();
+                setTimeout(() => {
+                    if (sankeyChart && sankeyChart.getOption()) {
+                        renderLegendNew();
+                    }
+                }, 50);
 
                 // Guardar nodos para tooltip y búsqueda, y aplicar indicadores visuales
                 allNodes.clear();
@@ -3298,10 +3421,22 @@
                 const legendContainer = document.getElementById('color-legend-content');
                 if (!legendContainer) return;
 
+                // Verificar que el gráfico esté inicializado
+                if (!sankeyChart) {
+                    console.warn('Sankey chart not initialized yet');
+                    return;
+                }
+
+                const option = sankeyChart.getOption();
+                if (!option || !option.series || !option.series[0] || !option.series[0].data) {
+                    console.warn('Sankey chart data not available yet');
+                    return;
+                }
+
                 const colors = window.sankeyConfig.energeticColors;
 
                 // Obtener solo los energéticos que aparecen en el gráfico actual
-                const currentNodes = sankeyChart.getOption().series[0].data;
+                const currentNodes = option.series[0].data;
                 const activeEnergeticos = currentNodes
                     .filter(node => !node.esEspaciador && colors[node.name])
                     .map(node => node.name);
@@ -3675,27 +3810,68 @@
                 document.body.appendChild(modal);
             }
 
-            // --- Inicialización ---
-            const years = Object.keys(energyData.Datos[0]["Nodos Hijo"][0])
-                .filter(key => !isNaN(key) && key.length === 4)
-                .sort((a, b) => b - a);
+            // Función para inicializar el gráfico
+            function initializeChart() {
+                if (!energyData) return;
 
-            years.forEach(year => {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelector.appendChild(option);
+                // --- Inicialización de años ---
+                const years = Object.keys(energyData.Datos[0]["Nodos Hijo"][0])
+                    .filter(key => !isNaN(key) && key.length === 4)
+                    .sort((a, b) => b - a);
+
+                // Limpiar opciones existentes
+                yearSelector.innerHTML = '';
+
+                years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelector.appendChild(option);
+                });
+
+                yearSelector.value = years[0];
+                updateChart(years[0]);
+                updateTitle(years[0]); // Actualizar título inicial
+
+                // Esperar a que el gráfico se renderice antes de crear la leyenda
+                setTimeout(() => {
+                    renderLegendNew();
+                }, 100);
+            }
+
+            // Mostrar mensaje de carga
+            const loadingMessage = document.createElement('div');
+            loadingMessage.id = 'loading-message';
+            loadingMessage.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--color-gris-oscuro);"><div class="loader" style="margin: 0 auto 1rem auto;"></div><p>Cargando datos del Balance Nacional de Energía...</p></div>';
+            document.getElementById('chart-container').appendChild(loadingMessage);
+
+            // Inicializar cuando los datos estén listos
+            waitForData().then((data) => {
+                energyData = data;
+                console.log('Datos cargados correctamente:', energyData);
+
+                // Remover mensaje de carga
+                const loading = document.getElementById('loading-message');
+                if (loading) {
+                    loading.remove();
+                }
+
+                initializeChart();
+            }).catch((error) => {
+                console.error('Error cargando datos:', error);
+                const loading = document.getElementById('loading-message');
+                if (loading) {
+                    loading.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--color-rojo-bandera);"><p>❌ Error cargando los datos. Por favor, recarga la página.</p></div>';
+                }
             });
-
-            yearSelector.value = years[0];
-            updateChart(years[0]);
-            updateTitle(years[0]); // Actualizar título inicial
-            renderLegendNew();
             // <<< AÑADIR: render inicial de etiquetas y posicionarlas >>>
             renderColumnLabels();
-            // Crear leyenda de colores inicial
-            createColorLegend();
             updateLabelOverlayPositions();
+
+            // Crear leyenda de colores después de que el gráfico esté listo
+            setTimeout(() => {
+                createColorLegend();
+            }, 200);
 
             // Función para actualizar el título con el año seleccionado
             function updateTitle(year) {
@@ -3715,8 +3891,10 @@
                 updateTitle(e.target.value); // Actualizar título con el año seleccionado
                 searchInput.value = ''; // Clear search input
                 document.getElementById('node-details-container').style.display = 'none'; // Hide details table
-                // Actualizar leyenda de colores
-                createColorLegend();
+                // Actualizar leyenda de colores después de que el gráfico se actualice
+                setTimeout(() => {
+                    createColorLegend();
+                }, 100);
             });
 
             document.getElementById('exportar').onclick = function () {
@@ -4237,6 +4415,128 @@
             document.getElementById('decal-switch').addEventListener('change', () => {
                 updateChart(yearSelector.value);
             });
+
+            // Funcionalidad del modal de exportación
+            const exportModal = document.getElementById('export-modal');
+            const exportButton = document.getElementById('export-sub-sankey');
+            const closeModal = document.getElementById('close-export-modal');
+
+            exportButton.addEventListener('click', () => {
+                if (subSankeyChart) {
+                    showExportModal();
+                }
+            });
+
+            closeModal.addEventListener('click', () => {
+                exportModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target === exportModal) {
+                    exportModal.style.display = 'none';
+                }
+            });
+
+            function showExportModal() {
+                const previewContainer = document.getElementById('export-preview-container');
+
+                // Crear vista previa combinada
+                createExportPreview(previewContainer);
+
+                exportModal.style.display = 'block';
+            }
+
+            function createExportPreview(container) {
+                container.innerHTML = '';
+
+                // Título principal
+                const mainTitle = document.createElement('h2');
+                mainTitle.textContent = document.getElementById('sub-sankey-main-title').textContent;
+                mainTitle.style.cssText = 'text-align: center; margin: 0 0 0.5rem 0; color: var(--color-guinda); font-size: 1.5rem;';
+
+                // Subtítulo
+                const subtitle = document.createElement('h3');
+                subtitle.textContent = document.getElementById('sub-sankey-subtitle').textContent;
+                subtitle.style.cssText = 'text-align: center; margin: 0 0 2rem 0; color: var(--color-gris-oscuro); font-size: 1.2rem; font-weight: 600;';
+
+                // Contenedor del gráfico
+                const chartContainer = document.createElement('div');
+                chartContainer.style.cssText = 'width: 800px; height: 500px; margin: 0 auto 2rem auto; border: 1px solid #ddd;';
+
+                // Leyenda
+                const legendContainer = document.createElement('div');
+                legendContainer.style.cssText = 'margin-top: 2rem;';
+
+                const legendTitle = document.createElement('h4');
+                legendTitle.textContent = 'Leyenda de Colores';
+                legendTitle.style.cssText = 'text-align: center; margin: 0 0 1rem 0; color: var(--color-guinda);';
+
+                const legendContent = document.createElement('div');
+                legendContent.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; font-size: 0.9rem;';
+
+                // Generar leyenda basada en los nodos del sub-sankey
+                if (subSankeyChart) {
+                    const option = subSankeyChart.getOption();
+                    if (option && option.series && option.series[0] && option.series[0].data) {
+                        option.series[0].data.forEach(node => {
+                            if (!node.name.startsWith('SPACER')) {
+                                const legendItem = document.createElement('div');
+                                legendItem.style.cssText = 'display: flex; align-items: center; gap: 0.5rem;';
+
+                                const colorBox = document.createElement('div');
+                                colorBox.style.cssText = `width: 15px; height: 15px; background-color: ${node.itemStyle.color}; border-radius: 3px; border: 1px solid #ccc;`;
+
+                                const label = document.createElement('span');
+                                label.textContent = node.name;
+
+                                legendItem.appendChild(colorBox);
+                                legendItem.appendChild(label);
+                                legendContent.appendChild(legendItem);
+                            }
+                        });
+                    }
+                }
+
+                // Ensamblar vista previa
+                container.appendChild(mainTitle);
+                container.appendChild(subtitle);
+                container.appendChild(chartContainer);
+                legendContainer.appendChild(legendTitle);
+                legendContainer.appendChild(legendContent);
+                container.appendChild(legendContainer);
+
+                // Crear gráfico en el contenedor de vista previa
+                const previewChart = echarts.init(chartContainer);
+                if (subSankeyChart) {
+                    const originalOption = subSankeyChart.getOption();
+                    previewChart.setOption(originalOption);
+                }
+
+                // Configurar botones de exportación
+                document.getElementById('export-png-white').onclick = () => {
+                    exportCombinedImage(container, true);
+                };
+
+                document.getElementById('export-png-transparent').onclick = () => {
+                    exportCombinedImage(container, false);
+                };
+            }
+
+            function exportCombinedImage(container, whiteBackground) {
+                // Usar html2canvas para capturar toda la vista previa
+                html2canvas(container, {
+                    backgroundColor: whiteBackground ? '#ffffff' : null,
+                    scale: 3, // Alta resolución
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    // Crear enlace de descarga
+                    const link = document.createElement('a');
+                    link.download = `sub-sankey-${document.getElementById('sub-sankey-subtitle').textContent.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            }
 
             // Función para manejar clic en nodos (desde leyenda o diagrama)
             function handleNodeClick(nodeName) {
@@ -4867,6 +5167,10 @@
                 const subSankeyContainer = document.getElementById('sub-sankey-container');
                 subSankeyContainer.style.display = 'block';
 
+                // Actualizar título y subtítulo del sub-sankey
+                document.getElementById('sub-sankey-main-title').textContent = `Vista Detallada del Flujo`;
+                document.getElementById('sub-sankey-subtitle').textContent = `${centerNodeName} - ${yearSelector.value}`;
+
                 const subChartDom = document.getElementById('sub-sankey-chart');
                 if (subSankeyChart) {
                     subSankeyChart.dispose();
@@ -5095,6 +5399,12 @@
             const panel = document.getElementById('filters-panel');
             const overlay = document.getElementById('filters-overlay');
 
+            // Verificar que los elementos existan
+            if (!toggleBtn || !panel || !overlay) {
+                console.warn('Elementos del panel de filtros no encontrados');
+                return;
+            }
+
             function openPanel() {
                 panel.classList.add('open');
                 overlay.classList.add('active');
@@ -5109,7 +5419,9 @@
 
             // Event listeners
             toggleBtn.addEventListener('click', openPanel);
-            closeBtn.addEventListener('click', closePanel);
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closePanel);
+            }
             overlay.addEventListener('click', closePanel);
 
             // Cerrar con tecla Escape
