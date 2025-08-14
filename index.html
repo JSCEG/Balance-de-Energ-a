@@ -2311,7 +2311,8 @@
             <!-- Controles -->
             <div class="control-section compact">
                 <div class="control-group">
-                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="toggle-container tooltip-container"
+                        style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Zoom</span>
                             <div class="toggle-switch">
@@ -2321,7 +2322,8 @@
                         </label>
                         <div class="tooltip">Zoom y arrastre</div>
                     </div>
-                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="toggle-container tooltip-container"
+                        style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Foco</span>
                             <div class="toggle-switch">
@@ -2331,7 +2333,8 @@
                         </label>
                         <div class="tooltip">Mantener selección</div>
                     </div>
-                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="toggle-container tooltip-container"
+                        style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Alertas</span>
                             <div class="toggle-switch">
@@ -2341,7 +2344,8 @@
                         </label>
                         <div class="tooltip">Indicadores de eficiencia</div>
                     </div>
-                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="toggle-container tooltip-container"
+                        style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Info</span>
                             <div class="toggle-switch">
@@ -2351,7 +2355,8 @@
                         </label>
                         <div class="tooltip">Descripciones detalladas</div>
                     </div>
-                    <div class="toggle-container tooltip-container" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="toggle-container tooltip-container"
+                        style="display: flex; flex-direction: column; align-items: center;">
                         <label class="toggle-label">
                             <span class="toggle-text">Patrones</span>
                             <div class="toggle-switch">
@@ -2408,12 +2413,15 @@
             </div>
         </div>
         <h3 style="margin-bottom: 1rem; color: var(--color-guinda); font-size: 1.1rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 0.5rem;">
-                <path d="M8.235 1.559a.5.5 0 0 0-.47 0L1.732 4.058a.5.5 0 0 0 0 .884l6.033 2.499a.5.5 0 0 0 .47 0l6.033-2.499a.5.5 0 0 0 0-.884L8.235 1.559zM7.5 9.983V15.5a.5.5 0 0 0 .235.424l6.033 2.499a.5.5 0 0 0 .732-.424V11.983l-6.5 2.683a.5.5 0 0 1-.47 0l-6.5-2.683V17.5a.5.5 0 0 0 .732.424l6.033-2.499A.5.5 0 0 0 8.5 15.5V9.983z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"
+                style="margin-right: 0.5rem;">
+                <path
+                    d="M8.235 1.559a.5.5 0 0 0-.47 0L1.732 4.058a.5.5 0 0 0 0 .884l6.033 2.499a.5.5 0 0 0 .47 0l6.033-2.499a.5.5 0 0 0 0-.884L8.235 1.559zM7.5 9.983V15.5a.5.5 0 0 0 .235.424l6.033 2.499a.5.5 0 0 0 .732-.424V11.983l-6.5 2.683a.5.5 0 0 1-.47 0l-6.5-2.683V17.5a.5.5 0 0 0 .732.424l6.033-2.499A.5.5 0 0 0 8.5 15.5V9.983z" />
             </svg>
             Balance Energético por Tipo
         </h3>
-        <div id="color-legend-content" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; justify-content: space-between;">
+        <div id="color-legend-content"
+            style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; justify-content: space-between;">
             <!-- Se llenará dinámicamente -->
         </div>
     </div>
@@ -2734,7 +2742,7 @@
                     if (!n.esEspaciador) {
                         const active = activeCategories[n.category] && connected.has(n.name);
                         n.itemStyle = n.itemStyle || {};
-                        n.itemStyle.opacity = active ? 1 : 0.2;
+                        n.itemStyle.opacity = active ? 1 : 0.01;
                     }
                 });
                 return filtered;
@@ -2835,7 +2843,7 @@
 
                     console.log('Mostrando valores PJ para nodo principal:', nodeName, 'y', connectedNodes.size - 1, 'nodos conectados');
                 }
-                
+
                 // Mostrar también las etiquetas de enlaces conectados
                 showLinkLabels(nodeName);
             }
@@ -2843,7 +2851,7 @@
             // Función para mostrar etiquetas en enlaces conectados a un nodo específico
             function showLinkLabels(nodeName) {
                 // Obtener enlaces conectados al nodo especificado
-                const connectedLinks = currentLinks.filter(link => 
+                const connectedLinks = currentLinks.filter(link =>
                     link.source === nodeName || link.target === nodeName
                 );
 
@@ -2931,7 +2939,7 @@
                         }]
                     });
                 }
-                
+
                 // Ocultar también las etiquetas de enlaces
                 hideLinkLabels();
             }
@@ -3048,7 +3056,7 @@
                         node.itemStyle = node.itemStyle || {};
                         node.itemStyle.shadowBlur = 3; // Resplandor sutil por defecto
                         node.itemStyle.shadowColor = 'rgba(0, 0, 0, 0.2)'; // Color de resplandor sutil
-                        
+
                         // Aplicar patrón decal de rayas diagonales si está activado
                         const decalSwitch = document.getElementById('decal-switch');
                         if (decalSwitch && decalSwitch.checked) {
@@ -3063,7 +3071,7 @@
                                 rotation: Math.PI / 4
                             };
                         }
-                        
+
 
 
                         // Lógica de indicadores visuales por pérdida de energía
@@ -3186,7 +3194,7 @@
                             blurScope: 'coordinateSystem',
                             itemStyle: {
                                 borderWidth: 3,
-                                borderColor: function(params) {
+                                borderColor: function (params) {
                                     const nodeData = allNodes.get(params.name);
                                     if (nodeData && nodeData.itemStyle && nodeData.itemStyle.color) {
                                         return brightenColor(nodeData.itemStyle.color, 30); // Aclarar un 30%
@@ -3243,44 +3251,44 @@
 
             function handleSearch() {
                 const term = searchInput.value.trim().toLowerCase();
-                
+
                 // Primero limpiar cualquier highlight previo
                 sankeyChart.dispatchAction({ type: 'downplay', seriesIndex: 0 });
                 sankeyChart.dispatchAction({ type: 'unfocusNodeAdjacency', seriesIndex: 0 });
-                
+
                 // Si no hay término de búsqueda, ocultar etiquetas de enlaces
                 if (!term) {
                     hideLinkLabels();
                     return;
                 }
-                
+
                 const option = sankeyChart.getOption();
                 const nodes = option.series[0].data;
                 const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
-                
+
                 if (idx === -1) {
                     hideLinkLabels();
                     return;
                 }
-                
+
                 const name = nodes[idx].name;
-                
+
                 // Primero hacer focus en el nodo y sus adyacentes
-                sankeyChart.dispatchAction({ 
-                    type: 'focusNodeAdjacency', 
-                    seriesIndex: 0, 
-                    dataIndex: idx 
+                sankeyChart.dispatchAction({
+                    type: 'focusNodeAdjacency',
+                    seriesIndex: 0,
+                    dataIndex: idx
                 });
-                
+
                 // Luego hacer highlight específico del nodo encontrado para mayor visibilidad
                 setTimeout(() => {
-                    sankeyChart.dispatchAction({ 
-                        type: 'highlight', 
-                        seriesIndex: 0, 
-                        dataIndex: idx 
+                    sankeyChart.dispatchAction({
+                        type: 'highlight',
+                        seriesIndex: 0,
+                        dataIndex: idx
                     });
                 }, 100);
-                
+
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
             }
@@ -3291,7 +3299,7 @@
                 if (!legendContainer) return;
 
                 const colors = window.sankeyConfig.energeticColors;
-                
+
                 // Obtener solo los energéticos que aparecen en el gráfico actual
                 const currentNodes = sankeyChart.getOption().series[0].data;
                 const activeEnergeticos = currentNodes
@@ -3312,7 +3320,7 @@
                         'Pérdidas EP'
                     ],
                     'Transformaciones': [
-                        'Coquizadoras y Hornos', 'Plantas de Gas y Fraccionadoras', 
+                        'Coquizadoras y Hornos', 'Plantas de Gas y Fraccionadoras',
                         'Refinerías y Despuntadoras', 'Centrales Eléctricas',
                         'Carboeléctrica', 'Térmica Convencional', 'Combustión Interna',
                         'Turbogás', 'Ciclo Combinado', 'Nucleoeléctrica', 'Cogeneración',
@@ -3341,7 +3349,7 @@
                 // Crear leyenda por grupos
                 Object.entries(grupos).forEach(([nombreGrupo, energeticosGrupo]) => {
                     // Filtrar solo los energéticos activos de este grupo
-                    const energeticosActivos = energeticosGrupo.filter(e => 
+                    const energeticosActivos = energeticosGrupo.filter(e =>
                         activeEnergeticos.includes(e) && colors[e]
                     );
 
@@ -3383,7 +3391,7 @@
                         // Agregar elementos del grupo
                         energeticosActivos.forEach(energetico => {
                             const color = colors[energetico];
-                            
+
                             const legendItem = document.createElement('div');
                             legendItem.style.cssText = `
                                 display: flex;
@@ -3396,7 +3404,7 @@
                                 transition: all 0.2s ease;
                                 cursor: pointer;
                             `;
-                            
+
                             legendItem.innerHTML = `
                                 <div style="
                                     width: 14px;
@@ -3417,18 +3425,18 @@
                                     <i class="fas fa-download legend-export-btn" data-energetico="${energetico}"></i>
                                 </div>
                             `;
-                            
+
                             // Agregar hover effect
                             legendItem.addEventListener('mouseenter', () => {
                                 legendItem.style.background = 'rgba(106, 28, 50, 0.1)';
                                 legendItem.style.transform = 'translateY(-1px)';
                             });
-                            
+
                             legendItem.addEventListener('mouseleave', () => {
                                 legendItem.style.background = 'rgba(255, 255, 255, 0.5)';
                                 legendItem.style.transform = 'translateY(0)';
                             });
-                            
+
                             // Agregar funcionalidad de búsqueda y mostrar detalles al hacer clic
                             legendItem.addEventListener('click', (e) => {
                                 const energetico = e.currentTarget.querySelector('.legend-info-btn').dataset.energetico;
@@ -3460,7 +3468,7 @@
                                     handleNodeClick(energetico);
                                 }
                             });
-                            
+
                             grupoContainer.appendChild(legendItem);
                         });
 
@@ -3471,44 +3479,59 @@
             }
 
             // Función para exportar gráfico con leyenda
+            // Función para exportar gráfico con leyenda
             function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', focusedNodeName = null) {
+                // Primera exportación con fondo blanco
+                exportWithBackground(true, format, pixelRatio, exportType, elementName, focusedNodeName);
+
+                // Segunda exportación con fondo transparente
+                setTimeout(() => {
+                    exportWithBackground(false, format, pixelRatio, exportType, elementName + '_transparente', focusedNodeName);
+                }, 1000);
+            }
+
+            function exportWithBackground(useWhiteBackground, format, pixelRatio, exportType, elementName, focusedNodeName) {
                 setTimeout(() => {
                     // Obtener la imagen del gráfico
-                    const chartUrl = sankeyChart.getDataURL({ 
-                        type: format, 
-                        pixelRatio: pixelRatio, 
-                        backgroundColor: '#fff' 
+                    const chartUrl = sankeyChart.getDataURL({
+                        type: format,
+                        pixelRatio: pixelRatio,
+                        backgroundColor: useWhiteBackground ? '#fff' : 'rgba(0,0,0,0)'
                     });
 
                     // Crear un canvas para combinar gráfico y leyenda
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
+
                     // Crear imagen del gráfico
                     const chartImg = new Image();
-                    chartImg.onload = function() {
+                    chartImg.onload = function () {
                         // Configurar dimensiones del canvas
                         const chartWidth = chartImg.width;
                         const chartHeight = chartImg.height;
                         const legendHeight = 200 * pixelRatio; // Altura para la leyenda
                         const padding = 20 * pixelRatio;
-                        
+
                         canvas.width = chartWidth;
                         canvas.height = chartHeight + legendHeight + padding;
-                        
-                        // Fondo blanco
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        
+
+                        // Fondo blanco solo si se solicita
+                        if (useWhiteBackground) {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        } else {
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        }
+
                         // Dibujar el gráfico
                         ctx.drawImage(chartImg, 0, 0);
-                        
+
                         // Dibujar la leyenda
-                        drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio, focusedNodeName);
+                        drawLegendOnCanvas(ctx, 0, chartHeight + padding, chartWidth, legendHeight, pixelRatio, focusedNodeName, useWhiteBackground);
 
                         // Detectar y ajustar solapamiento de etiquetas
                         adjustLabelOverlaps(ctx, pixelRatio);
-                        
+
                         // Descargar la imagen combinada
                         const finalUrl = canvas.toDataURL('image/png');
                         const a = document.createElement('a');
@@ -3519,7 +3542,6 @@
                     chartImg.src = chartUrl;
                 }, 500);
             }
-
             function adjustLabelOverlaps(ctx, pixelRatio) {
                 const labelLayouts = sankeyChart.getZr().storage.getDisplayList().filter(el => el.type === 'text');
                 const newLabelPositions = new Map();
@@ -3609,7 +3631,7 @@
                     // Dibujar cuadro de color
                     ctx.fillStyle = color;
                     ctx.fillRect(itemX, itemY - colorBoxSize + 2, colorBoxSize, colorBoxSize);
-                    
+
                     // Borde del cuadro
                     ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
                     ctx.lineWidth = 1;
@@ -3853,7 +3875,7 @@
             };
 
             let subSankeyChart = null; // Variable para el gráfico hijo
-            
+
             // Función para generar nombres de archivo dinámicos
             function generateFileName(exportType = 'general', extension = 'png', elementName = '') {
                 const year = yearSelector.value;
@@ -3873,7 +3895,7 @@
                             }
                         }
                     }
-                    
+
                     // Verificar si hay un nodo con detalles mostrados
                     if (!autoElementName) {
                         const nodeDetailsContainer = document.getElementById('node-details-container');
@@ -3887,7 +3909,7 @@
                             }
                         }
                     }
-                    
+
                     // Verificar si hay filtro de búsqueda activo
                     if (!autoElementName) {
                         const searchInput = document.getElementById('search-input');
@@ -3901,7 +3923,7 @@
                         fileName += `-${autoElementName}`;
                     }
                 }
-                
+
                 return `${fileName}.${extension}`;
             }
 
