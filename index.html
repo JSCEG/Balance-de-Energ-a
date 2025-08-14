@@ -3607,7 +3607,7 @@
                                     
                                     // Descargar sankey principal filtrado después de aplicar el filtro
                                     setTimeout(() => {
-                                        exportChartWithLegend('png', 4, 'element', energetico, `Sankey-Principal-${energetico}-${yearSelector.value}`);
+                                        exportChartWithLegendFiltered('png', 4, 'element', energetico, `Sankey-Principal-${energetico}-${yearSelector.value}`, energetico);
                                         
                                         // Restaurar icono original después de la descarga
                                         setTimeout(() => {
@@ -3690,7 +3690,6 @@
             }
 
             // Función para exportar gráfico con leyenda
-            // Función para exportar gráfico con leyenda
             function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', focusedNodeName = null) {
                 // Primera exportación con fondo blanco
                 exportWithBackground(true, format, pixelRatio, exportType, elementName, focusedNodeName);
@@ -3698,6 +3697,17 @@
                 // Segunda exportación con fondo transparente
                 setTimeout(() => {
                     exportWithBackground(false, format, pixelRatio, exportType, elementName + '_transparente', focusedNodeName);
+                }, 1000);
+            }
+
+            // Función específica para exportar sankey principal filtrado con leyenda de elementos visibles
+            function exportChartWithLegendFiltered(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', fileName = '', focusedNodeName = null) {
+                // Primera exportación con fondo blanco - pasando el focusedNodeName para filtrar leyenda
+                exportWithBackground(true, format, pixelRatio, exportType, fileName, focusedNodeName);
+
+                // Segunda exportación con fondo transparente
+                setTimeout(() => {
+                    exportWithBackground(false, format, pixelRatio, exportType, fileName + '_transparente', focusedNodeName);
                 }, 1000);
             }
 
@@ -3823,12 +3833,23 @@
                 const colorBoxSize = 14 * pixelRatio;
                 const cols = Math.floor(width / itemWidth);
                 const startX = x + 20 * pixelRatio;
-                const startY = y + 50 * pixelRatio;
+                const startY = y + (focusedNodeName ? 60 : 50) * pixelRatio;
 
                 // Título de la leyenda
                 ctx.fillStyle = '#6a1c32';
                 ctx.font = `bold ${fontSize + 2}px Arial`;
-                ctx.fillText('Leyenda', startX, y + 20 * pixelRatio);
+                const legendTitle = focusedNodeName ? 
+                    `Leyenda - Filtrado por: ${focusedNodeName}` : 
+                    'Leyenda de Energéticos';
+                ctx.fillText(legendTitle, startX, y + 20 * pixelRatio);
+
+                // Agregar información del año cuando está filtrado
+                if (focusedNodeName) {
+                    ctx.fillStyle = '#374151';
+                    ctx.font = `${fontSize - 1}px Arial`;
+                    const yearText = `Año: ${yearSelector.value} | Elementos conectados: ${activeEnergeticos.length}`;
+                    ctx.fillText(yearText, startX, y + 35 * pixelRatio);
+                }
 
                 // Dibujar elementos de la leyenda
                 ctx.font = `${fontSize}px Arial`;
@@ -4558,35 +4579,52 @@
 
                 // Leyenda
                 const legendContainer = document.createElement('div');
-                legendContainer.style.cssText = 'margin-top: 2rem;';
+                legendContainer.style.cssText = 'margin-top: 2rem; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;';
 
                 const legendTitle = document.createElement('h4');
-                legendTitle.textContent = 'Leyenda de Colores';
-                legendTitle.style.cssText = 'text-align: center; margin: 0 0 1rem 0; color: var(--color-guinda);';
+                legendTitle.textContent = 'Leyenda de Colores - Sub-Sankey';
+                legendTitle.style.cssText = 'text-align: center; margin: 0 0 0.5rem 0; color: var(--color-guinda);';
+                
+                const legendNote = document.createElement('p');
+                legendNote.textContent = 'Energéticos presentes en el diagrama detallado';
+                legendNote.style.cssText = 'text-align: center; margin: 0 0 1rem 0; color: var(--color-gris-oscuro); font-size: 0.8rem; font-style: italic;';
 
                 const legendContent = document.createElement('div');
-                legendContent.style.cssText = 'display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; font-size: 0.9rem;';
+                legendContent.style.cssText = 'display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; max-width: 100%;';
 
                 // Generar leyenda basada en los nodos del sub-sankey
                 if (subSankeyChart) {
-                    const option = subSankeyChart.getOption();
-                    if (option && option.series && option.series[0] && option.series[0].data) {
-                        option.series[0].data.forEach(node => {
-                            if (!node.name.startsWith('SPACER')) {
-                                const legendItem = document.createElement('div');
-                                legendItem.style.cssText = 'display: flex; align-items: center; gap: 0.5rem;';
+                    const subOption = subSankeyChart.getOption();
+                    if (subOption && subOption.series && subOption.series[0] && subOption.series[0].data) {
+                        // Obtener solo los nodos del sub-sankey (no espaciadores)
+                        const subSankeyNodes = subOption.series[0].data
+                            .filter(node => !node.name.startsWith('SPACER') && 
+                                           !node.esEspaciador && 
+                                           node.itemStyle && 
+                                           node.itemStyle.color)
+                            .sort((a, b) => a.name.localeCompare(b.name)); // Ordenar alfabéticamente
 
-                                const colorBox = document.createElement('div');
-                                colorBox.style.cssText = `width: 15px; height: 15px; background-color: ${node.itemStyle.color}; border-radius: 3px; border: 1px solid #ccc;`;
+                        // Crear leyenda simple con todos los nodos del sub-sankey
+                        const legendGrid = document.createElement('div');
+                        legendGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; width: 100%;';
 
-                                const label = document.createElement('span');
-                                label.textContent = node.name;
+                        subSankeyNodes.forEach(node => {
+                            const legendItem = document.createElement('div');
+                            legendItem.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: white; border-radius: 4px; border: 1px solid #e0e0e0;';
 
-                                legendItem.appendChild(colorBox);
-                                legendItem.appendChild(label);
-                                legendContent.appendChild(legendItem);
-                            }
+                            const colorBox = document.createElement('div');
+                            colorBox.style.cssText = `width: 16px; height: 16px; background-color: ${node.itemStyle.color}; border-radius: 3px; border: 1px solid #ccc; flex-shrink: 0;`;
+
+                            const label = document.createElement('span');
+                            label.textContent = node.name;
+                            label.style.cssText = 'font-size: 0.9rem; font-weight: 500;';
+
+                            legendItem.appendChild(colorBox);
+                            legendItem.appendChild(label);
+                            legendGrid.appendChild(legendItem);
                         });
+
+                        legendContent.appendChild(legendGrid);
                     }
                 }
 
@@ -4598,6 +4636,7 @@
                 }
                 container.appendChild(chartContainer);
                 legendContainer.appendChild(legendTitle);
+                legendContainer.appendChild(legendNote);
                 legendContainer.appendChild(legendContent);
                 container.appendChild(legendContainer);
 
