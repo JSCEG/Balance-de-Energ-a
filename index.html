@@ -2932,6 +2932,7 @@
             const focusSwitch = document.getElementById('focus-switch');
             let focusMode = focusSwitch.checked;
             let focusedNodeIndex = null;
+            let currentLegendOrder = null;
 
 
             // Verificar que los datos estén cargados
@@ -3800,6 +3801,7 @@
                 };
 
                 legendContainer.innerHTML = '';
+                let legendCounter = 1;
 
                 // Crear leyenda por grupos
                 Object.entries(grupos).forEach(([nombreGrupo, energeticosGrupo]) => {
@@ -3846,8 +3848,10 @@
                         // Agregar elementos del grupo
                         energeticosActivos.forEach(energetico => {
                             const color = colors[energetico];
+                            const order = legendCounter++;
 
                             const legendItem = document.createElement('div');
+                            legendItem.dataset.order = order;
                             legendItem.style.cssText = `
                                 display: flex;
                                 align-items: center;
@@ -3877,8 +3881,8 @@
                                 ">${truncateText(energetico, 25)}</span>
                                 <div class="legend-actions">
                                     <i class="fas fa-info-circle legend-info-btn" data-energetico="${energetico}" title="Ver información del energético"></i>
-                                    <i class="fas fa-chart-area legend-main-export-btn" data-energetico="${energetico}" title="Descargar Sankey principal filtrado"></i>
-                                    <i class="fas fa-download legend-export-btn" data-energetico="${energetico}" title="Exportar Sub-Sankey detallado"></i>
+                                    <i class="fas fa-chart-area legend-main-export-btn" data-energetico="${energetico}" data-order="${order}" title="Descargar Sankey principal filtrado"></i>
+                                    <i class="fas fa-download legend-export-btn" data-energetico="${energetico}" data-order="${order}" title="Exportar Sub-Sankey detallado"></i>
                                 </div>
                             `;
 
@@ -3905,6 +3909,7 @@
                                     }
                                 } else if (e.target.classList.contains('legend-main-export-btn')) {
                                     const energetico = e.target.dataset.energetico;
+                                    const order = parseInt(e.target.dataset.order, 10);
 
                                     // Mostrar indicador de carga
                                     const originalIcon = e.target.className;
@@ -3916,7 +3921,7 @@
 
                                     // Descargar sankey principal filtrado después de aplicar el filtro
                                     setTimeout(() => {
-                                        exportChartWithLegendFiltered('png', 4, 'element', energetico, `Sankey-Principal-${energetico}-${yearSelector.value}`, energetico);
+                                        exportChartWithLegendFiltered('png', 4, 'element', energetico, energetico, order);
 
                                         // Restaurar icono original después de la descarga
                                         setTimeout(() => {
@@ -3932,6 +3937,8 @@
                                     }
                                 } else if (e.target.classList.contains('legend-export-btn')) {
                                     const energetico = e.target.dataset.energetico;
+                                    const order = parseInt(e.target.dataset.order, 10);
+                                    currentLegendOrder = order;
 
                                     // Mostrar indicador de carga
                                     const originalIcon = e.target.className;
@@ -3999,28 +4006,28 @@
             }
 
             // Función para exportar gráfico con leyenda
-            function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', focusedNodeName = null) {
+            function exportChartWithLegend(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', focusedNodeName = null, order = null) {
                 // Primera exportación con fondo blanco
-                exportWithBackground(true, format, pixelRatio, exportType, elementName, focusedNodeName);
+                exportWithBackground(true, format, pixelRatio, exportType, elementName, focusedNodeName, order);
 
                 // Segunda exportación con fondo transparente
                 setTimeout(() => {
-                    exportWithBackground(false, format, pixelRatio, exportType, elementName + '_transparente', focusedNodeName);
+                    exportWithBackground(false, format, pixelRatio, exportType, elementName, focusedNodeName, order);
                 }, 1000);
             }
 
             // Función específica para exportar sankey principal filtrado con leyenda de elementos visibles
-            function exportChartWithLegendFiltered(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', fileName = '', focusedNodeName = null) {
+            function exportChartWithLegendFiltered(format = 'png', pixelRatio = 3, exportType = 'general', elementName = '', focusedNodeName = null, order = null) {
                 // Primera exportación con fondo blanco - pasando el focusedNodeName para filtrar leyenda
-                exportWithBackground(true, format, pixelRatio, exportType, fileName, focusedNodeName);
+                exportWithBackground(true, format, pixelRatio, exportType, elementName, focusedNodeName, order);
 
                 // Segunda exportación con fondo transparente
                 setTimeout(() => {
-                    exportWithBackground(false, format, pixelRatio, exportType, fileName + '_transparente', focusedNodeName);
+                    exportWithBackground(false, format, pixelRatio, exportType, elementName, focusedNodeName, order);
                 }, 1000);
             }
 
-            function exportWithBackground(useWhiteBackground, format, pixelRatio, exportType, elementName, focusedNodeName) {
+            function exportWithBackground(useWhiteBackground, format, pixelRatio, exportType, elementName, focusedNodeName, order = null) {
                 setTimeout(() => {
                     // Obtener la imagen del gráfico
                     const chartUrl = sankeyChart.getDataURL({
@@ -4066,7 +4073,7 @@
                         const finalUrl = canvas.toDataURL('image/png');
                         const a = document.createElement('a');
                         a.href = finalUrl;
-                        a.download = generateFileName(exportType, 'png', elementName);
+                        a.download = generateFileName(exportType, 'png', elementName, order, useWhiteBackground);
                         a.click();
                     };
                     chartImg.src = chartUrl;
@@ -4581,8 +4588,15 @@
             }
 
             // Función para generar nombres de archivo dinámicos
-            function generateFileName(exportType = 'general', extension = 'png', elementName = '') {
+            function generateFileName(exportType = 'general', extension = 'png', elementName = '', order = null, useWhiteBackground = true) {
                 const year = yearSelector.value;
+
+                if (order !== null && exportType === 'element' && elementName) {
+                    const prefix = `${order}.-${year}-${useWhiteBackground ? 'BN_' : 'BNE_'}`;
+                    const suffix = useWhiteBackground ? '' : '-transparente';
+                    return `${prefix}${cleanFileName(elementName)}${suffix}.${extension}`;
+                }
+
                 let fileName = `BNE-${year}`;
 
                 if (exportType === 'element' && elementName) {
@@ -4628,7 +4642,8 @@
                     }
                 }
 
-                return `${fileName}.${extension}`;
+                const suffix = useWhiteBackground ? '' : '-transparente';
+                return `${fileName}${suffix}.${extension}`;
             }
 
             sankeyChart.on('click', function (params) {
@@ -5097,8 +5112,8 @@
                     // Crear enlace de descarga
                     const link = document.createElement('a');
                     const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
-                    const backgroundType = whiteBackground ? 'fondo-blanco' : 'fondo-transparente';
-                    link.download = `balance-energetico-${subtitleText.replace(/[^a-zA-Z0-9]/g, '_')}-${backgroundType}.png`;
+                    const baseName = subtitleText.split(' - ')[0];
+                    link.download = generateFileName('element', 'png', baseName, currentLegendOrder, whiteBackground);
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 });
