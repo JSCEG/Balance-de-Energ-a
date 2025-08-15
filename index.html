@@ -2615,10 +2615,7 @@
                 Energético Seleccionado</p>
         </div>
         <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
-        <div id="sub-sankey-legend" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; display: none;">
-            <h4 style="margin: 0 0 1rem 0; color: var(--color-guinda); font-size: 1rem;">Leyenda de Energéticos</h4>
-            <div id="sub-sankey-legend-items" style="display: flex; flex-wrap: wrap; gap: 1rem;"></div>
-        </div>
+
         <!-- <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;"></button> -->
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path
@@ -4991,7 +4988,7 @@
 
             // Funcionalidad del modal de exportación
             const exportModal = document.getElementById('export-modal');
-            const exportButton = document.getElementById('export-sub-sankey');
+            const exportButton = document.getElementById('export-subsankey');
             const closeModal = document.getElementById('close-export-modal');
 
             exportButton.addEventListener('click', () => {
@@ -5135,24 +5132,31 @@
                     return;
                 }
 
+                // Forzar un resize para asegurar que todos los elementos se rendericen correctamente
+                subSankeyChart.resize();
+                
                 // Función para exportar con un fondo específico
                 function exportWithSpecificBackground(useWhiteBackground) {
-                    const chartUrl = subSankeyChart.getDataURL({
-                        type: 'png',
-                        pixelRatio: 3,
-                        backgroundColor: useWhiteBackground ? '#fff' : 'rgba(0,0,0,0)'
-                    });
+                    // Pequeño delay para asegurar que el resize se complete
+                    setTimeout(() => {
+                        const chartUrl = subSankeyChart.getDataURL({
+                            type: 'png',
+                            pixelRatio: 3,
+                            backgroundColor: useWhiteBackground ? '#fff' : 'rgba(0,0,0,0)',
+                            excludeComponents: [] // Asegurar que incluya todos los componentes
+                        });
 
-                    // Crear enlace de descarga
-                    const link = document.createElement('a');
-                    const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
-                    const baseName = cleanFileName(subtitleText.split(' - ')[0]);
-                    const prefix = currentLegendOrder !== null ? 
-                        `${currentLegendOrder}.-BNE_${useWhiteBackground ? '' : 'transparente_'}subsankey_` : 
-                        `subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
-                    link.download = `${prefix}${baseName}.png`;
-                    link.href = chartUrl;
-                    link.click();
+                        // Crear enlace de descarga
+                        const link = document.createElement('a');
+                        const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
+                        const baseName = cleanFileName(subtitleText.split(' - ')[0]);
+                        const prefix = currentLegendOrder !== null ? 
+                            `${currentLegendOrder}.-BNE_${useWhiteBackground ? '' : 'transparente_'}subsankey_` : 
+                            `subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
+                        link.download = `${prefix}${baseName}.png`;
+                        link.href = chartUrl;
+                        link.click();
+                    }, 100);
                 }
 
                 // Exportar con fondo blanco primero
@@ -5161,7 +5165,7 @@
                 // Exportar con fondo transparente después de un delay
                 setTimeout(() => {
                     exportWithSpecificBackground(false);
-                }, 1000);
+                }, 1500);
             }
 
             // Función para manejar clic en nodos (desde leyenda o diagrama)
@@ -5873,6 +5877,22 @@
                 });
 
                 const option = {
+                    // Título integrado en el sub-Sankey
+                    title: {
+                        text: 'Vista Detallada del Flujo',
+                        subtext: `${centerNodeName} - ${yearSelector.value}`,
+                        left: 'center',
+                        top: 10,
+                        textStyle: {
+                            color: '#6a1c32',
+                            fontSize: 16,
+                            fontWeight: 'bold'
+                        },
+                        subtextStyle: {
+                            color: '#666',
+                            fontSize: 12
+                        }
+                    },
                     // Configuración de accesibilidad para sub-sankey
                     aria: {
                         enabled: true
@@ -5891,30 +5911,90 @@
                         },
                         extraCssText: 'max-width:400px; white-space: normal;'
                     },
-                    legend: {
-                        type: 'scroll',
-                        orient: 'horizontal',
-                        bottom: 10,
-                        left: 'center',
-                        itemWidth: 12,
-                        itemHeight: 8,
-                        textStyle: {
-                            fontSize: 10,
-                            color: '#333'
-                        },
-                        data: Array.from(nodeMap.values())
+                    graphic: (() => {
+                        const legendItems = Array.from(nodeMap.values())
                             .filter(node => window.sankeyConfig.energeticColors[node.name])
-                            .map(node => ({
-                                name: node.name,
-                                itemStyle: {
-                                    color: window.sankeyConfig.energeticColors[node.name]
+                            .sort((a, b) => a.name.localeCompare(b.name));
+                        
+                        const graphics = [];
+                        const itemsPerRow = 4; // Más elementos por fila
+                        const itemWidth = 140; // Más ancho por elemento
+                        const itemHeight = 18;
+                        const startX = 30;
+                        const startY = 60; // Más espacio desde abajo
+                        
+                        // Título de la leyenda
+                        graphics.push({
+                            type: 'text',
+                            left: 'center',
+                            bottom: startY + (Math.ceil(legendItems.length / itemsPerRow) * itemHeight) + 15,
+                            style: {
+                                text: 'Leyenda de Energéticos',
+                                fontSize: 12,
+                                fill: '#6a1c32',
+                                fontWeight: 'bold',
+                                textAlign: 'center'
+                            }
+                        });
+                        
+                        // Elementos de la leyenda
+                        legendItems.forEach((node, index) => {
+                            const row = Math.floor(index / itemsPerRow);
+                            const col = index % itemsPerRow;
+                            const x = startX + col * itemWidth;
+                            const y = startY + row * itemHeight;
+                            
+                            // Cuadro de color
+                            graphics.push({
+                                type: 'rect',
+                                left: x,
+                                bottom: y,
+                                shape: { width: 12, height: 12 },
+                                style: {
+                                    fill: window.sankeyConfig.energeticColors[node.name],
+                                    stroke: '#333',
+                                    lineWidth: 1
                                 }
-                            }))
-                    },
+                            });
+                            
+                            // Texto
+                            graphics.push({
+                                type: 'text',
+                                left: x + 18,
+                                bottom: y + 6,
+                                style: {
+                                    text: node.name,
+                                    fontSize: 9,
+                                    fill: '#333',
+                                    textAlign: 'left',
+                                    textVerticalAlign: 'middle'
+                                }
+                            });
+                        });
+                        
+                        // Nota explicativa
+                        graphics.push({
+                            type: 'text',
+                            left: 'center',
+                            bottom: 15,
+                            style: {
+                                text: '*NOTA: "EP" = Energía Primaria, "ES" = Energía Secundaria y "V.I. y Dif. Est." = Variación de Inventarios y Diferencia Estadística',
+                                fontSize: 8,
+                                fill: '#666',
+                                textAlign: 'center',
+                                width: 500,
+                                overflow: 'break'
+                            }
+                        });
+                        
+                        return graphics;
+                    })(),
                     series: [{
                         type: 'sankey',
-                        top: 20,
-                        bottom: 20,
+                        top: 60,
+                        bottom: 120,
+                        left: 10,
+                        right: 100,
                         data: Array.from(nodeMap.values()),
                         links: links,
                         nodeWidth: 30,
@@ -5937,20 +6017,29 @@
                             borderRadius: 3,
                             padding: 4
                         },
-                        edgeLabel: {
-                            show: true,
-                            color: '#000',
-                            fontSize: 8,
-                            fontStyle: 'italic',
-                            formatter: function (params) {
-                                return formatNumber(params.data.value);
-                            },
-                            backgroundColor: '#ffffff',
-                            borderColor: 'rgba(0, 0, 0, 0.2)',
-                            borderWidth: 1,
-                            borderRadius: 3,
-                            padding: [2, 4, 2, 4]
+                        labelLayout: function (params) {
+                            if (params.dataType !== 'node') return {};
+                            const r = params.rect; // bounding box del nodo
+                            const padding = 6;
+                            
+                            // Obtener el ancho del gráfico para determinar posición
+                            const chartWidth = subSankeyChart?.getWidth ? subSankeyChart.getWidth() : (r.x + r.width) * 2;
+                            
+                            // Determinar si es la última columna (más a la derecha)
+                            const isLastColumn = (r.x + r.width / 2) > (chartWidth * 0.75);
+                            
+                            // Si es la última columna, etiqueta hacia la izquierda
+                            // Si no, etiqueta hacia la derecha
+                            const labelToRight = !isLastColumn;
+                            
+                            return {
+                                x: labelToRight ? r.x + r.width + padding : r.x - padding,
+                                y: r.y + r.height / 2,
+                                verticalAlign: 'middle',
+                                align: labelToRight ? 'left' : 'right'
+                            };
                         },
+
                         labelLayout: function (params) {
                             if (params.dataType === 'edge') {
                                 const link = links[params.dataIndex];
@@ -5974,55 +6063,7 @@
 
                 subSankeyChart.setOption(option);
 
-                // Crear leyenda para el sub-Sankey
-                createSubSankeyLegend(nodeMap);
-
                 // El botón de descarga ahora abre el modal (manejado en otro lugar)
-            }
-
-            // Función para crear la leyenda del sub-Sankey
-            function createSubSankeyLegend(nodeMap) {
-                const legendContainer = document.getElementById('sub-sankey-legend');
-                const legendItems = document.getElementById('sub-sankey-legend-items');
-                const colors = window.sankeyConfig.energeticColors;
-                
-                // Limpiar leyenda anterior
-                legendItems.innerHTML = '';
-                
-                // Obtener nodos únicos con colores
-                const uniqueNodes = Array.from(nodeMap.values())
-                    .filter(node => colors[node.name])
-                    .sort((a, b) => a.name.localeCompare(b.name));
-                
-                if (uniqueNodes.length > 0) {
-                    uniqueNodes.forEach(node => {
-                        const color = colors[node.name];
-                        const item = document.createElement('div');
-                        item.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; min-width: 150px;';
-                        
-                        const colorBox = document.createElement('div');
-                        colorBox.style.cssText = `
-                            width: 16px; 
-                            height: 16px; 
-                            background-color: ${color}; 
-                            border: 1px solid rgba(0,0,0,0.2); 
-                            border-radius: 3px;
-                            flex-shrink: 0;
-                        `;
-                        
-                        const label = document.createElement('span');
-                        label.textContent = node.name;
-                        label.style.cssText = 'font-size: 0.9rem; color: #333;';
-                        
-                        item.appendChild(colorBox);
-                        item.appendChild(label);
-                        legendItems.appendChild(item);
-                    });
-                    
-                    legendContainer.style.display = 'block';
-                } else {
-                    legendContainer.style.display = 'none';
-                }
             }
 
             // Portal para tooltips de controles
