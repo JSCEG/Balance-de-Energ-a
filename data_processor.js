@@ -125,7 +125,7 @@ window.dataProcessor = {
                         flow: nodo.flow || "default",
                         esEspaciador: Boolean(nodo.esEspaciador),
                         // Asignar ancho personalizado por columna
-                        nodeWidth: config.columnWidths && config.columnWidths[colIdx] ? 
+                        nodeWidth: config.columnWidths && config.columnWidths[colIdx] ?
                             config.columnWidths[colIdx] : config.layoutConfig.nodeWidth,
                     };
 
@@ -145,7 +145,7 @@ window.dataProcessor = {
                             borderColor: light ? '#333' : '#fff',
                             borderWidth: light ? 1 : 0,
                             // Aplicar ancho personalizado por columna
-                            width: config.columnWidths && config.columnWidths[colIdx] ? 
+                            width: config.columnWidths && config.columnWidths[colIdx] ?
                                 config.columnWidths[colIdx] : config.layoutConfig.nodeWidth
                         };
                         nodeConfig.label = { color: '#000' };
@@ -183,7 +183,7 @@ window.dataProcessor = {
                 const childNode = nodes.get(hijo["Nodo Hijo"]);
                 const sourceNode = nodes.get(source);
                 const targetNode = nodes.get(target);
-                
+
                 // Obtener colores de los nodos origen y destino
                 const sourceColor = sourceNode && sourceNode.itemStyle ? sourceNode.itemStyle.color : this.getNodeColor(source, sourceNode, config, padreNode);
                 const targetColor = targetNode && targetNode.itemStyle ? targetNode.itemStyle.color : this.getNodeColor(target, targetNode, config, padreNode);
@@ -195,7 +195,7 @@ window.dataProcessor = {
                     value: Math.abs(value),
                     sourceCategory: padreNode ? padreNode.category : undefined,
                     targetCategory: childNode ? childNode.category : undefined,
-                    lineStyle: { 
+                    lineStyle: {
                         color: 'gradient',
                         opacity: 0.7
                     }

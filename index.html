@@ -4622,7 +4622,8 @@
             // Función para generar nombres de archivo dinámicos
             function generateFileName(exportType = 'general', extension = 'png', elementName = '', order = null, useWhiteBackground = true) {
                 if (order !== null && exportType === 'element' && elementName) {
-                    const prefix = `${order}.-BNE_${useWhiteBackground ? '' : 'transparente_'}`;
+                    const year = yearSelector.value;
+                    const prefix = `${order}.-BNE_${year}_${useWhiteBackground ? '' : 'transparente_'}`;
                     return `${prefix}${cleanFileName(elementName)}.${extension}`;
                 }
 
@@ -5150,9 +5151,10 @@
                         const link = document.createElement('a');
                         const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
                         const baseName = cleanFileName(subtitleText.split(' - ')[0]);
+                        const year = yearSelector.value;
                         const prefix = currentLegendOrder !== null ? 
-                            `${currentLegendOrder}.-BNE_${useWhiteBackground ? '' : 'transparente_'}subsankey_` : 
-                            `subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
+                            `${currentLegendOrder}.-BNE_${year}_${useWhiteBackground ? '' : 'transparente_'}subsankey_` : 
+                            `BNE_${year}_subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
                         link.download = `${prefix}${baseName}.png`;
                         link.href = chartUrl;
                         link.click();
