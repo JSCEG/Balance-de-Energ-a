@@ -995,6 +995,79 @@
             border-color: var(--color-guinda);
         }
 
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-content {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .preloader-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .preloader h3 {
+            color: #6a1c32; /* Rojo institucional */
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .preloader-message {
+            color: #374151;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .preloader-progress {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .preloader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6a1c32 0%, #006847 100%);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         /* Botones responsivos */
         @media (max-width: 1200px) {
             .controls {
@@ -2352,6 +2425,18 @@
         </div>
     </header>
 
+    <!-- Preloader -->
+    <div class="preloader hidden" id="preloader">
+        <div class="preloader-content">
+            <img src="img/mujer.png" alt="Cargando" class="preloader-logo">
+            <h3>Balance Nacional de Energía</h3>
+            <div class="preloader-message" id="preloader-message">Cargando...</div>
+            <div class="preloader-progress">
+                <div class="preloader-progress-bar" id="preloader-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
 
 
     <div id="color-legend-container" class="card" style="margin-bottom: 1rem;">
@@ -2672,15 +2757,68 @@
         </div>
     </div>
 
+
     <script src="sankey_config.js"></script>
     <script src="data_processor.js"></script>
     <script src="datos.js"></script>
     <script>
+        // Funciones para controlar el preloader
+        function showPreloader(message = 'Cargando...') {
+            const preloader = document.getElementById('preloader');
+            const messageEl = document.getElementById('preloader-message');
+            const progressBar = document.getElementById('preloader-progress-bar');
+            
+            // Actualizar mensaje
+            messageEl.textContent = message;
+            
+            // Mostrar preloader
+            preloader.classList.remove('hidden');
+            
+            // Iniciar animación de progreso
+            let progress = 0;
+            progressBar.style.width = '0%';
+            
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+            }, 200);
+            
+            return {
+                complete: () => {
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        preloader.classList.add('hidden');
+                        progressBar.style.width = '0%';
+                    }, 300);
+                },
+                updateMessage: (newMessage) => {
+                    messageEl.textContent = newMessage;
+                },
+                updateProgress: (value) => {
+                    progress = Math.min(90, value);
+                    progressBar.style.width = progress + '%';
+                },
+                updateProgress: (value) => {
+                    progressBar.style.width = value + '%';
+                }
+            };
+        }
+
         // Efecto de hover mejorado para cards
         function initializeGlassEffects() {
-
-            const cards = document.querySelectorAll('.card');
+            const cards = document.querySelectorAll('.card, .card-inset');
             cards.forEach(card => {
+                card.addEventListener('mousemove', function (e) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--x', `${x}px`);
+                    card.style.setProperty('--y', `${y}px`);
+                });
+
                 card.addEventListener('mouseenter', function (e) {
                     this.style.transform = 'translateY(-8px)';
                 });
@@ -4141,158 +4279,188 @@
             });
 
             document.getElementById('exportar').onclick = function () {
-                // Guardar el renderizador actual
-                const currentRenderer = sankeyChart.getOption().renderer || 'canvas';
+                let loader;
+                try {
+                    loader = showPreloader('Preparando opciones de exportación...');
+                    // Guardar el renderizador actual
+                    const currentRenderer = sankeyChart.getOption().renderer || 'canvas';
 
-                // Crear un modal para opciones de exportación
-                const modal = document.createElement('div');
-                modal.style.position = 'fixed';
-                modal.style.left = '0';
-                modal.style.top = '0';
-                modal.style.width = '100%';
-                modal.style.height = '100%';
-                modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                modal.style.backdropFilter = 'blur(10px)';
-                modal.style.webkitBackdropFilter = 'blur(10px)';
-                modal.style.display = 'flex';
-                modal.style.justifyContent = 'center';
-                modal.style.alignItems = 'center';
-                modal.style.zIndex = '10002';
+                    // Crear un modal para opciones de exportación
+                    const modal = document.createElement('div');
+                    modal.style.position = 'fixed';
+                    modal.style.left = '0';
+                    modal.style.top = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    modal.style.backdropFilter = 'blur(10px)';
+                    modal.style.webkitBackdropFilter = 'blur(10px)';
+                    modal.style.display = 'flex';
+                    modal.style.justifyContent = 'center';
+                    modal.style.alignItems = 'center';
+                    modal.style.zIndex = '10002';
 
-                const modalContent = document.createElement('div');
-                modalContent.style.backgroundColor = 'white';
-                modalContent.style.padding = '20px';
-                modalContent.style.borderRadius = '12px';
-                modalContent.style.width = '300px';
-                modalContent.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                    const modalContent = document.createElement('div');
+                    modalContent.style.backgroundColor = 'white';
+                    modalContent.style.padding = '20px';
+                    modalContent.style.borderRadius = '12px';
+                    modalContent.style.width = '300px';
+                    modalContent.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
 
-                modalContent.innerHTML = `
-                    <h3 style="margin-top:0;color:var(--primary-color)">Opciones de Exportación</h3>
-                    
-                    <div style="margin-bottom:15px">
-                        <label style="display:block;margin-bottom:5px;font-weight:500">Formato:</label>
-                        <select id="export-format" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc">
-                            <option value="png" selected>PNG (imagen rasterizada)</option>
-                            <option value="svg">SVG (gráfico vectorial)</option>
-                        </select>
-                    </div>
-                    
-                    <div id="resolution-option" style="margin-bottom:15px">
-                        <label style="display:block;margin-bottom:5px;font-weight:500">Resolución:</label>
-                        <select id="png-resolution" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc">
-                            <option value="2">Normal (2x)</option>
-                            <option value="3" selected>Alta (3x)</option>
-                            <option value="4">Muy alta (4x)</option>
-                            <option value="5">Ultra alta (5x)</option>
-                        </select>
-                    </div>
-                    
-                    <div style="margin-bottom:20px">
-                        <label style="display:block;margin-bottom:5px;font-weight:500">Fondo:</label>
-                        <select id="export-background" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc">
-                            <option value="#ffffff" selected>Blanco</option>
-                            <option value="transparent">Transparente</option>
-                        </select>
-                    </div>
-                    
-                    <div style="display:flex;justify-content:space-between">
-                        <button id="cancel-export" style="padding:8px 15px;border:none;border-radius:8px;background:#f0f0f0;cursor:pointer">Cancelar</button>
-                        <button id="confirm-export" style="padding:8px 15px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer">Descargar</button>
-                    </div>
-                `;
+                    modalContent.innerHTML = `
+                        <h3 style="margin-top:0;color:var(--primary-color)">Opciones de Exportación</h3>
+                        
+                        <div style="margin-bottom:15px">
+                            <label style="display:block;margin-bottom:5px;font-weight:500">Formato:</label>
+                            <select id="export-format" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc">
+                                <option value="png" selected>PNG (imagen rasterizada)</option>
+                                <option value="svg">SVG (gráfico vectorial)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="resolution-option" style="margin-bottom:15px">
+                            <label style="display:block;margin-bottom:5px;font-weight:500">Resolución:</label>
+                            <select id="png-resolution" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc">
+                                <option value="2">Normal (2x)</option>
+                                <option value="3" selected>Alta (3x)</option>
+                                <option value="4">Muy alta (4x)</option>
+                                <option value="5">Ultra alta (5x)</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom:20px">
+                            <label style="display:block;margin-bottom:5px;font-weight:500">Fondo:</label>
+                            <select id="export-background" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc">
+                                <option value="#ffffff" selected>Blanco</option>
+                                <option value="transparent">Transparente</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display:flex;justify-content:space-between">
+                            <button id="cancel-export" style="padding:8px 15px;border:none;border-radius:8px;background:#f0f0f0;cursor:pointer">Cancelar</button>
+                            <button id="confirm-export" style="padding:8px 15px;border:none;border-radius:8px;background:var(--primary-color);color:white;cursor:pointer">Descargar</button>
+                        </div>
+                    `;
 
-                modal.appendChild(modalContent);
-                document.body.appendChild(modal);
+                    modal.appendChild(modalContent);
+                    document.body.appendChild(modal);
 
-                // Mostrar/ocultar opciones de resolución según el formato
-                document.getElementById('export-format').addEventListener('change', function () {
-                    const resolutionOption = document.getElementById('resolution-option');
-                    resolutionOption.style.display = this.value === 'png' ? 'block' : 'none';
-                });
+                    // Mostrar/ocultar opciones de resolución según el formato
+                    document.getElementById('export-format').addEventListener('change', function () {
+                        const resolutionOption = document.getElementById('resolution-option');
+                        resolutionOption.style.display = this.value === 'png' ? 'block' : 'none';
+                    });
 
-                // Manejar cancelación
-                document.getElementById('cancel-export').onclick = function () {
-                    document.body.removeChild(modal);
-                };
+                    // Manejar cancelación
+                    document.getElementById('cancel-export').onclick = function () {
+                        document.body.removeChild(modal);
+                        loader.complete();
+                    };
 
-                // Manejar confirmación y descarga
-                document.getElementById('confirm-export').onclick = function () {
-                    const format = document.getElementById('export-format').value;
-                    const background = document.getElementById('export-background').value;
-                    let url;
+                    // Manejar confirmación y descarga
+                    document.getElementById('confirm-export').onclick = function () {
+                        const format = document.getElementById('export-format').value;
+                        const background = document.getElementById('export-background').value;
+                        let url;
 
-                    // Guardar las opciones actuales antes de cualquier cambio
-                    const currentOptions = sankeyChart.getOption();
+                        // Guardar las opciones actuales antes de cualquier cambio
+                        const currentOptions = sankeyChart.getOption();
 
-                    if (format === 'png') {
-                        // Cambiar temporalmente a renderizador canvas si es necesario
-                        if (currentRenderer !== 'canvas') {
-                            // Recrear el gráfico con renderizador canvas
-                            sankeyChart.dispose();
-                            const newChart = echarts.init(chartDom, null, { renderer: 'canvas' });
-                            newChart.setOption(currentOptions);
-                            sankeyChart = newChart;
+                        if (format === 'png') {
+                            // Cambiar temporalmente a renderizador canvas si es necesario
+                            if (currentRenderer !== 'canvas') {
+                                // Recrear el gráfico con renderizador canvas
+                                sankeyChart.dispose();
+                                const newChart = echarts.init(chartDom, null, { renderer: 'canvas' });
+                                newChart.setOption(currentOptions);
+                                sankeyChart = newChart;
+                            }
+
+                            const resolution = document.getElementById('png-resolution').value;
+                            url = sankeyChart.getDataURL({
+                                type: 'png',
+                                pixelRatio: parseInt(resolution),
+                                backgroundColor: background
+                            });
+                        } else { // svg
+                            // Cambiar temporalmente a renderizador svg si es necesario
+                            if (currentRenderer !== 'svg') {
+                                // Recrear el gráfico con renderizador svg
+                                sankeyChart.dispose();
+                                const newChart = echarts.init(chartDom, null, { renderer: 'svg' });
+                                newChart.setOption(currentOptions);
+                                sankeyChart = newChart;
+                            }
+
+                            url = sankeyChart.getDataURL({
+                                type: 'svg',
+                                backgroundColor: background
+                            });
                         }
 
-                        const resolution = document.getElementById('png-resolution').value;
-                        url = sankeyChart.getDataURL({
-                            type: 'png',
-                            pixelRatio: parseInt(resolution),
-                            backgroundColor: background
-                        });
-                    } else { // svg
-                        // Cambiar temporalmente a renderizador svg si es necesario
-                        if (currentRenderer !== 'svg') {
-                            // Recrear el gráfico con renderizador svg
+                        // Descargar el archivo
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = generateFileName('sankey', format);
+                        a.click();
+
+                        // Restaurar el renderizador original si fue cambiado
+                        if (currentRenderer !== (sankeyChart.getOption() ? sankeyChart.getOption().renderer : null)) {
                             sankeyChart.dispose();
-                            const newChart = echarts.init(chartDom, null, { renderer: 'svg' });
-                            newChart.setOption(currentOptions);
-                            sankeyChart = newChart;
+                            const originalChart = echarts.init(chartDom, null, { renderer: currentRenderer });
+                            originalChart.setOption(currentOptions); // Usar las opciones guardadas
+                            sankeyChart = originalChart;
                         }
 
-                        url = sankeyChart.getDataURL({
-                            type: 'svg',
-                            backgroundColor: background
-                        });
-                    }
-
-                    // Descargar el archivo
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = generateFileName('sankey', format);
-                    a.click();
-
-                    // Restaurar el renderizador original si fue cambiado
-                    if (currentRenderer !== (sankeyChart.getOption() ? sankeyChart.getOption().renderer : null)) {
-                        sankeyChart.dispose();
-                        const originalChart = echarts.init(chartDom, null, { renderer: currentRenderer });
-                        originalChart.setOption(currentOptions); // Usar las opciones guardadas
-                        sankeyChart = originalChart;
-                    }
-
-                    document.body.removeChild(modal);
-                };
+                        document.body.removeChild(modal);
+                        if (loader) loader.complete();
+                    };
+                } catch (error) {
+                    console.error('Error al exportar:', error);
+                    alert('Ocurrió un error al exportar la imagen. Por favor intente nuevamente.');
+                } finally {
+                    if (loader) loader.complete();
+                }
             };
 
             document.getElementById('export-svg').onclick = function () {
-                const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = generateFileName('sankey', 'svg');
-                a.click();
+                let loader;
+                try {
+                    loader = showPreloader('Generando archivo SVG...');
+                    const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = generateFileName('sankey', 'svg');
+                    a.click();
+                } catch (error) {
+                    console.error('Error al exportar SVG:', error);
+                    alert('Error al exportar el archivo SVG. Por favor intente nuevamente.');
+                } finally {
+                    if (loader) loader.complete();
+                }
             };
             document.getElementById('export-csv').onclick = function () {
-                const rows = currentLinks.map(l => {
-                    const cat = allNodes.get(l.source) ? allNodes.get(l.source).category : '';
-                    return `${l.source},${l.target},${l.rawValue || l.value},${yearSelector.value},${cat},${l.lineStyle.color}`;
-                });
-                const csv = 'source,target,value,year,category,color\n' + rows.join('\n');
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = generateFileName('datos', 'csv');
-                a.click();
-                URL.revokeObjectURL(a.href);
+                let loader;
+                try {
+                    loader = showPreloader('Generando archivo CSV...');
+                    const rows = currentLinks.map(l => {
+                        const cat = allNodes.get(l.source) ? allNodes.get(l.source).category : '';
+                        return `"${l.source}","${l.target}",${l.value},${yearSelector.value},"${cat}","${l.lineStyle?.color || '#999'}"`;
+                    });
+                    const csv = 'source,target,value,year,category,color\n' + rows.join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const a = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = generateFileName('datos', 'csv');
+                    a.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 100);
+                } catch (error) {
+                    console.error('Error al exportar CSV:', error);
+                    alert('Error al exportar el archivo CSV. Por favor intente nuevamente.');
+                } finally {
+                    if (loader) loader.complete();
+                }
             };
 
             let subSankeyChart = null; // Variable para el gráfico hijo
