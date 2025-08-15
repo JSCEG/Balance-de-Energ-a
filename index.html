@@ -4624,7 +4624,7 @@
             // Función para generar nombres de archivo dinámicos
             function generateFileName(exportType = 'general', extension = 'png', elementName = '', order = null, useWhiteBackground = true) {
                 if (order !== null && exportType === 'element' && elementName) {
-                    const prefix = `${order}.-${useWhiteBackground ? 'BN_' : 'BNE_'}`;
+                    const prefix = `${order}.-BNE_${useWhiteBackground ? '' : 'transparente_'}`;
                     return `${prefix}${cleanFileName(elementName)}.${extension}`;
                 }
 
