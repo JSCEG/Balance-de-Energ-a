@@ -3471,8 +3471,8 @@
                         type: 'sankey',
                         top: 10,
                         bottom: 10,
-                        left: 10,
-                        right: 10,
+                        left: 20,
+                        right: 20,
                         roam: zoomEnabled,
                         draggable: focusMode || !zoomEnabled,
 
@@ -4165,14 +4165,25 @@
                     activeEnergeticos = activeEnergeticos.filter(name => connectedNodes.has(name));
                 }
 
-                // Configuración de la leyenda
+                // Configuración de la leyenda con padding mejorado
                 const fontSize = 12 * pixelRatio;
                 const itemHeight = 20 * pixelRatio;
                 const itemWidth = 180 * pixelRatio;
                 const colorBoxSize = 14 * pixelRatio;
-                const cols = Math.floor(width / itemWidth);
-                const startX = x + 20 * pixelRatio;
-                const startY = y + (focusedNodeName ? 60 : 50) * pixelRatio;
+                
+                // Padding mejorado para evitar cortes de texto
+                const legendPadding = {
+                    left: 10 * pixelRatio,      // Padding izquierdo aumentado
+                    right: 10 * pixelRatio,     // Padding derecho para evitar cortes
+                    top: (focusedNodeName ? 70 : 60) * pixelRatio,  // Padding superior
+                    bottom: 20 * pixelRatio     // Padding inferior
+                };
+                
+                // Calcular área disponible considerando el padding
+                const availableWidth = width - legendPadding.left - legendPadding.right;
+                const cols = Math.floor(availableWidth / itemWidth);
+                const startX = x + legendPadding.left;
+                const startY = y + legendPadding.top;
 
                 // Título de la leyenda
                 ctx.fillStyle = '#6a1c32';
@@ -4217,8 +4228,8 @@
                 const note = '*NOTA: "EP" = Energía Primaria, "ES" = Energía Secundaria y "V.I. y Dif. Est." = Variación de Inventarios y Diferencia Estadística';
                 ctx.fillStyle = '#444';
                 ctx.font = `${fontSize - 1}px Arial`;
-                // Posicionar nota al fondo dentro del recuadro de altura asignada
-                const noteY = y + height - 10 * pixelRatio; // pequeño margen inferior
+                // Posicionar nota al fondo respetando el padding inferior
+                const noteY = y + height - legendPadding.bottom;
                 ctx.fillText(note, startX, noteY);
             }
 
