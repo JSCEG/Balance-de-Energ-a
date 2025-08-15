@@ -4012,7 +4012,9 @@
 
                 // Segunda exportación con fondo transparente
                 setTimeout(() => {
+
                     exportWithBackground(false, format, pixelRatio, exportType, elementName, focusedNodeName, order);
+
                 }, 1000);
             }
 
@@ -4023,7 +4025,9 @@
 
                 // Segunda exportación con fondo transparente
                 setTimeout(() => {
+
                     exportWithBackground(false, format, pixelRatio, exportType, elementName, focusedNodeName, order);
+
                 }, 1000);
             }
 
@@ -4589,6 +4593,7 @@
 
             // Función para generar nombres de archivo dinámicos
             function generateFileName(exportType = 'general', extension = 'png', elementName = '', order = null, useWhiteBackground = true) {
+
                 const year = yearSelector.value;
 
                 if (order !== null && exportType === 'element' && elementName) {
@@ -5112,8 +5117,10 @@
                     // Crear enlace de descarga
                     const link = document.createElement('a');
                     const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
+
                     const baseName = subtitleText.split(' - ')[0];
                     link.download = generateFileName('element', 'png', baseName, currentLegendOrder, whiteBackground);
+
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 });
