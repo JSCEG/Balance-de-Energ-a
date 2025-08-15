@@ -195,7 +195,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 14000 },
+                { nombre: "SPACER_BIG", tipo: "Padre", visible: true, posicion: 0, depth: 2, esEspaciador: true, valorEspaciador: 15500 },
                 // Nodos reales posicionados después del espaciador
                 //{ nombre: "Exportación EP", tipo: "Padre", visible: true, posicion: 1, depth: 2, flow: 'sink' },
                 //{ nombre: "Energía No Aprovechada EP", tipo: "Padre", visible: true, posicion: 2, depth: 2, flow: 'sink' },
@@ -259,7 +259,7 @@ window.sankeyConfig = {
                 { nombre: "Otros energéticos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 7, depth: 5 },
                 { nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
                 // { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9, depth: 5 }
-                { nombre: "SPACER_BIG_5B", tipo: "Padre", visible: true, posicion: 9, esEspaciador: true, valorEspaciador: 2000 },
+                { nombre: "SPACER_BIG_5B", tipo: "Padre", visible: true, posicion: 9, esEspaciador: true, valorEspaciador: 3000 },
                 // // ...
             ]
         },
@@ -273,7 +273,7 @@ window.sankeyConfig = {
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
                 // Nodos reales posicionados después del espaciador
-                { nombre: "SPACER_BIG_7", tipo: "Padre", visible: true, posicion: 1, esEspaciador: true, valorEspaciador: 10000 },
+                { nombre: "SPACER_BIG_7", tipo: "Padre", visible: true, posicion: 1, esEspaciador: true, valorEspaciador: 11500 },
                 { nombre: "Centrales Eléctricas", tipo: "Padre", visible: true, posicion: 2, },
 
 
@@ -287,7 +287,7 @@ window.sankeyConfig = {
             filtroTipo: "Energía Secundaria",
             padre: "Oferta Interna Bruta EP", // Solo hijos cuyo tipo sea "Energía Secundaria"
             nodos: [
-                { nombre: "SPACER_BIG_E", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 10000 },
+                { nombre: "SPACER_BIG_E", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 11500 },
                 // Puedes ajustar el orden y agregar más según tu catálogo
 
                 //{ nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
@@ -304,7 +304,7 @@ window.sankeyConfig = {
             alineacionVertical: "abajo",
             nodos: [
                 // Un solo espaciador grande para empujar los nodos hacia abajo
-                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 14500 },
+                { nombre: "SPACER_BIG_ES", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 16000 },
                 // Nodos reales posicionados después del espaciador
                 // { nombre: "Exportación ES", tipo: "Padre", visible: true, posicion: 1, flow: 'sink' },
                 // { nombre: "Energía No Aprovechada ES", tipo: "Padre", visible: true, posicion: 2, flow: 'sink' },
