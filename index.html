@@ -1035,7 +1035,8 @@
         }
 
         .preloader h3 {
-            color: #6a1c32; /* Rojo institucional */
+            color: #6a1c32;
+            /* Rojo institucional */
             margin-bottom: 1rem;
             font-size: 1.25rem;
         }
@@ -1063,9 +1064,17 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         /* Botones responsivos */
@@ -2767,23 +2776,23 @@
             const preloader = document.getElementById('preloader');
             const messageEl = document.getElementById('preloader-message');
             const progressBar = document.getElementById('preloader-progress-bar');
-            
+
             // Actualizar mensaje
             messageEl.textContent = message;
-            
+
             // Mostrar preloader
             preloader.classList.remove('hidden');
-            
+
             // Iniciar animación de progreso
             let progress = 0;
             progressBar.style.width = '0%';
-            
+
             const progressInterval = setInterval(() => {
                 progress += Math.random() * 15;
                 if (progress > 90) progress = 90;
                 progressBar.style.width = progress + '%';
             }, 200);
-            
+
             return {
                 complete: () => {
                     clearInterval(progressInterval);
@@ -2814,7 +2823,7 @@
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    
+
                     card.style.setProperty('--x', `${x}px`);
                     card.style.setProperty('--y', `${y}px`);
                 });
@@ -3147,14 +3156,14 @@
                             // Mejorar la visibilidad de los enlaces conectados
                             lineStyle: {
                                 curveness: window.sankeyConfig.layoutConfig.curveness,
-                                opacity: function(params) {
+                                opacity: function (params) {
                                     // Enlaces conectados al nodo filtrado más visibles
                                     if (params.data.source === nodeName || params.data.target === nodeName) {
                                         return 0.9;
                                     }
                                     return 0.3; // Enlaces no conectados más tenues
                                 },
-                                width: function(params) {
+                                width: function (params) {
                                     // Enlaces conectados ligeramente más gruesos
                                     if (params.data.source === nodeName || params.data.target === nodeName) {
                                         return Math.max(1, Math.sqrt(params.data.value) * 0.8);
@@ -3180,7 +3189,7 @@
                         lineStyle: {
                             curveness: window.sankeyConfig.layoutConfig.curveness,
                             opacity: 0.8,
-                            width: function(params) {
+                            width: function (params) {
                                 return Math.max(1, Math.sqrt(params.data.value) * 0.6);
                             }
                         }
@@ -3472,7 +3481,7 @@
                             formatter: function (params) {
                                 const nodeInfo = allNodes.get(params.name);
                                 if (nodeInfo && (nodeInfo.value > 0.1 || params.name === "Coquizadoras y Hornos")) {
-                                     return `${params.name} ${formatNumberForLabel(params.value)} PJ`;
+                                    return `${params.name} ${formatNumberForLabel(params.value)} PJ`;
                                 }
                                 return '';
                             },
@@ -3631,7 +3640,7 @@
 
                 // Mostrar etiquetas de enlaces para el nodo encontrado
                 showLinkLabels(name);
-                
+
                 // Mejorar la visibilidad de elementos después del filtro
                 setTimeout(() => {
                     improveFilteredVisibility(name);
@@ -3643,28 +3652,28 @@
                 // Obtener el canvas del gráfico para manipular z-index
                 const zr = sankeyChart.getZr();
                 const storage = zr.storage;
-                
+
                 // Obtener todos los elementos gráficos
                 const displayList = storage.getDisplayList();
-                
+
                 // Separar nodos, enlaces y etiquetas
                 const nodes = displayList.filter(el => el.type === 'rect' || el.type === 'circle');
                 const links = displayList.filter(el => el.type === 'bezierCurve' || el.type === 'line');
                 const labels = displayList.filter(el => el.type === 'text');
-                
+
                 // Reordenar z-index: enlaces primero, luego nodos, luego etiquetas
                 links.forEach((link, index) => {
                     link.z = 1 + index * 0.001; // Enlaces en el fondo
                 });
-                
+
                 nodes.forEach((node, index) => {
                     node.z = 100 + index * 0.001; // Nodos en el medio
                 });
-                
+
                 labels.forEach((label, index) => {
                     label.z = 200 + index * 0.001; // Etiquetas arriba de todo
                 });
-                
+
                 // Forzar re-renderizado
                 zr.refresh();
             }
@@ -3675,12 +3684,12 @@
                     const zr = sankeyChart.getZr();
                     const storage = zr.storage;
                     const displayList = storage.getDisplayList();
-                    
+
                     // Clasificar elementos por tipo
                     const links = [];
                     const nodes = [];
                     const labels = [];
-                    
+
                     displayList.forEach(el => {
                         if (el.type === 'bezierCurve' || el.type === 'line' || el.type === 'polygon') {
                             links.push(el);
@@ -3690,7 +3699,7 @@
                             labels.push(el);
                         }
                     });
-                    
+
                     // Asignar z-index apropiado
                     nodes.forEach((node, index) => {
                         node.z = 1 + index * 0.001;
@@ -3699,11 +3708,11 @@
                     links.forEach((link, index) => {
                         link.z = 100 + index * 0.001;
                     });
-                    
+
                     labels.forEach((label, index) => {
                         label.z = 200 + index * 0.001;
                     });
-                    
+
                     // Refresh para aplicar cambios
                     zr.refresh();
                 } catch (error) {
@@ -3880,26 +3889,26 @@
                                     }
                                 } else if (e.target.classList.contains('legend-main-export-btn')) {
                                     const energetico = e.target.dataset.energetico;
-                                    
+
                                     // Mostrar indicador de carga
                                     const originalIcon = e.target.className;
                                     e.target.className = 'fas fa-spinner fa-spin legend-main-export-btn';
                                     e.target.style.color = 'var(--color-verde-bandera)';
-                                    
+
                                     searchInput.value = energetico;
                                     handleSearch();
-                                    
+
                                     // Descargar sankey principal filtrado después de aplicar el filtro
                                     setTimeout(() => {
                                         exportChartWithLegendFiltered('png', 4, 'element', energetico, `Sankey-Principal-${energetico}-${yearSelector.value}`, energetico);
-                                        
+
                                         // Restaurar icono original después de la descarga
                                         setTimeout(() => {
                                             e.target.className = originalIcon;
                                             e.target.style.color = '';
                                         }, 2000);
                                     }, 500);
-                                    
+
                                     // Actualizar el subtitulo del Sankey principal
                                     const nodeInfo = allNodes.get(energetico);
                                     if (nodeInfo) {
@@ -3907,24 +3916,24 @@
                                     }
                                 } else if (e.target.classList.contains('legend-export-btn')) {
                                     const energetico = e.target.dataset.energetico;
-                                    
+
                                     // Mostrar indicador de carga
                                     const originalIcon = e.target.className;
                                     e.target.className = 'fas fa-spinner fa-spin legend-export-btn';
                                     e.target.style.color = 'var(--color-guinda)';
-                                    
+
                                     searchInput.value = energetico;
                                     handleSearch();
-                                    
+
                                     // Simular clic en nodo para mostrar detalles y sub-sankey
                                     handleNodeClick(energetico);
-                                    
+
                                     // Abrir modal de exportación después de que se cree el sub-sankey
                                     setTimeout(() => {
                                         // Restaurar icono original
                                         e.target.className = originalIcon;
                                         e.target.style.color = '';
-                                        
+
                                         if (subSankeyChart) {
                                             showExportModal();
                                         }
@@ -4122,8 +4131,8 @@
                 // Título de la leyenda
                 ctx.fillStyle = '#6a1c32';
                 ctx.font = `bold ${fontSize + 2}px Arial`;
-                const legendTitle = focusedNodeName ? 
-                    `Leyenda - Filtrado por: ${focusedNodeName}` : 
+                const legendTitle = focusedNodeName ?
+                    `Leyenda - Filtrado por: ${focusedNodeName}` :
                     'Leyenda de Energéticos';
                 ctx.fillText(legendTitle, startX, y + 20 * pixelRatio);
 
@@ -4157,6 +4166,14 @@
                     ctx.fillStyle = '#333';
                     ctx.fillText(energetico, itemX + colorBoxSize + 8 * pixelRatio, itemY);
                 });
+
+                // Nota aclaratoria (siempre al final de la leyenda)
+                const note = '*NOTA: "EP" = Energía Primaria, "ES" = Energía Secundaria y "V.I. y Dif. Est." = Variación de Inventarios y Diferencia Estadística';
+                ctx.fillStyle = '#444';
+                ctx.font = `${fontSize - 1}px Arial`;
+                // Posicionar nota al fondo dentro del recuadro de altura asignada
+                const noteY = y + height - 10 * pixelRatio; // pequeño margen inferior
+                ctx.fillText(note, startX, noteY);
             }
 
             function showNodeInfoModal(nodeName) {
@@ -4361,59 +4378,130 @@
                     document.getElementById('confirm-export').onclick = function () {
                         const format = document.getElementById('export-format').value;
                         const background = document.getElementById('export-background').value;
-                        let url;
-
-                        // Guardar las opciones actuales antes de cualquier cambio
+                        // Guardar las opciones actuales antes de cualquier cambio (para restaurar luego)
                         const currentOptions = sankeyChart.getOption();
 
                         if (format === 'png') {
-                            // Cambiar temporalmente a renderizador canvas si es necesario
+                            // Asegurar renderizador canvas (requerido para combinar en un <canvas>)
                             if (currentRenderer !== 'canvas') {
-                                // Recrear el gráfico con renderizador canvas
                                 sankeyChart.dispose();
                                 const newChart = echarts.init(chartDom, null, { renderer: 'canvas' });
                                 newChart.setOption(currentOptions);
                                 sankeyChart = newChart;
                             }
 
-                            const resolution = document.getElementById('png-resolution').value;
-                            url = sankeyChart.getDataURL({
+                            const resolution = parseInt(document.getElementById('png-resolution').value, 10);
+                            const chartUrl = sankeyChart.getDataURL({
                                 type: 'png',
-                                pixelRatio: parseInt(resolution),
-                                backgroundColor: background
+                                pixelRatio: resolution,
+                                backgroundColor: background === 'transparent' ? 'rgba(0,0,0,0)' : background
                             });
-                        } else { // svg
-                            // Cambiar temporalmente a renderizador svg si es necesario
+
+                            const img = new Image();
+                            img.onload = () => {
+                                const chartW = img.width;
+                                const chartH = img.height;
+
+                                // Determinar energéticos activos (mismo criterio que la leyenda principal)
+                                const colors = window.sankeyConfig?.energeticColors || {};
+                                const option = sankeyChart.getOption();
+                                const activeNodes = option.series[0].data
+                                    .filter(n => !n.esEspaciador && colors[n.name])
+                                    .map(n => n.name)
+                                    .sort();
+
+                                // Calcular alto dinámico para la leyenda según nº de elementos
+                                const itemWidth = 180 * resolution; // igual que en drawLegendOnCanvas
+                                const itemsPerRow = Math.max(1, Math.floor(chartW / itemWidth));
+                                const rows = Math.ceil(activeNodes.length / itemsPerRow);
+                                const baseTop = 50 * resolution; // espacio para título dentro de drawLegendOnCanvas
+                                const rowHeight = 20 * resolution; // altura por fila (coincide con drawLegendOnCanvas)
+                                // +60*resolution para garantizar espacio de la nota explicativa añadida al final
+                                const legendInnerHeight = baseTop + rows * rowHeight + 60 * resolution; // margen inferior extra + nota
+                                const padding = 20 * resolution;
+
+                                const canvas = document.createElement('canvas');
+                                canvas.width = chartW;
+                                canvas.height = chartH + legendInnerHeight + padding;
+                                const ctx = canvas.getContext('2d');
+
+                                if (background !== 'transparent') {
+                                    ctx.fillStyle = '#ffffff';
+                                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                } else {
+                                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                }
+
+                                // Dibuja el gráfico primero
+                                ctx.drawImage(img, 0, 0);
+
+                                // Dibuja la leyenda reutilizando función existente
+                                try {
+                                    drawLegendOnCanvas(
+                                        ctx,
+                                        0,
+                                        chartH + padding / 2,
+                                        chartW,
+                                        legendInnerHeight,
+                                        resolution,
+                                        null // sin nodo enfocado
+                                    );
+                                } catch (e) {
+                                    console.warn('No se pudo dibujar la leyenda en el canvas, se exportará solo el gráfico.', e);
+                                }
+
+                                const finalUrl = canvas.toDataURL('image/png');
+                                const a = document.createElement('a');
+                                a.href = finalUrl;
+                                a.download = generateFileName('sankey', 'png');
+                                a.click();
+
+                                // Restaurar renderer original si fue temporal
+                                if (currentRenderer !== 'canvas') {
+                                    sankeyChart.dispose();
+                                    const originalChart = echarts.init(chartDom, null, { renderer: currentRenderer });
+                                    originalChart.setOption(currentOptions);
+                                    sankeyChart = originalChart;
+                                }
+
+                                document.body.removeChild(modal);
+                                if (loader) loader.complete();
+                            };
+                            img.onerror = () => {
+                                alert('Error cargando imagen para exportar.');
+                                document.body.removeChild(modal);
+                                if (loader) loader.complete();
+                            };
+                            img.src = chartUrl;
+                        } else {
+                            // Exportación SVG (sin combinación manual de leyenda en canvas)
                             if (currentRenderer !== 'svg') {
-                                // Recrear el gráfico con renderizador svg
                                 sankeyChart.dispose();
                                 const newChart = echarts.init(chartDom, null, { renderer: 'svg' });
                                 newChart.setOption(currentOptions);
                                 sankeyChart = newChart;
                             }
 
-                            url = sankeyChart.getDataURL({
+                            const url = sankeyChart.getDataURL({
                                 type: 'svg',
-                                backgroundColor: background
+                                backgroundColor: background === 'transparent' ? 'rgba(0,0,0,0)' : background
                             });
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = generateFileName('sankey', 'svg');
+                            a.click();
+
+                            // Restaurar renderer original si fue temporal
+                            if (currentRenderer !== 'svg') {
+                                sankeyChart.dispose();
+                                const originalChart = echarts.init(chartDom, null, { renderer: currentRenderer });
+                                originalChart.setOption(currentOptions);
+                                sankeyChart = originalChart;
+                            }
+
+                            document.body.removeChild(modal);
+                            if (loader) loader.complete();
                         }
-
-                        // Descargar el archivo
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = generateFileName('sankey', format);
-                        a.click();
-
-                        // Restaurar el renderizador original si fue cambiado
-                        if (currentRenderer !== (sankeyChart.getOption() ? sankeyChart.getOption().renderer : null)) {
-                            sankeyChart.dispose();
-                            const originalChart = echarts.init(chartDom, null, { renderer: currentRenderer });
-                            originalChart.setOption(currentOptions); // Usar las opciones guardadas
-                            sankeyChart = originalChart;
-                        }
-
-                        document.body.removeChild(modal);
-                        if (loader) loader.complete();
                     };
                 } catch (error) {
                     console.error('Error al exportar:', error);
@@ -4861,7 +4949,7 @@
 
             function showExportModal() {
                 const previewContainer = document.getElementById('export-preview-container');
-                
+
                 // Verificar que el sub-sankey esté disponible
                 if (!subSankeyChart) {
                     alert('Por favor, selecciona un energético primero para generar el sub-sankey.');
@@ -4886,7 +4974,7 @@
                 const subtitle = document.createElement('h3');
                 subtitle.textContent = document.getElementById('sub-sankey-subtitle').textContent;
                 subtitle.style.cssText = 'text-align: center; margin: 0 0 1rem 0; color: var(--color-gris-oscuro); font-size: 1.2rem; font-weight: 600;';
-                
+
                 // Descripción del energético (si está disponible)
                 const description = document.createElement('p');
                 const energeticoName = document.getElementById('sub-sankey-subtitle').textContent.split(' - ')[0];
@@ -4909,7 +4997,7 @@
                 const legendTitle = document.createElement('h4');
                 legendTitle.textContent = 'Leyenda de Colores - Sub-Sankey';
                 legendTitle.style.cssText = 'text-align: center; margin: 0 0 0.5rem 0; color: var(--color-guinda);';
-                
+
                 const legendNote = document.createElement('p');
                 legendNote.textContent = 'Energéticos presentes en el diagrama detallado';
                 legendNote.style.cssText = 'text-align: center; margin: 0 0 1rem 0; color: var(--color-gris-oscuro); font-size: 0.8rem; font-style: italic;';
@@ -4923,10 +5011,10 @@
                     if (subOption && subOption.series && subOption.series[0] && subOption.series[0].data) {
                         // Obtener solo los nodos del sub-sankey (no espaciadores)
                         const subSankeyNodes = subOption.series[0].data
-                            .filter(node => !node.name.startsWith('SPACER') && 
-                                           !node.esEspaciador && 
-                                           node.itemStyle && 
-                                           node.itemStyle.color)
+                            .filter(node => !node.name.startsWith('SPACER') &&
+                                !node.esEspaciador &&
+                                node.itemStyle &&
+                                node.itemStyle.color)
                             .sort((a, b) => a.name.localeCompare(b.name)); // Ordenar alfabéticamente
 
                         // Crear leyenda simple con todos los nodos del sub-sankey
