@@ -111,11 +111,20 @@ window.sankeyConfig = {
     },
     // Configuración general del layout
     layoutConfig: {
-        nodeAlign: 'justify',
+        nodeAlign: 'left',
         nodeGap: 15,
-        nodeWidth: 20,
+        nodeWidth: 30, // Ancho por defecto
         layoutIterations: 0,
         curveness: 0.7
+    },
+    // Configuración de anchos personalizados por columna
+    columnWidths: {
+        0: 15,  // Columna 1: Origen (más estrecha)
+        1: 35,  // Columna 2: Energía Primaria (más ancha)
+        2: 30,  // Columna 3: Transformación (ancho medio)
+        3: 25,  // Columna 4: Energía Secundaria (más estrecha)
+        4: 1,  // Columna 5: Sectores (ancho medio)
+        5: 20   // Columna 6: Destinos finales (más estrecha)
     },
     // Parámetros de comportamiento/legibilidad
     colorBy: 'child',               // 'child' | 'parent' | 'category'
@@ -340,16 +349,16 @@ window.sankeyConfig = {
     ],
     // Títulos/etiquetas de columnas (ajusta left en % y top en px)
     columnLabels: [
-        { id: 'col-ep', text: 'FEP', left: '5%', top: 80 },
-        { id: 'col-origen', text: 'Energéticos Primarios', left: '10%', top: 80 },
-        { id: 'col-origen', text: 'Energéticos Secundarios', left: '43%', top: 80 },
-        { id: 'col-salidas-ep', text: 'Transformaciones', left: '26%', top: 80 },
+        // { id: 'col-ep', text: 'FEP', left: '5%', top: 80 },
+        // { id: 'col-origen', text: 'Energéticos Primarios', left: '10%', top: 80 },
+        // { id: 'col-origen', text: 'Energéticos Secundarios', left: '43%', top: 80 },
+        // { id: 'col-salidas-ep', text: 'Transformaciones', left: '26%', top: 80 },
         // { id: 'col-transform', text: 'Transformaciones', left: '40%', top: 8 },
         // { id: 'col-origen-es', text: 'Origen ES', left: '52%', top: 8 },
         // { id: 'col-es', text: 'Energía Secundaria', left: '64%', top: 8 },
         // { id: 'col-ce', text: 'Centrales Eléctricas', left: '76%', top: 8 },
         // { id: 'col-ee', text: 'Energía Eléctrica', left: '84%', top: 8 },
         // { id: 'col-salidas-es', text: 'Salidas ES', left: '90%', top: 8 },
-        { id: 'col-sectores', text: 'Usos Finales', left: '76%', top: 80 },
+        // { id: 'col-sectores', text: 'Usos Finales', left: '76%', top: 80 },
     ],
 };

@@ -124,6 +124,9 @@ window.dataProcessor = {
                         depth: nodo.depth !== undefined ? nodo.depth : colIdx,
                         flow: nodo.flow || "default",
                         esEspaciador: Boolean(nodo.esEspaciador),
+                        // Asignar ancho personalizado por columna
+                        nodeWidth: config.columnWidths && config.columnWidths[colIdx] ? 
+                            config.columnWidths[colIdx] : config.layoutConfig.nodeWidth,
                     };
 
                     if (nodeConfig.esEspaciador) {
@@ -140,7 +143,10 @@ window.dataProcessor = {
                         nodeConfig.itemStyle = {
                             color,
                             borderColor: light ? '#333' : '#fff',
-                            borderWidth: light ? 1 : 0
+                            borderWidth: light ? 1 : 0,
+                            // Aplicar ancho personalizado por columna
+                            width: config.columnWidths && config.columnWidths[colIdx] ? 
+                                config.columnWidths[colIdx] : config.layoutConfig.nodeWidth
                         };
                         nodeConfig.label = { color: '#000' };
                     }

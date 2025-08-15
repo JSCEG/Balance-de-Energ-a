@@ -3469,10 +3469,10 @@
                     },
                     series: [{
                         type: 'sankey',
-                        top: 20,
-                        bottom: 20,
-                        left: 30,
-                        right: 30,
+                        top: 10,
+                        bottom: 10,
+                        left: 10,
+                        right: 10,
                         roam: zoomEnabled,
                         draggable: focusMode || !zoomEnabled,
 
@@ -3490,7 +3490,7 @@
                             },
                             color: '#000',
                             fontSize: 8,
-                            fontWeight: 'bold',
+                            fontWeight: 'normal',
                             backgroundColor: '#ffffff',
                             borderRadius: 3,
                             padding: 4
@@ -3500,15 +3500,26 @@
                             if (params.dataType !== 'node') return {};
                             const r = params.rect; // bounding box del nodo
                             const padding = 6;
-                            // Heurística: nodos más a la izquierda colocan etiqueta a la derecha y viceversa
+
+                            // Obtener información del nodo para determinar su columna
+                            const nodeInfo = allNodes.get(params.name);
                             const chartWidth = sankeyChart?.getWidth ? sankeyChart.getWidth() : (r.x + r.width) * 2;
-                            const centerX = chartWidth / 2;
-                            const isLeft = (r.x + r.width / 2) < centerX;
+
+                            // Determinar si es la última columna (energéticos secundarios)
+                            // Los nodos de la última columna están más a la derecha
+                            const isLastColumn = (r.x + r.width / 2) > (chartWidth * 0.75);
+
+                            // Si es la última columna, etiqueta hacia la izquierda (para evitar cortes)
+                            // Si es primera columna, etiqueta hacia la derecha
+                            // Columnas del medio, etiqueta hacia la derecha también
+                            const isFirstColumn = (r.x + r.width / 2) < (chartWidth * 0.25);
+                            const labelToRight = !isLastColumn; // Todas hacia la derecha excepto la última
+
                             return {
-                                x: isLeft ? r.x + r.width + padding : r.x - padding,
+                                x: labelToRight ? r.x + r.width + padding : r.x - padding,
                                 y: r.y + r.height / 2,
                                 verticalAlign: 'middle',
-                                align: isLeft ? 'left' : 'right'
+                                align: labelToRight ? 'left' : 'right'
                             };
                         },
                         emphasis: {
@@ -3561,7 +3572,15 @@
                         },
                         nodeAlign: window.sankeyConfig.layoutConfig.nodeAlign,
                         nodeGap: window.sankeyConfig.layoutConfig.nodeGap,
-                        nodeWidth: window.sankeyConfig.layoutConfig.nodeWidth,
+                        nodeWidth: (() => {
+                            // Calcular ancho promedio de las columnas personalizadas
+                            const columnWidths = window.sankeyConfig.columnWidths;
+                            if (columnWidths) {
+                                const widths = Object.values(columnWidths);
+                                return widths.reduce((sum, width) => sum + width, 0) / widths.length;
+                            }
+                            return window.sankeyConfig.layoutConfig.nodeWidth;
+                        })(),
                         layoutIterations: window.sankeyConfig.layoutConfig.layoutIterations,
                         lineStyle: {
                             color: 'gradient',
