@@ -2615,7 +2615,11 @@
                 Energético Seleccionado</p>
         </div>
         <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
-        <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;">
+        <div id="sub-sankey-legend" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; display: none;">
+            <h4 style="margin: 0 0 1rem 0; color: var(--color-guinda); font-size: 1rem;">Leyenda de Energéticos</h4>
+            <div id="sub-sankey-legend-items" style="display: flex; flex-wrap: wrap; gap: 1rem;"></div>
+        </div>
+        <!-- <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;"></button> -->
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path
                     d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
@@ -2755,11 +2759,8 @@
                     <!-- Aquí se generará la vista previa -->
                 </div>
                 <div class="export-options" style="margin-top: 1rem; text-align: center;">
-                    <button id="export-png-white" class="btn btn-primary" style="margin: 0.5rem;">
-                        Descargar PNG (Fondo Blanco)
-                    </button>
-                    <button id="export-png-transparent" class="btn btn-secondary" style="margin: 0.5rem;">
-                        Descargar PNG (Fondo Transparente)
+                    <button id="export-subsankey" class="btn btn-primary" style="margin: 0.5rem;">
+                        Descargar Sub-Sankey (Ambas versiones)
                     </button>
                 </div>
             </div>
@@ -5122,33 +5123,45 @@
                     previewChart.setOption(originalOption);
                 }
 
-                // Configurar botones de exportación
-                document.getElementById('export-png-white').onclick = () => {
-                    exportCombinedImage(container, true);
-                };
-
-                document.getElementById('export-png-transparent').onclick = () => {
-                    exportCombinedImage(container, false);
+                // Configurar botón de exportación
+                document.getElementById('export-subsankey').onclick = () => {
+                    exportSubSankey();
                 };
             }
 
-            function exportCombinedImage(container, whiteBackground) {
-                // Usar html2canvas para capturar toda la vista previa
-                html2canvas(container, {
-                    backgroundColor: whiteBackground ? '#ffffff' : null,
-                    scale: 3, // Alta resolución
-                    useCORS: true,
-                    allowTaint: true
-                }).then(canvas => {
+            function exportSubSankey() {
+                if (!subSankeyChart) {
+                    alert('No hay sub-Sankey disponible para exportar');
+                    return;
+                }
+
+                // Función para exportar con un fondo específico
+                function exportWithSpecificBackground(useWhiteBackground) {
+                    const chartUrl = subSankeyChart.getDataURL({
+                        type: 'png',
+                        pixelRatio: 3,
+                        backgroundColor: useWhiteBackground ? '#fff' : 'rgba(0,0,0,0)'
+                    });
+
                     // Crear enlace de descarga
                     const link = document.createElement('a');
                     const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
                     const baseName = cleanFileName(subtitleText.split(' - ')[0]);
-                    const prefix = currentLegendOrder !== null ? `${currentLegendOrder}.-${whiteBackground ? 'BN_' : 'BNE_'}` : '';
+                    const prefix = currentLegendOrder !== null ? 
+                        `${currentLegendOrder}.-BNE_${useWhiteBackground ? '' : 'transparente_'}subsankey_` : 
+                        `subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
                     link.download = `${prefix}${baseName}.png`;
-                    link.href = canvas.toDataURL('image/png');
+                    link.href = chartUrl;
                     link.click();
-                });
+                }
+
+                // Exportar con fondo blanco primero
+                exportWithSpecificBackground(true);
+                
+                // Exportar con fondo transparente después de un delay
+                setTimeout(() => {
+                    exportWithSpecificBackground(false);
+                }, 1000);
             }
 
             // Función para manejar clic en nodos (desde leyenda o diagrama)
@@ -5878,6 +5891,26 @@
                         },
                         extraCssText: 'max-width:400px; white-space: normal;'
                     },
+                    legend: {
+                        type: 'scroll',
+                        orient: 'horizontal',
+                        bottom: 10,
+                        left: 'center',
+                        itemWidth: 12,
+                        itemHeight: 8,
+                        textStyle: {
+                            fontSize: 10,
+                            color: '#333'
+                        },
+                        data: Array.from(nodeMap.values())
+                            .filter(node => window.sankeyConfig.energeticColors[node.name])
+                            .map(node => ({
+                                name: node.name,
+                                itemStyle: {
+                                    color: window.sankeyConfig.energeticColors[node.name]
+                                }
+                            }))
+                    },
                     series: [{
                         type: 'sankey',
                         top: 20,
@@ -5941,7 +5974,55 @@
 
                 subSankeyChart.setOption(option);
 
+                // Crear leyenda para el sub-Sankey
+                createSubSankeyLegend(nodeMap);
+
                 // El botón de descarga ahora abre el modal (manejado en otro lugar)
+            }
+
+            // Función para crear la leyenda del sub-Sankey
+            function createSubSankeyLegend(nodeMap) {
+                const legendContainer = document.getElementById('sub-sankey-legend');
+                const legendItems = document.getElementById('sub-sankey-legend-items');
+                const colors = window.sankeyConfig.energeticColors;
+                
+                // Limpiar leyenda anterior
+                legendItems.innerHTML = '';
+                
+                // Obtener nodos únicos con colores
+                const uniqueNodes = Array.from(nodeMap.values())
+                    .filter(node => colors[node.name])
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                
+                if (uniqueNodes.length > 0) {
+                    uniqueNodes.forEach(node => {
+                        const color = colors[node.name];
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; min-width: 150px;';
+                        
+                        const colorBox = document.createElement('div');
+                        colorBox.style.cssText = `
+                            width: 16px; 
+                            height: 16px; 
+                            background-color: ${color}; 
+                            border: 1px solid rgba(0,0,0,0.2); 
+                            border-radius: 3px;
+                            flex-shrink: 0;
+                        `;
+                        
+                        const label = document.createElement('span');
+                        label.textContent = node.name;
+                        label.style.cssText = 'font-size: 0.9rem; color: #333;';
+                        
+                        item.appendChild(colorBox);
+                        item.appendChild(label);
+                        legendItems.appendChild(item);
+                    });
+                    
+                    legendContainer.style.display = 'block';
+                } else {
+                    legendContainer.style.display = 'none';
+                }
             }
 
             // Portal para tooltips de controles
