@@ -5993,12 +5993,14 @@
                         type: 'sankey',
                         top: 60,
                         bottom: 120,
-                        left: 10,
-                        right: 100,
+                        left: 20,
+                        right: 120,
                         data: Array.from(nodeMap.values()),
                         links: links,
-                        nodeWidth: 30,
-                        nodeGap: 30,
+                        nodeWidth: 35,
+                        nodeGap: 20,
+                        layoutIterations: 0,
+                        nodeAlign: 'justify',
                         label: {
                             formatter: function (params) {
                                 const value = params.data.value || 0;
@@ -6009,8 +6011,8 @@
                                 return `${params.data.name}\n${formattedValue} PJ`;
                             },
                             color: '#000',
-                            fontSize: 8,
-                            fontWeight: 'bold',
+                            fontSize: 7,
+                            fontWeight: 'normal',
                             backgroundColor: '#ffffff',
                             borderColor: 'rgba(0, 0, 0, 0.2)',
                             borderWidth: 1,
