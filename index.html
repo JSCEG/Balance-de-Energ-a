@@ -950,7 +950,6 @@
                 padding: 1rem;
             }
         }
-        }
 
         .filter-text {
             flex: 1;
@@ -2176,7 +2175,7 @@
             position: absolute;
             background: rgba(255, 255, 255, 0.96);
             color: #333;
-            border: 1px solid rgba(106, 28, 50, 0.25);
+            border: 1px solid rgba(128, 128, 128, 0.3);
             border-radius: 10px;
             padding: 4px 10px;
             font: 600 12px 'Montserrat', 'Inter', sans-serif;
@@ -2617,13 +2616,13 @@
         <div id="sub-sankey-chart" style="height: 600px; width: 100%;"></div>
 
         <!-- <button id="export-sub-sankey" class="btn btn-secondary" style="margin-top: 1rem;"></button> -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path
-                    d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                <path
-                    d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
-            </svg>
-            Exportar Sub-Sankey con Leyenda
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+            <path
+                d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+        </svg>
+        Exportar Sub-Sankey con Leyenda
         </button>
     </div>
 
@@ -3092,13 +3091,13 @@
                                     fontSize: 8,
                                     fontWeight: 'normal',
                                     color: '#333',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                    borderColor: 'rgba(106, 28, 50, 0.3)',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                    borderColor: 'rgba(128,128,128,0.9)',
                                     borderWidth: 1,
                                     borderRadius: 4,
                                     padding: [4, 8],
                                     shadowBlur: 2,
-                                    shadowColor: 'rgba(0,0,0,0.2)'
+                                    shadowColor: 'rgba(0,0,0,0.12)'
                                 };
                             }
                         }
@@ -3145,7 +3144,7 @@
                                         fontSize: 8,
                                         fontStyle: 'italic',
                                         backgroundColor: '#ffffff',
-                                        borderColor: 'rgba(0, 0, 0, 0.2)',
+                                        borderColor: '#808080',
                                         borderWidth: 1,
                                         borderRadius: 3,
                                         padding: [2, 4, 2, 4]
@@ -3212,13 +3211,13 @@
                                 fontSize: 8,
                                 fontWeight: 'normal',
                                 color: '#000',
-                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                borderColor: 'rgba(0, 0, 0, 0.1)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                borderColor: 'rgba(128,128,128,0.9)',
                                 borderWidth: 1,
                                 borderRadius: 4,
                                 padding: [2, 6, 2, 6],
-                                shadowBlur: 114,
-                                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                                shadowBlur: 6,
+                                shadowColor: 'rgba(0, 0, 0, 0.08)',
                                 shadowOffsetX: 0,
                                 shadowOffsetY: 1
                             };
@@ -3490,6 +3489,8 @@
                             fontSize: 8,
                             fontWeight: 'normal',
                             backgroundColor: '#ffffff',
+                            borderColor: '#808080',
+                            borderWidth: 1,
                             borderRadius: 3,
                             padding: 4
                         },
@@ -3547,7 +3548,7 @@
                                 fontWeight: 'bold',
                                 color: '#000',
                                 backgroundColor: '#ffffff',
-                                borderColor: 'rgba(0, 0, 0, 0.2)',
+                                borderColor: '#808080',
                                 borderWidth: 1,
                                 borderRadius: 3,
                                 padding: 4,
@@ -4168,7 +4169,7 @@
                 const itemHeight = 20 * pixelRatio;
                 const itemWidth = 180 * pixelRatio;
                 const colorBoxSize = 14 * pixelRatio;
-                
+
                 // Padding mejorado para evitar cortes de texto
                 const legendPadding = {
                     left: 10 * pixelRatio,      // Padding izquierdo aumentado
@@ -4176,7 +4177,7 @@
                     top: (focusedNodeName ? 70 : 60) * pixelRatio,  // Padding superior
                     bottom: 20 * pixelRatio     // Padding inferior
                 };
-                
+
                 // Calcular área disponible considerando el padding
                 const availableWidth = width - legendPadding.left - legendPadding.right;
                 const cols = Math.floor(availableWidth / itemWidth);
@@ -5135,7 +5136,7 @@
 
                 // Forzar un resize para asegurar que todos los elementos se rendericen correctamente
                 subSankeyChart.resize();
-                
+
                 // Función para exportar con un fondo específico
                 function exportWithSpecificBackground(useWhiteBackground) {
                     // Pequeño delay para asegurar que el resize se complete
@@ -5152,8 +5153,8 @@
                         const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
                         const baseName = cleanFileName(subtitleText.split(' - ')[0]);
                         const year = yearSelector.value;
-                        const prefix = currentLegendOrder !== null ? 
-                            `${currentLegendOrder}.-BNE_${year}_${useWhiteBackground ? '' : 'transparente_'}subsankey_` : 
+                        const prefix = currentLegendOrder !== null ?
+                            `${currentLegendOrder}.-BNE_${year}_${useWhiteBackground ? '' : 'transparente_'}subsankey_` :
                             `BNE_${year}_subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
                         link.download = `${prefix}${baseName}.png`;
                         link.href = chartUrl;
@@ -5163,7 +5164,7 @@
 
                 // Exportar con fondo blanco primero
                 exportWithSpecificBackground(true);
-                
+
                 // Exportar con fondo transparente después de un delay
                 setTimeout(() => {
                     exportWithSpecificBackground(false);
@@ -5917,14 +5918,14 @@
                         const legendItems = Array.from(nodeMap.values())
                             .filter(node => window.sankeyConfig.energeticColors[node.name])
                             .sort((a, b) => a.name.localeCompare(b.name));
-                        
+
                         const graphics = [];
                         const itemsPerRow = 4; // Más elementos por fila
                         const itemWidth = 140; // Más ancho por elemento
                         const itemHeight = 18;
                         const startX = 30;
                         const startY = 60; // Más espacio desde abajo
-                        
+
                         // Título de la leyenda
                         graphics.push({
                             type: 'text',
@@ -5938,14 +5939,14 @@
                                 textAlign: 'center'
                             }
                         });
-                        
+
                         // Elementos de la leyenda
                         legendItems.forEach((node, index) => {
                             const row = Math.floor(index / itemsPerRow);
                             const col = index % itemsPerRow;
                             const x = startX + col * itemWidth;
                             const y = startY + row * itemHeight;
-                            
+
                             // Cuadro de color
                             graphics.push({
                                 type: 'rect',
@@ -5958,7 +5959,7 @@
                                     lineWidth: 1
                                 }
                             });
-                            
+
                             // Texto
                             graphics.push({
                                 type: 'text',
@@ -5973,7 +5974,7 @@
                                 }
                             });
                         });
-                        
+
                         // Nota explicativa
                         graphics.push({
                             type: 'text',
@@ -5988,7 +5989,7 @@
                                 overflow: 'break'
                             }
                         });
-                        
+
                         return graphics;
                     })(),
                     series: [{
@@ -6016,7 +6017,7 @@
                             fontSize: 7,
                             fontWeight: 'normal',
                             backgroundColor: '#ffffff',
-                            borderColor: 'rgba(0, 0, 0, 0.2)',
+                            borderColor: '#808080',
                             borderWidth: 1,
                             borderRadius: 3,
                             padding: 4
@@ -6025,17 +6026,17 @@
                             if (params.dataType !== 'node') return {};
                             const r = params.rect; // bounding box del nodo
                             const padding = 6;
-                            
+
                             // Obtener el ancho del gráfico para determinar posición
                             const chartWidth = subSankeyChart?.getWidth ? subSankeyChart.getWidth() : (r.x + r.width) * 2;
-                            
+
                             // Determinar si es la última columna (más a la derecha)
                             const isLastColumn = (r.x + r.width / 2) > (chartWidth * 0.75);
-                            
+
                             // Si es la última columna, etiqueta hacia la izquierda
                             // Si no, etiqueta hacia la derecha
                             const labelToRight = !isLastColumn;
-                            
+
                             return {
                                 x: labelToRight ? r.x + r.width + padding : r.x - padding,
                                 y: r.y + r.height / 2,
