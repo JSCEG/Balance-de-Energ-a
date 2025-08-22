@@ -3041,6 +3041,15 @@
                         const active = activeCategories[n.category] && connected.has(n.name);
                         n.itemStyle = n.itemStyle || {};
                         n.itemStyle.opacity = active ? 1 : 0.01;
+                        // Asegurar que las etiquetas también se oculten cuando el nodo no esté activo
+                        n.label = n.label || {};
+                        n.label.show = !!active;
+                        if (!active) {
+                            // Remover decoración de etiqueta para que no quede halo visible
+                            n.label.backgroundColor = 'rgba(0,0,0,0)';
+                            n.label.borderWidth = 0;
+                            n.label.color = 'rgba(0,0,0,0)';
+                        }
                     }
                 });
                 return filtered;
@@ -3523,6 +3532,7 @@
                             borderRadius: 3,
                             padding: 4
                         },
+                        edgeLabel: { show: false },
                         // Reposicionar etiquetas fuera del nodo para minimizar solapamientos visuales
                         labelLayout: function (params) {
                             if (params.dataType !== 'node') return {};
@@ -3647,6 +3657,11 @@
                 // <<< AÑADIR: crear/actualizar etiquetas de columnas después de dibujar >>>
                 renderColumnLabels();
                 updateLabelOverlayPositions();
+                // Forzar una actualización del overlay por si filtros cambiaron visibilidad
+                setTimeout(() => {
+                    renderColumnLabels();
+                    updateLabelOverlayPositions();
+                }, 50);
             }
 
             function populateDatalist(nodes) {
