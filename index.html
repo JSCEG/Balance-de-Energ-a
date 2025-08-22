@@ -4050,12 +4050,22 @@
             }
 
             function exportWithBackground(useWhiteBackground, format, pixelRatio, exportType, elementName, focusedNodeName, order = null) {
-                setTimeout(() => {
+                new Promise(resolve => {
+                    const handler = () => {
+                        sankeyChart.off('rendered', handler);
+                        resolve();
+                    };
+                    sankeyChart.on('rendered', handler);
+
+                    if (!sankeyChart.isDisposed() && sankeyChart.getOption()) {
+                        resolve();
+                    }
+                }).then(() => {
                     // Obtener la imagen del gráfico
                     const chartUrl = sankeyChart.getDataURL({
                         type: format,
                         pixelRatio: pixelRatio,
-                        backgroundColor: useWhiteBackground ? '#fff' : 'rgba(0,0,0,0)'
+                        backgroundColor: 'rgba(0,0,0,0)' // Always transparent from ECharts
                     });
 
                     // Crear un canvas para combinar gráfico y leyenda
@@ -4099,7 +4109,7 @@
                         a.click();
                     };
                     chartImg.src = chartUrl;
-                }, 500);
+                });
             }
             function adjustLabelOverlaps(ctx, pixelRatio) {
                 const labelLayouts = sankeyChart.getZr().storage.getDisplayList().filter(el => el.type === 'text');
@@ -5124,51 +5134,77 @@
 
                 // Configurar botón de exportación
                 document.getElementById('export-subsankey').onclick = () => {
-                    exportSubSankey();
+                    exportSubSankey(previewChart);
                 };
             }
-
-            function exportSubSankey() {
-                if (!subSankeyChart) {
+            function exportSubSankey(chartInstance) {
+                if (!chartInstance) {
                     alert('No hay sub-Sankey disponible para exportar');
                     return;
                 }
 
-                // Forzar un resize para asegurar que todos los elementos se rendericen correctamente
-                subSankeyChart.resize();
-
                 // Función para exportar con un fondo específico
                 function exportWithSpecificBackground(useWhiteBackground) {
-                    // Pequeño delay para asegurar que el resize se complete
-                    setTimeout(() => {
-                        const chartUrl = subSankeyChart.getDataURL({
+                    new Promise(resolve => {
+                        const handler = () => {
+                            chartInstance.off('rendered', handler);
+                            resolve();
+                        };
+                        chartInstance.on('rendered', handler);
+
+                        if (!chartInstance.isDisposed() && chartInstance.getOption()) {
+                            resolve();
+                        }
+                    }).then(() => {
+                        const chartUrl = chartInstance.getDataURL({
                             type: 'png',
                             pixelRatio: 3,
-                            backgroundColor: useWhiteBackground ? '#fff' : 'rgba(0,0,0,0)',
-                            excludeComponents: [] // Asegurar que incluya todos los componentes
+                            backgroundColor: 'rgba(0,0,0,0)', // Siempre transparente desde ECharts
+                            excludeComponents: []
                         });
 
-                        // Crear enlace de descarga
-                        const link = document.createElement('a');
-                        const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
-                        const baseName = cleanFileName(subtitleText.split(' - ')[0]);
-                        const year = yearSelector.value;
-                        const prefix = currentLegendOrder !== null ?
-                            `${currentLegendOrder}.-BNE_${year}_${useWhiteBackground ? '' : 'transparente_'}subsankey_` :
-                            `BNE_${year}_subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
-                        link.download = `${prefix}${baseName}.png`;
-                        link.href = chartUrl;
-                        link.click();
-                    }, 100);
+                        const chartImg = new Image();
+                        chartImg.onload = function () {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+
+                            canvas.width = chartImg.width;
+                            canvas.height = chartImg.height;
+
+                            if (useWhiteBackground) {
+                                ctx.fillStyle = '#ffffff';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            } else {
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            }
+
+                            ctx.drawImage(chartImg, 0, 0);
+
+                            const finalUrl = canvas.toDataURL('image/png');
+                            const link = document.createElement('a');
+                            const subtitleText = document.getElementById('sub-sankey-subtitle').textContent;
+                            const baseName = cleanFileName(subtitleText.split(' - ')[0]);
+                            const year = yearSelector.value;
+                            const prefix = currentLegendOrder !== null ?
+                                `${currentLegendOrder}.-BNE_${year}_${useWhiteBackground ? '' : 'transparente_'}subsankey_` :
+                                `BNE_${year}_subsankey_${useWhiteBackground ? '' : 'transparente_'}`;
+                            link.download = `${prefix}${baseName}.png`;
+                            link.href = finalUrl;
+                            link.click();
+                        };
+                        chartImg.src = chartUrl;
+                    });
                 }
 
                 // Exportar con fondo blanco primero
-                exportWithSpecificBackground(true);
-
+                // exportWithSpecificBackground(true);
+                setTimeout(() => {
+                    exportWithSpecificBackground(true);
+                }, 1500);
                 // Exportar con fondo transparente después de un delay
                 setTimeout(() => {
                     exportWithSpecificBackground(false);
-                }, 1500);
+                }, 3000);
             }
 
             // Función para manejar clic en nodos (desde leyenda o diagrama)

@@ -12,7 +12,7 @@ window.sankeyConfig = {
         // Primarios no fósiles (paleta Pantone - tonos más claros para renovables)
         "Energía Nuclear": "#98989A",        // Cool Gray 7 C - gris neutro para nuclear
         "Energía Hidráulica": "#1E5B4F",     // Pantone 626 C - verde oscuro para hidráulica
-        "Geoenergía": "#9C2348",             // Pantone 7420 C - rojo vino para geotermia
+        "Energía Geotérmica": "#9C2348",             // Pantone 7420 C - rojo vino para geotermia
         "Energía solar": "#E7D295",          // Pantone 7402 C - beige claro para solar
         "Energía eólica": "#002F2A",         // Pantone 627 C - verde muy oscuro para eólica
         "Bagazo de caña": "#A6802D",         // Pantone 1255 C - dorado para bagazo
@@ -178,7 +178,7 @@ window.sankeyConfig = {
                 { nombre: "Condensados", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 3 },
                 { nombre: "Energía Nuclear", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 4 },
                 { nombre: "Energía Hidráulica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 5 },
-                { nombre: "Geoenergía", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 6 },
+                { nombre: "Energía Geotérmica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 6 },
                 { nombre: "Energía solar", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 7 },
                 { nombre: "Energía eólica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8 },
                 { nombre: "Bagazo de caña", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9 },
