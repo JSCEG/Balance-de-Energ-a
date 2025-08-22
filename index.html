@@ -3802,6 +3802,14 @@
             }
 
             // Función para crear la leyenda des
+            // Alias de nombres para mostrar (no cambia claves de datos)
+            function getDisplayName(name) {
+                const aliases = {
+                    'Plantas de Gas y Fraccionadoras': 'Plantas de Gas y Fracc.'
+                };
+                return aliases[name] || name;
+            }
+
             function createColorLegend() {
                 const legendContainer = document.getElementById('color-legend-content');
                 if (!legendContainer) return;
@@ -3942,7 +3950,7 @@
                                     color: var(--color-gris-oscuro);
                                     font-weight: 500;
                                     line-height: 1.2;
-                                ">${truncateText(energetico, 25)}</span>
+                                ">${truncateText(getDisplayName(energetico), 25)}</span>
                                 <div class="legend-actions">
                                     <i class="fas fa-info-circle legend-info-btn" data-energetico="${energetico}" title="Ver información del energético"></i>
                                     <i class="fas fa-chart-area legend-main-export-btn" data-energetico="${energetico}" data-order="${order}" title="Descargar Sankey principal filtrado"></i>
@@ -4198,24 +4206,30 @@
 
             // Función para dibujar la leyenda en el canvas
             function drawLegendOnCanvas(ctx, x, y, width, height, pixelRatio, focusedNodeName = null) {
-                const colors = window.sankeyConfig.energeticColors;
-                const currentNodes = sankeyChart.getOption().series[0].data;
+                const colors = window.sankeyConfig?.energeticColors || {};
+                const option = sankeyChart.getOption();
+                const series = option?.series?.[0] || {};
+                const currentNodes = Array.isArray(series.data) ? series.data : [];
+                const currentLinksFiltered = Array.isArray(series.links) ? series.links : [];
+
+                // Conjunto de nodos realmente visibles (conectados por enlaces filtrados)
+                const connected = new Set();
+                currentLinksFiltered.forEach(l => { connected.add(l.source); connected.add(l.target); });
+
                 let activeEnergeticos = currentNodes
                     .filter(node => !node.esEspaciador && colors[node.name])
+                    .filter(node => connected.has(node.name))
+                    .filter(node => typeof activeCategories === 'object' ? !!activeCategories[node.category] : true)
                     .map(node => node.name)
                     .sort();
 
                 if (focusedNodeName) {
-                    const connectedNodes = new Set([focusedNodeName]);
-                    currentLinks.forEach(link => {
-                        if (link.source === focusedNodeName) {
-                            connectedNodes.add(link.target);
-                        }
-                        if (link.target === focusedNodeName) {
-                            connectedNodes.add(link.source);
-                        }
+                    const connectedToFocus = new Set([focusedNodeName]);
+                    currentLinksFiltered.forEach(link => {
+                        if (link.source === focusedNodeName) connectedToFocus.add(link.target);
+                        if (link.target === focusedNodeName) connectedToFocus.add(link.source);
                     });
-                    activeEnergeticos = activeEnergeticos.filter(name => connectedNodes.has(name));
+                    activeEnergeticos = activeEnergeticos.filter(name => connectedToFocus.has(name));
                 }
 
                 // Configuración de la leyenda con padding mejorado
@@ -4274,7 +4288,7 @@
 
                     // Texto del energético
                     ctx.fillStyle = '#333';
-                    ctx.fillText(energetico, itemX + colorBoxSize + 8 * pixelRatio, itemY);
+                    ctx.fillText(getDisplayName(energetico), itemX + colorBoxSize + 8 * pixelRatio, itemY);
                 });
 
                 // Nota aclaratoria (siempre al final de la leyenda)
@@ -4512,11 +4526,18 @@
                                 const chartW = img.width;
                                 const chartH = img.height;
 
-                                // Determinar energéticos activos (mismo criterio que la leyenda principal)
+                                // Determinar energéticos activos y conectados (misma lógica que drawLegendOnCanvas)
                                 const colors = window.sankeyConfig?.energeticColors || {};
                                 const option = sankeyChart.getOption();
-                                const activeNodes = option.series[0].data
+                                const series = option?.series?.[0] || {};
+                                const dataNodes = Array.isArray(series.data) ? series.data : [];
+                                const linksFiltered = Array.isArray(series.links) ? series.links : [];
+                                const connected = new Set();
+                                linksFiltered.forEach(l => { connected.add(l.source); connected.add(l.target); });
+                                const activeNodes = dataNodes
                                     .filter(n => !n.esEspaciador && colors[n.name])
+                                    .filter(n => connected.has(n.name))
+                                    .filter(n => typeof activeCategories === 'object' ? !!activeCategories[n.category] : true)
                                     .map(n => n.name)
                                     .sort();
 
