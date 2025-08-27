@@ -3828,10 +3828,10 @@
 
                 const colors = window.sankeyConfig.energeticColors;
 
-                // Obtener solo los energéticos que aparecen en el gráfico actual
+                // Obtener solo los energéticos que aparecen en el gráfico actual y tienen valor > 0
                 const currentNodes = option.series[0].data;
                 const activeEnergeticos = currentNodes
-                    .filter(node => !node.esEspaciador && colors[node.name])
+                    .filter(node => !node.esEspaciador && colors[node.name] && (node.value > 0))
                     .map(node => node.name);
 
                 // Definir grupos de energéticos
