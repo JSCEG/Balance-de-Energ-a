@@ -2949,7 +2949,7 @@
             const legendContainer = document.getElementById('legend-container');
             const activeCategories = {};
             const categoryCounts = {};
-            Object.keys(window.sankeyConfig.categoryColors || {}).forEach(c => {
+            Object.keys(window.sankeyConfig?.categoryColors || {}).forEach(c => {
                 activeCategories[c] = true;
                 categoryCounts[c] = 0;
             });
@@ -4142,7 +4142,7 @@
                         // Configurar dimensiones del canvas
                         const chartWidth = chartImg.width;
                         const chartHeight = chartImg.height;
-                        const legendHeight = 200 * pixelRatio; // Altura para la leyenda
+                        const legendHeight = 250 * pixelRatio; // Altura para la leyenda (aumentada para evitar superposición)
                         const padding = 20 * pixelRatio;
 
                         canvas.width = chartWidth;
@@ -4246,21 +4246,21 @@
 
                 // Configuración de la leyenda con padding mejorado
                 const fontSize = 12 * pixelRatio;
-                const itemHeight = 20 * pixelRatio;
-                const itemWidth = 180 * pixelRatio;
+                const itemHeight = 25 * pixelRatio; // Aumentado para evitar superposición
+                const itemWidth = 220 * pixelRatio; // Aumentado para textos más largos
                 const colorBoxSize = 14 * pixelRatio;
 
                 // Padding mejorado para evitar cortes de texto
                 const legendPadding = {
-                    left: 10 * pixelRatio,      // Padding izquierdo aumentado
-                    right: 10 * pixelRatio,     // Padding derecho para evitar cortes
-                    top: (focusedNodeName ? 70 : 60) * pixelRatio,  // Padding superior
-                    bottom: 20 * pixelRatio     // Padding inferior
+                    left: 15 * pixelRatio,      // Padding izquierdo aumentado
+                    right: 15 * pixelRatio,     // Padding derecho para evitar cortes
+                    top: (focusedNodeName ? 80 : 70) * pixelRatio,  // Padding superior aumentado
+                    bottom: 40 * pixelRatio     // Padding inferior aumentado
                 };
 
                 // Calcular área disponible considerando el padding
                 const availableWidth = width - legendPadding.left - legendPadding.right;
-                const cols = Math.floor(availableWidth / itemWidth);
+                const cols = Math.max(1, Math.floor(availableWidth / itemWidth)); // Asegurar al menos 1 columna
                 const startX = x + legendPadding.left;
                 const startY = y + legendPadding.top;
 
@@ -4278,6 +4278,17 @@
                     ctx.font = `${fontSize - 1}px Arial`;
                     const yearText = `Año: ${yearSelector.value} | Elementos conectados: ${activeEnergeticos.length}`;
                     ctx.fillText(yearText, startX, y + 35 * pixelRatio);
+                }
+
+                // Función auxiliar para truncar texto si es muy largo
+                function truncateTextForCanvas(text, maxWidth, ctx) {
+                    if (ctx.measureText(text).width <= maxWidth) return text;
+
+                    let truncated = text;
+                    while (ctx.measureText(truncated + '...').width > maxWidth && truncated.length > 0) {
+                        truncated = truncated.slice(0, -1);
+                    }
+                    return truncated + '...';
                 }
 
                 // Dibujar elementos de la leyenda
@@ -4298,9 +4309,12 @@
                     ctx.lineWidth = 1;
                     ctx.strokeRect(itemX, itemY - colorBoxSize + 2, colorBoxSize, colorBoxSize);
 
-                    // Texto del energético
+                    // Texto del energético (truncado si es necesario)
                     ctx.fillStyle = '#333';
-                    ctx.fillText(getDisplayName(energetico), itemX + colorBoxSize + 8 * pixelRatio, itemY);
+                    const textX = itemX + colorBoxSize + 8 * pixelRatio;
+                    const maxTextWidth = itemWidth - colorBoxSize - 16 * pixelRatio; // Espacio disponible para texto
+                    const displayText = truncateTextForCanvas(getDisplayName(energetico), maxTextWidth, ctx);
+                    ctx.fillText(displayText, textX, itemY);
                 });
 
                 // Nota aclaratoria (siempre al final de la leyenda)
@@ -4553,14 +4567,14 @@
                                     .map(n => n.name)
                                     .sort();
 
-                                // Calcular alto dinámico para la leyenda según nº de elementos
-                                const itemWidth = 180 * resolution; // igual que en drawLegendOnCanvas
+                                // Calcular alto dinámico para la leyenda según nº de elementos (actualizado para coincidir con drawLegendOnCanvas)
+                                const itemWidth = 220 * resolution; // igual que en drawLegendOnCanvas
                                 const itemsPerRow = Math.max(1, Math.floor(chartW / itemWidth));
                                 const rows = Math.ceil(activeNodes.length / itemsPerRow);
-                                const baseTop = 50 * resolution; // espacio para título dentro de drawLegendOnCanvas
-                                const rowHeight = 20 * resolution; // altura por fila (coincide con drawLegendOnCanvas)
-                                // +60*resolution para garantizar espacio de la nota explicativa añadida al final
-                                const legendInnerHeight = baseTop + rows * rowHeight + 60 * resolution; // margen inferior extra + nota
+                                const baseTop = 70 * resolution; // espacio para título dentro de drawLegendOnCanvas (actualizado)
+                                const rowHeight = 25 * resolution; // altura por fila (coincide con drawLegendOnCanvas - actualizado)
+                                // +80*resolution para garantizar espacio de la nota explicativa añadida al final
+                                const legendInnerHeight = baseTop + rows * rowHeight + 80 * resolution; // margen inferior extra + nota (aumentado)
                                 const padding = 20 * resolution;
 
                                 const canvas = document.createElement('canvas');
