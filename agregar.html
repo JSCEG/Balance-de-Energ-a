@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Administrador de nodos padre</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --color-guinda: #6a1c32;
+      --color-gris-oscuro: #374151;
+      --color-blanco: #ffffff;
+      --color-gris-claro: #f9fafb;
+      --color-bordes: #e5e7eb;
+      --background-color: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      --glass-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --bs-body-font-family: 'Montserrat', sans-serif;
+      --bs-primary: var(--color-guinda);
+      --bs-border-color: var(--color-bordes);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--color-gris-oscuro);
+      background: var(--background-color);
+      line-height: 1.6;
+      padding-top: 175px;
+    }
+
+    header {
+      background: var(--color-blanco);
+      color: var(--color-gris-oscuro);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(17,24,39,0.08);
+      border-bottom: 1px solid rgba(17,24,39,0.08);
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(55,65,81,0.12), transparent);
+      animation: headerShimmer 4s infinite;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(17,24,39,0.08) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    @keyframes headerShimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .header-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      z-index: 1;
+    }
+
+    .header-logo {
+      height: 65px;
+      max-width: 220px;
+      object-fit: contain;
+    }
+
+    .sener-logo {
+      background: rgba(17,24,39,0.05);
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .header-text {
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .header-text p {
+      margin: 0.35rem 0 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .main-nav {
+      position: relative;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      z-index: 1;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      background: rgba(106, 28, 50, 0.08);
+      border: 1px solid rgba(106, 28, 50, 0.15);
+      border-radius: 999px;
+      color: var(--color-gris-oscuro);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .nav-button .icon {
+      width: 1.25rem;
+      text-align: center;
+    }
+
+    .nav-button:hover {
+      background: rgba(106, 28, 50, 0.15);
+      border-color: rgba(106, 28, 50, 0.25);
+      color: var(--color-guinda);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(106, 28, 50, 0.15);
+    }
+
+    .nav-button.active {
+      background: var(--color-guinda);
+      color: var(--color-blanco);
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(106, 28, 50, 0.25);
+    }
+
+    .nav-button.active .icon {
+      color: var(--color-blanco);
+    }
+
+
+    .container-page {
+      width: 100%;
+      max-width: 1600px;
+      flex: 1;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .card {
+      border: 1px solid rgba(229,231,235,0.6);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+    }
+
+    .card-header {
+      font-weight: 600;
+      border-bottom: 1px solid rgba(17,24,39,0.08);
+      background: rgba(249,250,251,0.9);
+    }
+
+    .list-scroll {
+      max-height: 60vh;
+      overflow: auto;
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: 12px;
+      padding: 0.75rem;
+      background: #ffffff;
+    }
+
+    .small-hint { font-size: 0.85rem; color: #6b7280; }
+
+    footer {
+      background: var(--color-gris-claro);
+      color: var(--color-gris-oscuro);
+      padding: 2rem 1rem 1rem;
+      margin-top: auto;
+      border-top: 1px solid rgba(17,24,39,0.08);
+    }
+
+    .footer-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+      align-items: flex-start;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .footer-logo { display: flex; align-items: center; }
+    .footer-logo-img { height: 60px; object-fit: contain; filter: grayscale(0.1); }
+
+    .footer-section h4 { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 700; }
+    .footer-section h5 { margin: 1rem 0 0.5rem; font-size: 0.95rem; font-weight: 600; }
+    .footer-section p { margin: 0 0 0.75rem; font-size: 0.9rem; color: #4b5563; }
+    .footer-section ul { list-style: none; margin: 0; padding: 0; }
+    .footer-section ul li { margin-bottom: 0.35rem; }
+    .footer-section ul li a { color: #4b5563; text-decoration: none; font-size: 0.9rem; }
+    .footer-section ul li a:hover { color: var(--color-guinda); text-decoration: underline; }
+    .footer-email { color: var(--color-guinda); font-weight: 600; text-decoration: none; }
+    .footer-email:hover { text-decoration: underline; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .social-links { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
+    .social-link { width: 36px; height: 36px; border-radius: 50%; background: rgba(17,24,39,0.08); display: flex; align-items: center; justify-content: center; color: var(--color-gris-oscuro); text-decoration: none; transition: background 0.2s ease, transform 0.2s ease; }
+    .social-link:hover { background: rgba(17,24,39,0.18); transform: translateY(-2px); }
+    .footer-pattern { margin-top: 2rem; height: 4px; background: linear-gradient(90deg, rgba(17,24,39,0.2), rgba(55,65,81,0.4), rgba(17,24,39,0.2)); border-radius: 999px; }
+
+    .loader-overlay {
+      position: fixed; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.82); backdrop-filter: blur(2px);
+      z-index: 9999;
+    }
+
+    .loader-box {
+      background: #ffffff;
+      border: 1px solid var(--color-bordes);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-shadow: var(--glass-shadow);
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+    }
+
+    .loader-text { font-weight: 600; color: var(--color-gris-oscuro); }
+
+    .modal-header-soft { background: #f3f4f6; border-bottom: 1px solid rgba(17,24,39,0.08); color: var(--color-gris-oscuro); }
+    .modal-body { font-size: 0.95rem; color: var(--color-gris-oscuro); }
+    .btn-outline { background: #ffffff; border: 1px solid rgba(17,24,39,0.12); color: var(--color-gris-oscuro); }
+    .btn-outline:hover { background: rgba(17,24,39,0.05); border-color: rgba(17,24,39,0.2); }
+
+    @media (max-width: 768px) {
+      header { padding: 0.75rem 0.75rem; }
+      .header-content { justify-content: center; gap: 0.5rem; }
+      .header-logo { display: none; }
+      .header-text h1 { font-size: 1.2rem; }
+      body { padding-top: 150px; }
+      .footer-content { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 640px) {
+      .container-page { padding: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="fixed-navbar">
+    <div class="header-content">
+      <img src="img/logo_sener.png" alt="Logo Secretaria de Energia" class="header-logo sener-logo">
+      <div class="header-text">
+        <h1>Balance Nacional de Energia - Administrador de nodos</h1>
+        <p>Agrega nodos padre con su paquete completo de hijos</p>
+      </div>
+      <img src="img/logo_gob.png" alt="Logo Gobierno de Mexico" class="header-logo">
+    </div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a class="nav-button" href="tablero.html">
+        <span class="icon"><i class="fa-solid fa-table-columns"></i></span>
+        Tablero
+      </a>
+      <a class="nav-button" href="index.html">
+        <span class="icon"><i class="fa-solid fa-diagram-project"></i></span>
+        Ver Sankey
+      </a>
+      <a class="nav-button" href="editor.html">
+        <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
+        Editor de datos
+      </a>
+      <a class="nav-button" href="personalizador.html">
+        <span class="icon"><i class="fa-solid fa-palette"></i></span>
+        Personalizador
+      </a>
+      <a class="nav-button active" href="agregar.html" aria-current="page">
+        <span class="icon"><i class="fa-solid fa-sitemap"></i></span>
+        Administrador de nodos
+      </a>
+    </nav>
+  </header>
+
+  <div class="container-page container">
+    <div class="row g-4">
+      <div class="col-12 col-xl-6">
+        <section class="card h-100">
+          <div class="card-header">Anadir nodos padre</div>
+          <div class="card-body form-section">
+            <div>
+              <label class="form-label">Selecciona paquetes de energeticos (22 disponibles)</label>
+              <div class="list-scroll" id="parent-energetics-list"></div>
+              <div class="small-hint">Cada nodo padre se crea con los 22 nodos hijo base (valores en 0).</div>
+            </div>
+            <div>
+              <label for="parent-name-input" class="form-label">Nombre personalizado (opcional)</label>
+              <input type="text" id="parent-name-input" class="form-control" placeholder="Ej. Nuevo nodo padre">
+            </div>
+            <button class="btn btn-primary" id="add-parent-btn">Crear nodos padre</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-12 col-xl-6">
+        <section class="card h-100">
+          <div class="card-header">Anadir anio global</div>
+          <div class="card-body form-section">
+            <div>
+              <label for="new-year-input" class="form-label">Anio (formato YYYY)</label>
+              <input type="text" id="new-year-input" class="form-control" placeholder="Ej. 2025">
+              <div class="small-hint">Se agregara a todos los nodos hijo existentes.</div>
+            </div>
+            <button class="btn btn-primary" id="add-year-btn">Agregar anio</button>
+            <div class="mt-3">
+              <label for="year-remove-select" class="form-label">Eliminar anio existente</label>
+              <div class="d-flex gap-2">
+                <select id="year-remove-select" class="form-select">
+                  <option value="">Seleccione anio</option>
+                </select>
+                <button class="btn btn-outline-danger" id="remove-year-btn">Eliminar</button>
+              </div>
+              <div class="small-hint">Quita el anio seleccionado de todos los nodos hijo.</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-12">
+        <section a class="card">
+          <div class="card-header">Resumen</div>
+          <div class="card-body">
+            <p id="summary-text" class="small-hint">Cargando informacion...</p>
+            <div class="d-flex flex-wrap gap-2">
+              <button class="btn btn-success" id="save-all-btn">Guardar cambios</button>
+              <button class="btn btn-outline-secondary" id="reload-btn">Recargar datos</button>
+              <button class="btn btn-outline-primary" id="download-btn">Descargar datos.js</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img src="img/logo_gob.png" alt="Gobierno de Mexico" class="footer-logo-img">
+      </div>
+      <div class="footer-section">
+        <h4>Enlaces</h4>
+        <ul>
+          <li><a href="https://datos.gob.mx/" target="_blank">Datos</a></li>
+          <li><a href="https://www.gob.mx/transparencia" target="_blank">Transparencia</a></li>
+          <li><a href="https://www.gob.mx/pnt" target="_blank">PNT</a></li>
+          <li><a href="https://www.gob.mx/inai" target="_blank">INAI</a></li>
+          <li><a href="https://www.gob.mx/alerta" target="_blank">Alerta</a></li>
+          <li><a href="https://www.gob.mx/denuncia" target="_blank">Denuncia</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Que es gob.mx?</h4>
+        <p>Portal unico de tramites, informacion y participacion ciudadana.</p>
+        <ul class="footer-links">
+          <li><a href="https://www.gob.mx/en" target="_blank">English</a></li>
+          <li><a href="https://www.gob.mx/accesibilidad" target="_blank">Declaracion de accesibilidad</a></li>
+          <li><a href="https://www.gob.mx/terminos" target="_blank">Terminos y condiciones</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contacto</h4>
+        <p>Dudas e informacion:</p>
+        <a href="mailto:calidad@energia.gob.mx" class="footer-email">calidad@energia.gob.mx</a>
+        <h5>Siguenos en</h5>
+        <div class="social-links">
+          <a href="https://www.facebook.com/gobmexico" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://twitter.com/GobiernoMX" target="_blank" class="social-link"><i class="fab fa-twitter"></i></a>
+          <a href="https://www.instagram.com/gobiernomx" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.youtube.com/user/GobiernoMexico" target="_blank" class="social-link"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-pattern"></div>
+  </footer>
+
+  <div id="loader-overlay" class="loader-overlay" aria-hidden="true">
+    <div class="loader-box">
+      <div class="spinner-border text-primary" role="status" aria-label="Trabajando"></div>
+      <div class="loader-text" id="loader-text">Procesando...</div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header modal-header-soft" id="resultModalHeader">
+          <h5 class="modal-title" id="resultModalLabel">Resultado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="resultModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="datos.js"></script>
+  <script>
+    const API_URL = '/api/datos';
+    const STORAGE_KEY = 'energyData_admin_temp';
+    const ENERGETICOS_BASE = [
+      'Carbon mineral', 'Petroleo crudo', 'Condensados', 'Gas natural', 'Energia Nuclear',
+      'Energia Hidraulica', 'Energia Geotermica', 'Energia solar', 'Energia eolica', 'Bagazo de cana',
+      'Lena', 'Biogas', 'Gas licuado de petroleo', 'Gasolinas y naftas', 'Diesel', 'Combustoleo',
+      'Gas natural seco', 'Energia electrica', 'Coque de carbon', 'Coque de petroleo',
+      'Produccion', 'Importacion EP'
+    ];
+
+    const state = { data: null, dirty: false };
+    let resultModal = null;
+    let modalHeader = null;
+    let modalTitle = null;
+    let modalBody = null;
+
+    function ensureModal() {
+      if (resultModal) return true;
+      const el = document.getElementById('resultModal');
+      if (!el || !(window.bootstrap && window.bootstrap.Modal)) return false;
+      resultModal = new bootstrap.Modal(el, { backdrop: 'static' });
+      modalHeader = el.querySelector('#resultModalHeader');
+      modalTitle = el.querySelector('#resultModalLabel');
+      modalBody = el.querySelector('#resultModalBody');
+      return true;
+    }
+
+    function showModal(type, title, message) {
+      if (!ensureModal()) return;
+      modalHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+      if (type === 'success') modalHeader.classList.add('bg-success');
+      if (type === 'danger') modalHeader.classList.add('bg-danger');
+      if (type === 'warning') modalHeader.classList.add('bg-warning');
+      modalTitle.textContent = title || 'Resultado';
+      modalBody.textContent = message || '';
+      resultModal.show();
+    }
+
+    function showLoader(text) {
+      const overlay = document.getElementById('loader-overlay');
+      const label = document.getElementById('loader-text');
+      if (label) label.textContent = text || 'Procesando...';
+      overlay.style.display = 'flex';
+    }
+
+    function hideLoader() {
+      document.getElementById('loader-overlay').style.display = 'none';
+    }
+
+    function deepClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.Datos) return parsed;
+      } catch (err) {
+        console.warn('No se pudo leer STORAGE_KEY', err);
+      }
+      return null;
+    }
+
+    function saveToLocalStorage(data) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+      catch (err) { console.warn('No se pudo guardar STORAGE_KEY', err); }
+    }
+
+    function collectAllYears() {
+      if (!state.data || !Array.isArray(state.data.Datos)) return [];
+      const set = new Set();
+      state.data.Datos.forEach(p => (p['Nodos Hijo'] || []).forEach(h =>
+        Object.keys(h).forEach(k => { if (/^\\d{4}$/.test(k)) set.add(Number(k)); })));
+      return Array.from(set).sort((a, b) => a - b);
+    }
+
+    function updateYearSelect(years) {
+      const select = document.getElementById('year-remove-select');
+      if (!select) return;
+      select.innerHTML = '<option value=\"\">Seleccione anio</option>';
+      years.slice().sort((a, b) => b - a).forEach(y => {
+        const opt = document.createElement('option');
+        opt.value = String(y);
+        opt.textContent = y;
+        select.appendChild(opt);
+      });
+    }
+
+    function updateSummary() {
+      const summaryEl = document.getElementById('summary-text');
+      if (!state.data) {
+        summaryEl.textContent = 'Sin datos cargados.';
+        updateYearSelect([]);
+        return;
+      }
+      const padres = state.data.Datos || [];
+      const totalPadres = padres.length;
+      const totalHijos = padres.reduce((acc, p) => acc + (p['Nodos Hijo'] || []).length, 0);
+      const years = collectAllYears();
+      summaryEl.textContent = [
+        `Nodos padre: ${totalPadres}`,
+        `Nodos hijo totales: ${totalHijos}`,
+        `Anios detectados: ${years.join(', ') || 'N/D'}`,
+        state.dirty ? 'Cambios pendientes de guardar.' : 'Sin cambios pendientes.'
+      ].join(' | ');
+      updateYearSelect(years);
+    }
+
+    async function loadData() {
+      showLoader('Cargando datos...');
+      try {
+        const response = await fetch(API_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!data || !data.Datos) throw new Error('Formato invalido desde API');
+        state.data = data;
+        state.dirty = false;
+        saveToLocalStorage(data);
+      } catch (err) {
+        console.error(err);
+        const fallback = loadFromLocalStorage() || (window.energyData ? deepClone(window.energyData) : null);
+        if (fallback) {
+          state.data = fallback;
+          state.dirty = false;
+          showModal('warning', 'Datos locales', 'No se pudo consultar la API. Usando datos locales.');
+        } else {
+          showModal('danger', 'Error', 'No se pudo cargar datos. Verifica el servidor.');
+          state.data = null;
+        }
+      } finally {
+        hideLoader();
+        updateSummary();
+      }
+    }
+
+    function markDirty() {
+      state.dirty = true;
+      updateSummary();
+      saveToLocalStorage(state.data);
+    }
+
+    function addYearGlobal() {
+      if (!state.data) {
+        showModal('danger', 'Sin datos', 'Carga datos antes de agregar un anio.');
+        return;
+      }
+      const input = document.getElementById('new-year-input');
+      const value = (input.value || '').trim();
+      if (!/^\\d{4}$/.test(value)) {
+        showModal('warning', 'Formato invalido', 'Ingrese un anio en formato YYYY.');
+        return;
+      }
+      let added = false;
+      state.data.Datos.forEach(p => {
+        (p['Nodos Hijo'] || []).forEach(h => {
+          if (!(value in h)) {
+            h[value] = 0;
+            added = true;
+          }
+        });
+      });
+      if (added) {
+        markDirty();
+        showModal('success', 'Anio agregado', `Se agrego el anio ${value} con valor 0 a todos los nodos hijo.`);
+      } else {
+        showModal('warning', 'Sin cambios', `El anio ${value} ya existia en todos los nodos hijo.`);
+      }
+      input.value = '';
+      updateSummary();
+    }
+
+    function removeYearGlobal() {
+      if (!state.data) {
+        showModal('danger', 'Sin datos', 'Carga datos antes de eliminar un anio.');
+        return;
+      }
+      const select = document.getElementById('year-remove-select');
+      const value = select.value;
+      if (!value) {
+        showModal('warning', 'Seleccione anio', 'Debes elegir un anio existente para eliminar.');
+        return;
+      }
+      let removed = false;
+      state.data.Datos.forEach(p => {
+        (p['Nodos Hijo'] || []).forEach(h => {
+          if (Object.prototype.hasOwnProperty.call(h, value)) {
+            delete h[value];
+            removed = true;
+          }
+        });
+      });
+      if (removed) {
+        markDirty();
+        showModal('success', 'Anio eliminado', `Se elimino el anio ${value} de todos los nodos hijo.`);
+      } else {
+        showModal('warning', 'Sin cambios', `El anio ${value} no estaba presente en los nodos hijo.`);
+      }
+      updateSummary();
+    }
+
+    function renderEnergeticsList() {
+      const container = document.getElementById('parent-energetics-list');
+      container.innerHTML = '';
+      ENERGETICOS_BASE.forEach((name, idx) => {
+        const id = `energetico-${idx}`;
+        const item = document.createElement('div');
+        item.className = 'form-check';
+        item.innerHTML = `
+          <input class="form-check-input" type="checkbox" value="${name}" id="${id}">
+          <label class="form-check-label" for="${id}">${name}</label>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function buildChildTemplate(type) {
+      return ENERGETICOS_BASE.map(name => ({
+        'Nodo Hijo': name,
+        'tipo': type,
+      }));
+    }
+
+    function addParentNodes() {
+      if (!state.data) {
+        showModal('danger', 'Sin datos', 'Carga datos antes de crear nodos padre.');
+        return;
+      }
+      const container = document.getElementById('parent-energetics-list');
+      const selected = Array.from(container.querySelectorAll('input[type="checkbox"]:checked'));
+      if (!selected.length) {
+        showModal('warning', 'Seleccione energeticos', 'Selecciona al menos un energetico base.');
+        return;
+      }
+      const customName = (document.getElementById('parent-name-input').value || '').trim();
+      const years = collectAllYears();
+      selected.forEach(cb => {
+        const name = customName || cb.value;
+        const hijos = ENERGETICOS_BASE.map(h => {
+          const node = { 'Nodo Hijo': h };
+          years.forEach(y => node[String(y)] = 0);
+          return node;
+        });
+        state.data.Datos.push({
+          'Nodo Padre': name,
+          'descripcion': '',
+          'Nodos Hijo': hijos,
+        });
+        cb.checked = false;
+      });
+      document.getElementById('parent-name-input').value = '';
+      markDirty();
+      showModal('success', 'Nodos padre creados', 'Se agregaron nuevos nodos padre con los 22 hijos base.');
+    }
+
+    async function saveAllChanges() {
+      if (!state.data) {
+        showModal('danger', 'Sin datos', 'No hay datos cargados para guardar.');
+        return;
+      }
+      showLoader('Guardando cambios...');
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(state.data),
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || `HTTP ${response.status}`);
+        }
+        state.dirty = false;
+        saveToLocalStorage(state.data);
+        showModal('success', 'Guardado', 'datos.js se guardo correctamente.');
+      } catch (err) {
+        console.error(err);
+        showModal('danger', 'Error al guardar', err.message || 'No se pudo guardar datos.js.');
+      } finally {
+        hideLoader();
+        updateSummary();
+      }
+    }
+
+    function downloadData() {
+      if (!state.data) {
+        showModal('danger', 'Sin datos', 'No hay datos para descargar.');
+        return;
+      }
+      const content = 'window.energyData = ' + JSON.stringify(state.data, null, 2) + ';\n';
+      const blob = new Blob([content], { type: 'application/javascript;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'datos.js';
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }
+
+    document.getElementById('add-parent-btn').addEventListener('click', addParentNodes);
+    document.getElementById('add-year-btn').addEventListener('click', addYearGlobal);
+    document.getElementById('remove-year-btn').addEventListener('click', removeYearGlobal);
+    document.getElementById('save-all-btn').addEventListener('click', saveAllChanges);
+    document.getElementById('reload-btn').addEventListener('click', loadData);
+    document.getElementById('download-btn').addEventListener('click', downloadData);
+
+    window.addEventListener('load', () => {
+      renderEnergeticsList();
+      ensureModal();
+      loadData();
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

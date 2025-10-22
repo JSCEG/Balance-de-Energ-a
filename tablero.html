@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tablero de administración del Sankey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-guinda: #6a1c32;
+      --color-gris-oscuro: #374151;
+      --color-blanco: #ffffff;
+      --color-gris-claro: #f9fafb;
+      --color-bordes: #e5e7eb;
+      --color-verde-acento: #136235;
+      --glass-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --background-color: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+      --bs-body-font-family: 'Montserrat', sans-serif;
+      --bs-primary: var(--color-guinda);
+      --bs-border-color: var(--color-bordes);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--color-gris-oscuro);
+      background: var(--background-color);
+      line-height: 1.6;
+      padding-top: 160px;
+    }
+
+    header {
+      background: var(--color-blanco);
+      color: var(--color-gris-oscuro);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0.75rem 1.5rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(17,24,39,0.08);
+      border-bottom: 1px solid rgba(17,24,39,0.08);
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(55,65,81,0.12), transparent);
+      animation: headerShimmer 4s infinite;
+    }
+
+    @keyframes headerShimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .header-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      z-index: 1;
+    }
+
+    .header-logo {
+      height: 65px;
+      max-width: 220px;
+      object-fit: contain;
+    }
+
+    .sener-logo {
+      background: rgba(17,24,39,0.05);
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .header-text {
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .header-text p {
+      margin: 0.35rem 0 0;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    .main-nav {
+      position: relative;
+      z-index: 1;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.1rem;
+      background: rgba(106, 28, 50, 0.08);
+      border: 1px solid rgba(106, 28, 50, 0.15);
+      border-radius: 999px;
+      color: var(--color-gris-oscuro);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .nav-button .icon {
+      width: 1.25rem;
+      text-align: center;
+    }
+
+    .nav-button:hover {
+      background: rgba(106, 28, 50, 0.15);
+      border-color: rgba(106, 28, 50, 0.25);
+      color: var(--color-guinda);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(106, 28, 50, 0.15);
+    }
+
+    .nav-button.active {
+      background: var(--color-guinda);
+      color: var(--color-blanco);
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(106, 28, 50, 0.25);
+    }
+
+    .nav-button.active .icon {
+      color: var(--color-blanco);
+    }
+
+    .container-page {
+      width: 100%;
+      max-width: 1400px;
+      flex: 1;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .intro-card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: var(--glass-shadow);
+      border: 1px solid rgba(17,24,39,0.06);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(106,28,50,0.08), transparent 60%);
+      pointer-events: none;
+    }
+
+    .intro-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .intro-heading .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(106, 28, 50, 0.12);
+      color: var(--color-guinda);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+    }
+
+    .intro-heading h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .dashboard-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.75rem;
+      background: rgba(255,255,255,0.98);
+      border-radius: 24px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid rgba(17,24,39,0.06);
+      box-shadow: var(--glass-shadow);
+      transition: all 0.28s ease;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 35px rgba(17, 24, 39, 0.18);
+      border-color: rgba(106, 28, 50, 0.25);
+    }
+
+    .dashboard-card .card-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      background: rgba(106, 28, 50, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--color-guinda);
+    }
+
+    .dashboard-card h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .dashboard-card p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      font-weight: 600;
+      color: var(--color-guinda);
+    }
+
+    .card-footer .tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(106, 28, 50, 0.12);
+      color: var(--color-guinda);
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    footer {
+      background: rgba(255, 255, 255, 0.98);
+      padding: 3rem 1.5rem 2rem;
+      box-shadow: 0 -10px 30px rgba(17, 24, 39, 0.08);
+      border-top: 1px solid rgba(17,24,39,0.06);
+      margin-top: auto;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .footer-logo-img {
+      height: 60px;
+      object-fit: contain;
+      filter: grayscale(0.1);
+    }
+
+    .footer-section h4 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .footer-section p {
+      margin: 0 0 0.75rem;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 0.35rem;
+    }
+
+    .footer-section ul li a {
+      color: #4b5563;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .footer-section ul li a:hover {
+      color: var(--color-guinda);
+      text-decoration: underline;
+    }
+
+    .footer-email {
+      color: var(--color-guinda);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .footer-email:hover {
+      text-decoration: underline;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .footer-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.75rem;
+      background: rgba(106, 28, 50, 0.1);
+      border-radius: 999px;
+      color: var(--color-guinda);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      background: var(--color-guinda);
+      color: var(--color-blanco);
+      transform: translateY(-2px);
+    }
+
+    .footer-pattern {
+      margin-top: 2rem;
+      height: 4px;
+      background: linear-gradient(90deg, rgba(17,24,39,0.2), rgba(55,65,81,0.4), rgba(17,24,39,0.2));
+      border-radius: 999px;
+    }
+
+    @media (max-width: 992px) {
+      body {
+        padding-top: 190px;
+      }
+
+      header {
+        padding: 0.75rem 1rem 1.25rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .header-text {
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding-top: 210px;
+      }
+
+      .dashboard-card {
+        padding: 1.35rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <img src="img/logo_gob.png" alt="Logo Gobierno de México" class="header-logo">
+      <div class="header-text">
+        <h1>Tablero de administración del Sankey</h1>
+        <p>Gestiona los datos, estilos y visualización desde un solo lugar</p>
+      </div>
+      <img src="img/logo_sener.png" alt="Logo SENER" class="header-logo sener-logo">
+    </div>
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a class="nav-button active" href="tablero.html" aria-current="page">
+        <span class="icon"><i class="fa-solid fa-table-columns"></i></span>
+        Tablero
+      </a>
+      <a class="nav-button" href="index.html">
+        <span class="icon"><i class="fa-solid fa-diagram-project"></i></span>
+        Ver Sankey
+      </a>
+      <a class="nav-button" href="editor.html">
+        <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
+        Editor de datos
+      </a>
+      <a class="nav-button" href="personalizador.html">
+        <span class="icon"><i class="fa-solid fa-palette"></i></span>
+        Personalizador
+      </a>
+      <a class="nav-button" href="agregar.html">
+        <span class="icon"><i class="fa-solid fa-sitemap"></i></span>
+        Administrador de nodos
+      </a>
+    </nav>
+  </header>
+
+  <main class="container-page">
+    <section class="intro-card">
+      <div class="intro-heading">
+        <span class="icon"><i class="fa-solid fa-lightbulb"></i></span>
+        <h2>Elige la vista para continuar</h2>
+      </div>
+      <p>
+        Este tablero reúne todas las herramientas internas de trabajo del Sankey. Desde aquí puedes editar los datos base,
+        ajustar estilos y validar la visualización pública. Usa las tarjetas para acceder rápidamente a cada módulo.
+      </p>
+    </section>
+
+    <section class="dashboard-grid" aria-label="Accesos a módulos">
+      <a class="dashboard-card" href="editor.html">
+        <div>
+          <div class="card-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+          <h3>Editor de datos</h3>
+          <p>Revisa y modifica el archivo <code>datos.js</code>. Incluye búsqueda, filtros y utilidades para mantener consistencia.</p>
+        </div>
+        <div class="card-footer">
+          <span class="tag">Datos</span>
+          <span>Ir al editor&nbsp;<i class="fa-solid fa-arrow-right-long"></i></span>
+        </div>
+      </a>
+
+      <a class="dashboard-card" href="personalizador.html">
+        <div>
+          <div class="card-icon"><i class="fa-solid fa-palette"></i></div>
+          <h3>Personalizador de estilos</h3>
+          <p>Configura colores, layout y otros parámetros visuales del diagrama para mantener una identidad consistente.</p>
+        </div>
+        <div class="card-footer">
+          <span class="tag">Estilos</span>
+          <span>Personalizar&nbsp;<i class="fa-solid fa-arrow-right-long"></i></span>
+        </div>
+      </a>
+
+      <a class="dashboard-card" href="agregar.html">
+        <div>
+          <div class="card-icon"><i class="fa-solid fa-sitemap"></i></div>
+          <h3>Administrador de nodos</h3>
+          <p>Crea y reorganiza nodos padre e hijos, así como los años disponibles, para preparar nuevas versiones.</p>
+        </div>
+        <div class="card-footer">
+          <span class="tag">Estructura</span>
+          <span>Gestionar&nbsp;<i class="fa-solid fa-arrow-right-long"></i></span>
+        </div>
+      </a>
+
+      <a class="dashboard-card" href="index.html">
+        <div>
+          <div class="card-icon"><i class="fa-solid fa-diagram-project"></i></div>
+          <h3>Visualización pública</h3>
+          <p>Consulta el resultado final tal como se publicará. Esta vista no incluye accesos a las herramientas internas.</p>
+        </div>
+        <div class="card-footer">
+          <span class="tag">Sankey</span>
+          <span>Ver diagrama&nbsp;<i class="fa-solid fa-arrow-right-long"></i></span>
+        </div>
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img src="img/logo_gob.png" alt="Gobierno de México" class="footer-logo-img">
+      </div>
+      <div class="footer-section">
+        <h4>Subsecretaría de Planeación y Transición Energética</h4>
+        <p>Secretaría de Energía (SENER)<br>Av. Insurgentes Sur 890, Col. Del Valle<br>Ciudad de México, C.P. 03100</p>
+      </div>
+      <div class="footer-section">
+        <h4>Enlaces de interés</h4>
+        <ul>
+          <li><a href="https://www.gob.mx/sener" target="_blank" rel="noreferrer noopener">Portal SENER</a></li>
+          <li><a href="https://www.gob.mx/cre" target="_blank" rel="noreferrer noopener">Comisión Reguladora de Energía</a></li>
+          <li><a href="https://www.gob.mx/cnh" target="_blank" rel="noreferrer noopener">Comisión Nacional de Hidrocarburos</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contacto</h4>
+        <p>Para comentarios internos del tablero:</p>
+        <a href="mailto:calidad@energia.gob.mx" class="footer-email">calidad@energia.gob.mx</a>
+        <h5 style="margin-top:1rem;font-size:0.95rem;">Enlaces rápidos</h5>
+        <div class="footer-links">
+          <a href="tablero.html"><i class="fa-solid fa-table-columns"></i> Tablero</a>
+          <a href="editor.html"><i class="fa-solid fa-pen-to-square"></i> Editor</a>
+          <a href="personalizador.html"><i class="fa-solid fa-palette"></i> Personalizador</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-pattern"></div>
+  </footer>
+</body>
+</html>

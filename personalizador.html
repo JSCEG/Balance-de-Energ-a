@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalizador del Sankey</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Colores institucionales con diseño minimalista */
+            --color-guinda: #6a1c32;
+            --color-gris-oscuro: #374151;
+            --color-blanco: #FFFFFF;
+            --color-gris-claro: #f9fafb;
+            --color-bordes: #e5e7eb;
+            --color-verde-acento: #136235;
+            --color-azul-enlaces: #3b82f6;
+            --color-oro: #B8860B;
+            --color-verde-bandera: #006847;
+            --color-rojo-bandera: #CE1126;
+
+            /* Colores oficiales de SENER */
+            --color-sener-verde: #2c5234;
+            --color-sener-verde-oscuro: #1a3d28;
+            --color-sener-verde-muy-oscuro: #0d2415;
+
+            /* Sistema de diseño minimalista elegante */
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-bg-strong: rgba(255, 255, 255, 0.98);
+            --glass-border: rgba(229, 231, 235, 0.6);
+            --glass-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --glass-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --backdrop-blur: blur(8px);
+            --backdrop-blur-strong: blur(12px);
+
+            --background-color: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            --card-background: var(--glass-bg);
+            --text-color: var(--color-gris-oscuro);
+            --primary-color: var(--color-guinda);
+            --shadow-color: var(--glass-shadow);
+            --border-radius: 16px;
+            --border-radius-small: 8px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            background: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            padding-top: 185px !important;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            background: var(--color-blanco) !important;
+            border-bottom: 1px solid var(--color-bordes);
+            color: var(--color-gris-oscuro);
+            padding: 0.75rem 0.5rem;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 10001 !important;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0 1.5rem;
+        }
+
+        .header-logo {
+            height: 65px;
+            max-width: 220px;
+            object-fit: contain;
+        }
+
+        .sener-logo {
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .header-text {
+            flex-grow: 1;
+        }
+
+        header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--color-gris-oscuro);
+            margin: 0;
+        }
+
+        .palette-panel {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .palette-panel-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .palette-panel-header p {
+            margin: 0.35rem 0 1rem;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .palette-options {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .palette-option {
+            border: 1px solid rgba(17, 24, 39, 0.08);
+            border-radius: 14px;
+            padding: 0.75rem 0.9rem;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+        }
+
+        .palette-option:hover {
+            border-color: rgba(106, 28, 50, 0.35);
+            box-shadow: 0 10px 20px rgba(17, 24, 39, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .palette-option:focus-visible {
+            outline: 2px solid var(--color-guinda);
+            outline-offset: 2px;
+        }
+
+        .palette-option.is-active {
+            border-color: var(--color-guinda);
+            box-shadow: 0 12px 26px rgba(106, 28, 50, 0.25);
+        }
+
+        .palette-option-title {
+            font-weight: 600;
+            color: var(--color-gris-oscuro);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .palette-preview {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .palette-swatch {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 1px solid rgba(17, 24, 39, 0.08);
+        }
+
+        .palette-option-description {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .palette-active {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .palette-active-name {
+            font-weight: 600;
+            color: var(--color-guinda);
+        }
+
+        .palette-actions {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .palette-description {
+            margin: 0.35rem 0 0;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .palette-hint {
+            margin: 0.75rem 0 0;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .main-nav {
+            position: relative;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            z-index: 1;
+        }
+
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.1rem;
+            background: rgba(106, 28, 50, 0.08);
+            border: 1px solid rgba(106, 28, 50, 0.15);
+            border-radius: 999px;
+            color: var(--color-gris-oscuro);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .nav-button .icon {
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            background: rgba(106, 28, 50, 0.15);
+            border-color: rgba(106, 28, 50, 0.25);
+            color: var(--color-guinda);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(106, 28, 50, 0.15);
+        }
+
+        .nav-button.active {
+            background: var(--color-guinda);
+            color: var(--color-blanco);
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(106, 28, 50, 0.25);
+        }
+
+        .nav-button.active .icon {
+            color: var(--color-blanco);
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            box-shadow: var(--glass-shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+            color: var(--color-gris-oscuro);
+            padding: 3rem 0 0 0;
+            margin-top: auto;
+            margin-bottom: 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid var(--color-bordes);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 220px 1fr 1fr 1fr;
+            gap: 3rem;
+            padding: 0 3rem 3rem 3rem;
+            align-items: start;
+            position: relative;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-logo-img {
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(1.1);
+        }
+
+        .footer-section h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 1.5rem 0;
+            color: var(--color-gris-oscuro);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(106, 28, 50, 0.8), transparent);
+            border-radius: 1px;
+        }
+
+        .footer-section p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0 0 1.5rem 0;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.25rem 0;
+            display: inline-block;
+        }
+
+        .footer-section ul li a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-guinda);
+            transition: width 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--color-guinda);
+            transform: translateX(4px);
+        }
+
+        .footer-section ul li a:hover::before {
+            width: 100%;
+        }
+
+        .footer-email {
+            color: var(--color-guinda);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            background: rgba(106, 28, 50, 0.1);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 0.5rem;
+            border: 1px solid rgba(106, 28, 50, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .footer-email:hover {
+            background: rgba(106, 28, 50, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(106, 28, 50, 0.2);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: rgba(106, 28, 50, 0.1);
+            border-radius: 12px;
+            color: var(--color-guinda);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.1rem;
+            border: 1px solid rgba(106, 28, 50, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link:hover {
+            background: rgba(106, 28, 50, 0.15);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(106, 28, 50, 0.3);
+            border-color: rgba(106, 28, 50, 0.4);
+        }
+        .table td,
+        .table th {
+            vertical-align: middle;
+        }
+
+        .table input[type="color"] {
+            width: 100%;
+            height: 38px;
+            padding: 0;
+            border: none;
+        }
+        .pickr .pcr-button {
+            width: 100%;
+            height: 38px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <img src="img/logo_gob.png" alt="Logo Gobierno de México" class="header-logo">
+            <div class="header-text">
+                <h1>Personalizador del Sankey</h1>
+            </div>
+            <img src="img/logo_sener.png" alt="Logo SENER" class="header-logo sener-logo">
+        </div>
+        <nav class="main-nav" aria-label="Navegación principal">
+            <a class="nav-button" href="tablero.html">
+                <span class="icon"><i class="fa-solid fa-table-columns"></i></span>
+                Tablero
+            </a>
+            <a class="nav-button" href="index.html">
+                <span class="icon"><i class="fa-solid fa-diagram-project"></i></span>
+                Ver Sankey
+            </a>
+            <a class="nav-button" href="editor.html">
+                <span class="icon"><i class="fa-solid fa-pen-to-square"></i></span>
+                Editor de datos
+            </a>
+            <a class="nav-button active" href="personalizador.html" aria-current="page">
+                <span class="icon"><i class="fa-solid fa-palette"></i></span>
+                Personalizador
+            </a>
+            <a class="nav-button" href="agregar.html">
+                <span class="icon"><i class="fa-solid fa-sitemap"></i></span>
+                Administrador de nodos
+            </a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <ul class="nav nav-tabs" id="config-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="colors-tab" data-toggle="tab" href="#colors" role="tab" aria-controls="colors" aria-selected="true">Colores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="layout-tab" data-toggle="tab" href="#layout" role="tab" aria-controls="layout" aria-selected="false">Layout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="other-tab" data-toggle="tab" href="#other" role="tab" aria-controls="other" aria-selected="false">Otras</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="config-tabs-content">
+                <div class="tab-pane fade show active" id="colors" role="tabpanel" aria-labelledby="colors-tab">
+                    <div class="palette-panel" id="palette-panel">
+                        <div class="palette-panel-header">
+                            <h3>Paletas predefinidas</h3>
+                            <p>Selecciona una paleta institucional o temática para aplicar colores base y después ajusta detalles con los selectores individuales.</p>
+                        </div>
+                        <div class="palette-options" id="palette-options"></div>
+                        <div class="palette-active">
+                            <span>Paleta activa:</span>
+                            <span class="palette-active-name" id="active-palette-label">Institucional SENER</span>
+                        </div>
+                        <div class="palette-actions">
+                            <button type="button" id="export-palette-button" class="btn btn-outline-secondary btn-sm">
+                                <i class="fa-solid fa-file-excel"></i>
+                                Exportar paleta a Excel
+                            </button>
+                        </div>
+                        <p class="palette-description" id="palette-description"></p>
+                        <p class="palette-hint">Tras aplicar una paleta puedes modificar colores individuales. Cualquier cambio manual marcará la paleta como personalizada.</p>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Color</th>
+                                <th>Columna</th>
+                                <th>Nodo</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="color-pickers-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="layout" role="tabpanel" aria-labelledby="layout-tab">
+                    <div id="layout-config-container"></div>
+                </div>
+                <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
+                    <div id="other-config-container"></div>
+                </div>
+            </div>
+            <button id="save-button" class="btn btn-primary mt-3">Guardar Cambios</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="img/logo_sener.png" alt="Logo SENER" class="footer-logo-img">
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>Para más información, por favor contáctenos:</p>
+                <a href="mailto:contacto@sener.gob.mx" class="footer-email">contacto@sener.gob.mx</a>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces de Interés</h4>
+                <ul>
+                    <li><a href="https://www.gob.mx/sener">Página Oficial de SENER</a></li>
+                    <li><a href="https://www.gob.mx/cre">Comisión Reguladora de Energía</a></li>
+                    <li><a href="https://www.gob.mx/cnh">Comisión Nacional de Hidrocarburos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Síguenos</h4>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="sankey_config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="personalizador.js"></script>
+</body>
+
+</html>
