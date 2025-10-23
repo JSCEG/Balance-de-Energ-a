@@ -711,7 +711,7 @@
     function renderEditor(parent) {
       const panel = document.getElementById('editor-panel');
       const years = state.years.length ? state.years : uniqueYearsFromAll(state.data);
-      const displayYears = [...years].sort((a, b) => b - a);
+      const displayYears = [...years].sort((a, b) => a - b);
       const latestYear = years.length ? Math.max(...years) : null;
       const hijos = parent['Nodos Hijo'] || [];
       if (!hijos.length) {
@@ -723,7 +723,7 @@
       tools.className = 'toolbar mb-2';
       tools.innerHTML = `
         <div class="d-flex flex-wrap gap-2 align-items-center w-100">
-          <span class="hint flex-grow-1">Columnas ordenadas de anio reciente a antiguo.</span>
+          <span class="hint flex-grow-1">Columnas ordenadas de anio antiguo a reciente.</span>
           <div class="btn-group ms-auto" role="group">
             <button class="btn btn-primary" id="save-server">Guardar</button>
             <button class="btn btn-success" id="download">Descargar datos.js</button>
@@ -753,6 +753,58 @@
       headerRow.appendChild(thActions);
       thead.appendChild(headerRow);
 
+      const handlePaste = (event, startRow, startCol) => {
+        const clipboard = event.clipboardData || window.clipboardData;
+        const text = clipboard ? clipboard.getData('text') : '';
+        if (!text) return;
+        event.preventDefault();
+        const rows = text
+          .replace(/\r\n/g, '\n')
+          .split('\n')
+          .map(line => line.replace(/\t+$/g, ''))
+          .filter(line => line.length);
+        if (!rows.length) return;
+
+        const parentNode = state.data.Datos[state.parentIndex];
+        const hijosList = parentNode['Nodos Hijo'] || [];
+        let updated = 0;
+
+        rows.forEach((line, rowOffset) => {
+          const values = line.split('\t');
+          values.forEach((cellValue, colOffset) => {
+            const targetRow = startRow + rowOffset;
+            const targetCol = startCol + colOffset;
+            if (targetRow >= hijosList.length) return;
+            if (targetCol >= displayYears.length) return;
+            const yearKey = String(displayYears[targetCol]);
+            const trimmed = (cellValue || '').trim();
+            if (trimmed === '') {
+              if (hijosList[targetRow][yearKey] !== '') {
+                hijosList[targetRow][yearKey] = '';
+                updated++;
+              }
+              return;
+            }
+            const normalized = trimmed.replace(/\s+/g, '');
+            let parsed = Number(normalized.replace(/,/g, ''));
+            if (Number.isNaN(parsed)) {
+              parsed = Number(normalized.replace(/\./g, '').replace(',', '.'));
+            }
+            if (Number.isNaN(parsed)) return;
+            hijosList[targetRow][yearKey] = parsed;
+            updated++;
+          });
+        });
+
+        if (updated) {
+          scheduleAutoSave();
+          renderEditor(state.data.Datos[state.parentIndex]);
+          setTimeout(() => showAlert(`Se pegaron ${updated} celda${updated === 1 ? '' : 's'} desde Excel.`, 'success'), 0);
+        } else {
+          showAlert('No se detectaron valores válidos al pegar.', 'warning');
+        }
+      };
+
       hijos.forEach((hijo, childIdx) => {
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
@@ -760,7 +812,7 @@
         tdName.innerHTML = `<span class="child-name">${hijo['Nodo Hijo']}</span><div class="hint">${hijo.tipo || ''}</div>`;
         tr.appendChild(tdName);
 
-        displayYears.forEach(y => {
+        displayYears.forEach((y, colIdx) => {
           const td = document.createElement('td');
           const input = document.createElement('input');
           input.type = 'number';
@@ -768,6 +820,10 @@
           input.min = '0';
           input.className = 'form-control form-control-sm';
           input.value = formatNumber(hijo[String(y)]);
+          input.dataset.rowIndex = childIdx;
+          input.dataset.colIndex = colIdx;
+          input.dataset.year = y;
+          input.addEventListener('paste', (event) => handlePaste(event, childIdx, colIdx));
           input.onchange = (e) => {
             const v = e.target.value.trim();
             const num = v === '' ? '' : Number(v);
