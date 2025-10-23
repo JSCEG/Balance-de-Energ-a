@@ -3715,7 +3715,12 @@
 
                 const option = sankeyChart.getOption();
                 const nodes = option.series[0].data;
-                const idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
+
+                const exactMatchIndex = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase() === term);
+                let idx = exactMatchIndex;
+                if (idx === -1) {
+                    idx = nodes.findIndex(n => !n.esEspaciador && n.name && n.name.toLowerCase().includes(term));
+                }
 
                 if (idx === -1) {
                     hideLinkLabels();
