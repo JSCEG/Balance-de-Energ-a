@@ -214,6 +214,45 @@
             display: none;
         }
 
+        .header-links {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 0.75rem 0 0;
+        }
+
+        .header-links .nav-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem 0.4rem;
+            background: rgba(106, 28, 50, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 999px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+            box-shadow: 0 4px 12px rgba(17, 24, 39, 0.22);
+        }
+
+        .header-links .nav-button:hover {
+            transform: translateY(-2px);
+            background: rgba(106, 28, 50, 1);
+            box-shadow: 0 6px 18px rgba(17, 24, 39, 0.24);
+        }
+
+        .header-links .nav-button:focus-visible {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+        }
+
+        .header-links .icon {
+            font-size: 0.95rem;
+            color: inherit;
+        }
+
         .header-content {
             display: flex;
             align-items: center;
@@ -2435,6 +2474,12 @@
                 <p>Diagrama de Sankey</p>
             </div>
             <img src="img/logo_gob.png" alt="Logo Gobierno de México" class="header-logo">
+        </div>
+        <div class="header-links" role="navigation" aria-label="Accesos rapidos">
+            <a class="nav-button" href="graficos.html">
+                <span class="icon"><i class="fa-solid fa-chart-line"></i></span>
+                Analitica
+            </a>
         </div>
         <!-- Navegación interna disponible solo en entornos con backend -->
         <!--
