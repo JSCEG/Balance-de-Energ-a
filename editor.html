@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -474,6 +474,42 @@
       td input[type="number"] {
         width: 100px;
       }
+    }
+
+    /* Result modal adjustments */
+    .modal-header-soft {
+      background: #f3f4f6;
+      border-bottom: 1px solid rgba(17,24,39,0.08);
+      color: var(--color-gris-oscuro);
+    }
+
+    .modal-header-soft.bg-success,
+    .modal-header-soft.bg-danger,
+    .modal-header-soft.bg-warning {
+      color: var(--color-gris-oscuro);
+      background: var(--color-gris-claro);
+    }
+
+    .modal-header-soft.bg-success .modal-title,
+    .modal-header-soft.bg-danger .modal-title,
+    .modal-header-soft.bg-warning .modal-title {
+      color: var(--color-gris-oscuro);
+    }
+
+    .modal-body {
+      font-size: 0.95rem;
+      color: var(--color-gris-oscuro);
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      border: 1px solid rgba(17,24,39,0.12);
+      color: var(--color-gris-oscuro);
+    }
+
+    .btn-outline:hover {
+      background: rgba(17,24,39,0.05);
+      border-color: rgba(17,24,39,0.2);
     }
   </style>
 </head>
@@ -993,45 +1029,3 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-    .modal-header-soft {
-      background: #f3f4f6;
-      border-bottom: 1px solid rgba(17,24,39,0.08);
-      color: var(--color-gris-oscuro);
-    }
-
-    .modal-header-soft.bg-success,
-    .modal-header-soft.bg-danger,
-    .modal-header-soft.bg-warning {
-      color: var(--color-gris-oscuro);
-      background: var(--color-gris-claro);
-    }
-
-    .modal-header-soft.bg-success .modal-title,
-    .modal-header-soft.bg-danger .modal-title,
-    .modal-header-soft.bg-warning .modal-title {
-      color: var(--color-gris-oscuro);
-    }
-
-    .modal-body {
-      font-size: 0.95rem;
-      color: var(--color-gris-oscuro);
-    }
-
-    .btn-outline {
-      background: #ffffff;
-      border: 1px solid rgba(17,24,39,0.12);
-      color: var(--color-gris-oscuro);
-    }
-
-    .btn-outline:hover {
-      background: rgba(17,24,39,0.05);
-      border-color: rgba(17,24,39,0.2);
-    }
