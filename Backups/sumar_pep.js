@@ -1,6 +1,6 @@
 window.energyData = {
-    "Datos": [
-   {
+  "Datos": [
+    {
       "Nodo Padre": "Exportación EP",
       "Nodos Hijo": [
         {
@@ -444,7 +444,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -492,7 +492,7 @@ window.energyData = {
       "id_padre": 6,
       "color": ""
     },
-          {
+    {
       "Nodo Padre": "Energía No Aprovechada EP",
       "Nodos Hijo": [
         {
@@ -764,7 +764,7 @@ window.energyData = {
       "id_padre": 7,
       "color": "#A9A9A9"
     },
-           {
+    {
       "Nodo Padre": "Consumo Propio del Sector EP",
       "Nodos Hijo": [
         {
@@ -1208,7 +1208,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -1256,7 +1256,7 @@ window.energyData = {
       "id_padre": 24,
       "color": "#AB7C38"
     },
-             {
+    {
       "Nodo Padre": "Pérdidas técnicas por transporte, transmisión y distribución EP",
       "Nodos Hijo": [
         {
@@ -1700,7 +1700,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -1747,7 +1747,7 @@ window.energyData = {
       "id_padre": 26,
       "color": "#F28E2B"
     },
-                 {
+    {
       "Nodo Padre": "Variación de Inventarios EP (-)",
       "Nodos Hijo": [
         {
@@ -1843,5 +1843,5 @@ window.energyData = {
       "id_padre": 5,
       "color": ""
     }
-    ]
+  ]
 }

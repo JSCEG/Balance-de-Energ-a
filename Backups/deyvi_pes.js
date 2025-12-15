@@ -1,5 +1,5 @@
 window.energyData = {
-    "Datos": [
+  "Datos": [
     {
       "Nodo Padre": "Variación de Inventarios ES (+)",
       "Nodos Hijo": [
@@ -180,7 +180,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.62,
           "2011": 0,
@@ -206,7 +206,7 @@ window.energyData = {
       "id_padre": 5,
       "color": ""
     },
-          {
+    {
       "Nodo Padre": "Diferencia Estadística ES (+)",
       "Nodos Hijo": [
         {
@@ -386,7 +386,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 2.1,
           "2011": 0,
@@ -434,5 +434,5 @@ window.energyData = {
       "id_padre": 25,
       "color": "#7F7F7F"
     }
-    ]
+  ]
 }

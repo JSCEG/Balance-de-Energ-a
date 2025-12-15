@@ -171,7 +171,7 @@ A continuación se presenta la lista de nodos padre utilizada en el archivo dato
   5. Querosenos (id_hijo: 17)
   6. Diesel (id_hijo: 18)
   7. Combustóleo (id_hijo: 19)
-  8. Gas natural seco (id_hijo: 21)
+  8. Gas Seco (id_hijo: 21)
   9. Energía eléctrica (id_hijo: 22)
   10. Otros energéticos (id_hijo: 20)
 
@@ -223,7 +223,7 @@ A continuación se presenta la lista de nodos padre utilizada en el archivo dato
       'Coque de petróleo': [termicaConvencionalIndex],
       'Diesel': [combustionInternaIndex, turbogasIndex],
       'Gas natural': [cicloCombinadoIndex],
-      'Gas natural seco': [cicloCombinadoIndex, termicaConvencionalIndex, combustionInternaIndex, turbogasIndex], // Ahora puede ir a Ciclo Combinado, Térmica Convencional, Combustión Interna y Turbogás
+      'Gas Seco': [cicloCombinadoIndex, termicaConvencionalIndex, combustionInternaIndex, turbogasIndex], // Ahora puede ir a Ciclo Combinado, Térmica Convencional, Combustión Interna y Turbogás
       'Energía Nuclear': [nucleoelectricaIndex],
       'Geoenergía': [geotermicaIndex],
       'Energía eólica': [eolicaIndex],
@@ -494,7 +494,7 @@ Cuando necesites información sobre un nodo o enlace específico, o quieras ente
 - "Busca la definición del nodo 'Centrales Eléctricas' en `datos_energia_completo.json`."
 - "Muéstrame la lógica de creación de enlaces para 'Oferta Total (Hub)' en `index.html`."
 - "¿Cómo se calcula el popup para el nodo 'Refinerías y Despuntadoras' en `PopupManager.js`?"
-- "Encuentra todas las ocurrencias de 'Gas natural seco' en `index.html`."
+- "Encuentra todas las ocurrencias de 'Gas Seco' en `index.html`."
 
 ### 2. Modificar o Eliminar Enlaces
 

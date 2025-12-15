@@ -452,7 +452,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "descripcion": "Es el gas natural en ausencia de condensados o hidrocarburos líquidos, es decir, aquel al que se le han eliminado los hidrocarburos condensables existentes. Es el energético más empleado en México, consumido en todos los sectores.",
           "2010": 847.77,
@@ -944,7 +944,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 878.45,
           "2011": 1029.07,
@@ -1436,7 +1436,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -1936,7 +1936,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 877.84,
           "2011": 1029.18,
@@ -2356,7 +2356,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.62,
           "2011": 0,
@@ -2562,7 +2562,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0,
           "2011": -0.1,
@@ -3032,7 +3032,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -3524,7 +3524,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -30.68,
           "2011": -9.23,
@@ -4024,7 +4024,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -4516,7 +4516,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 380.94,
           "2011": 436.92,
@@ -5008,7 +5008,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0,
           "2011": 0,
@@ -5520,7 +5520,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "valores": null,
           "2010": 451.22,
@@ -6014,7 +6014,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 1359.65,
           "2011": 1438.12,
@@ -6506,7 +6506,7 @@ window.energyData = {
           "2024": 0.0
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "descripcion": "Gas natural del cual se han eliminado componentes líquidos y húmedos.",
           "id_hijo": 21,
@@ -6998,7 +6998,7 @@ window.energyData = {
           "2024": 0.0
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "descripcion": "",
           "id_hijo": 21,
@@ -7506,7 +7506,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -174.8,
           "2011": -212.16,
@@ -7998,7 +7998,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -15.77,
           "2011": -9.18,
@@ -8490,7 +8490,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -39.82,
           "2011": -41.54,
@@ -8982,7 +8982,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -1159.44,
           "2011": -1178.02,
@@ -9474,7 +9474,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -9966,7 +9966,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -40.1,
           "2011": -66.1,
@@ -10458,7 +10458,7 @@ window.energyData = {
           "color": "#7F7F7F"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Conversión Energética",
           "2010": 0,
           "2011": 0,
@@ -10947,7 +10947,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -11439,7 +11439,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -11931,7 +11931,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -12541,7 +12541,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -13033,7 +13033,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -729.43,
           "2011": -937.9,
@@ -13805,7 +13805,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 2.1,
           "2011": 0,
@@ -14033,7 +14033,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0,
           "2011": -8.22,
@@ -14525,7 +14525,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -15016,7 +15016,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -15507,7 +15507,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -15998,7 +15998,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "2010": 0.0,
           "2011": 0.0,
           "2012": 0.0,
@@ -16489,7 +16489,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -16980,7 +16980,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 501.39,
           "2011": 510.65,
@@ -17472,7 +17472,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 28.62,
           "2011": 29.37,
@@ -17964,7 +17964,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.77,
           "2011": 0.74,
@@ -18456,7 +18456,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 472.77,
           "2011": 481.28,
@@ -18948,7 +18948,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 1.42,
           "2011": 1.51,
@@ -19440,7 +19440,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 432.76,
           "2011": 442.85,
@@ -19932,7 +19932,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 7.9,
           "2011": 7.78,
@@ -20424,7 +20424,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 30.19,
           "2011": 28.57,
@@ -20916,7 +20916,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -21408,7 +21408,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.5,
           "2011": 0.56,
@@ -21900,7 +21900,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 1810.87,
           "2011": 1943.91,
@@ -22391,7 +22391,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 27.85,
           "2011": 28.63,
@@ -22616,7 +22616,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.0,
           "2011": 0.0,
@@ -22844,7 +22844,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": -760.11,
           "2011": -947.23,
@@ -23336,7 +23336,7 @@ window.energyData = {
           "color": ""
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 0.00,
           "2011": 0.00,
@@ -23564,7 +23564,7 @@ window.energyData = {
           "color": "#BDB76B"
         },
         {
-          "Nodo Hijo": "Gas natural seco",
+          "Nodo Hijo": "Gas Seco",
           "tipo": "Energía Secundaria",
           "2010": 2.72,
           "2011": 0.0,

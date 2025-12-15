@@ -89,7 +89,7 @@ Este documento resume las paletas incluidas en el `personalizador.html` y en `sa
 | Querosenos | `#A0522D` |
 | Diesel | `#C62828` |
 | Combustoleo | `#7B2C2C` |
-| Gas natural seco | `#00796B` |
+| Gas Seco | `#00796B` |
 | Energia electrica | `#FFD54F` |
 
 ### Flujos, perdidas y totales

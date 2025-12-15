@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Querosenos': '#98989A',
         'Diesel': '#9C2348',
         'Combustóleo': '#621333',
-        'Gas natural seco': '#1E5B4F',
+        'Gas Seco': '#1E5B4F',
         'Otros energéticos': '#002F2A',
         'Energía eléctrica': '#E7D295',
         'Producción': '#9C2348',
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     assignCategory(['Energía Nuclear'], 'primarioNuclear');
     assignCategory(['Coque de carbón', 'Coque de petróleo'], 'secSolido');
     assignCategory(['Gas licuado de petróleo', 'Gasolinas y naftas', 'Querosenos', 'Diesel', 'Combustóleo', 'Otros energéticos'], 'secLiquido');
-    assignCategory(['Gas natural seco'], 'secGas');
+    assignCategory(['Gas Seco'], 'secGas');
     assignCategory(['Energía eléctrica'], 'electricidad');
     assignCategory(['Producción', 'Importación EP', 'Importación ES', 'Oferta Interna Bruta EP', 'Oferta Interna Bruta ES', 'Oferta Total', 'Producción bruta energía secundaria'], 'origenBalance');
     assignCategory(['Variación de Inventarios EP (+)', 'Variación de Inventarios ES (+)'], 'inventarioPos');
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Coque de petróleo': '#8B3A3A',
         'Condensados': '#A94442',
         'Gas natural': '#1E5B4F',
-        'Gas natural seco': '#00796B',
+        'Gas Seco': '#00796B',
         'Energía Nuclear': '#C0C0C0',
         'Nucleoeléctrica': '#6B21A8',
         'Energía Hidráulica': '#1565C0',

@@ -19,7 +19,7 @@ window.sankeyConfig = {
         "Querosenos": "#A0522D",
         "Diesel": "#C62828",
         "Combustóleo": "#7B2C2C",
-        "Gas natural seco": "#00796B",
+        "Gas Seco": "#00796B",
         "Otros energéticos": "#3E3E3E",
         "Energía eléctrica": "#FFD54F",
         "Producción": "#795548",
@@ -478,7 +478,7 @@ window.sankeyConfig = {
                     "depth": 5
                 },
                 {
-                    "nombre": "Gas natural seco",
+                    "nombre": "Gas Seco",
                     "tipo": "Hijo",
                     "visible": true,
                     "padre": "Oferta Interna Bruta EP",

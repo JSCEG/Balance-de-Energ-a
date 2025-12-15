@@ -22,7 +22,7 @@ window.sankeyConfig = {
         "Diesel": "#D62728",
         "Combustóleo": "#A22C29",
         "Otros energéticos": "#BDB76B",
-        "Gas natural seco": "#2A9D8F",
+        "Gas Seco": "#2A9D8F",
         "Energía eléctrica": "#FCEE0C",
         "Producción": "#4CAF50",
         "Importación EP": "#2196F3",
@@ -198,7 +198,7 @@ window.sankeyConfig = {
                 { nombre: "Diesel", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 5, depth: 5 },
                 { nombre: "Combustóleo", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 6, depth: 5 },
                 { nombre: "Otros energéticos", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 7, depth: 5 },
-                { nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
+                { nombre: "Gas Seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
                 // { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9, depth: 5 }
                 { nombre: "SPACER_BIG_5B", tipo: "Padre", visible: true, posicion: 9, esEspaciador: true, valorEspaciador: 2000 },
                 // // ...
@@ -231,7 +231,7 @@ window.sankeyConfig = {
                 { nombre: "SPACER_BIG_E", tipo: "Padre", visible: true, posicion: 0, esEspaciador: true, valorEspaciador: 8000 },
                 // Puedes ajustar el orden y agregar más según tu catálogo
 
-                //{ nombre: "Gas natural seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
+                //{ nombre: "Gas Seco", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 8, depth: 5 },
                 { nombre: "Energía eléctrica", tipo: "Hijo", visible: true, padre: "Oferta Interna Bruta EP", posicion: 9, }
                 // // ...
             ]
