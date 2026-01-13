@@ -3042,6 +3042,8 @@
             let focusedNodeIndex = null;
             let currentLegendOrder = null;
             let hydrocarbonsFilterActive = false; // Estado del filtro de Hidrocarburos
+            let singleElementFilterActive = false; // Estado del filtro de elemento único
+            let activeSingleElement = null; // Nombre del elemento activo para el filtro único
 
 
             // Verificar que los datos estén cargados
@@ -3138,10 +3140,76 @@
                         }
                     });
                 }
+
+                // Función para rastreo bidireccional (upstream + downstream)
+                function traceBidirectional(startNode, links) {
+                    const visited = new Set();
+                    if (!startNode) return visited;
+
+                    visited.add(startNode);
+
+                    // 1. Downstream (BFS hacia adelante)
+                    const queueDown = [startNode];
+                    const visitedDown = new Set([startNode]);
+
+                    while (queueDown.length > 0) {
+                        const current = queueDown.shift();
+                        const outgoing = links.filter(l => l.source === current);
+                        outgoing.forEach(l => {
+                            if (!visitedDown.has(l.target)) {
+                                visitedDown.add(l.target);
+                                visited.add(l.target);
+                                queueDown.push(l.target);
+                            }
+                        });
+                    }
+
+                    // 2. Upstream (BFS hacia atrás)
+                    const queueUp = [startNode];
+                    const visitedUp = new Set([startNode]);
+
+                    while (queueUp.length > 0) {
+                        const current = queueUp.shift();
+                        const incoming = links.filter(l => l.target === current);
+                        incoming.forEach(l => {
+                            if (!visitedUp.has(l.source)) {
+                                visitedUp.add(l.source);
+                                visited.add(l.source);
+                                queueUp.push(l.source);
+                            }
+                        });
+                    }
+
+                    return visited;
+                }
                 return visited;
             }
 
             function applyLegendFilter(nodes, links) {
+                if (singleElementFilterActive && activeSingleElement) {
+                    const validNodes = traceBidirectional(activeSingleElement, links);
+
+                    const filtered = links.filter(lk => {
+                        return validNodes.has(lk.source) && validNodes.has(lk.target);
+                    });
+
+                    nodes.forEach(n => {
+                        if (!n.esEspaciador) {
+                            const active = validNodes.has(n.name);
+                            n.itemStyle = n.itemStyle || {};
+                            n.itemStyle.opacity = active ? 1 : 0.01;
+                            n.label = n.label || {};
+                            n.label.show = !!active;
+                            if (!active) {
+                                n.label.backgroundColor = 'rgba(0,0,0,0)';
+                                n.label.borderWidth = 0;
+                                n.label.color = 'rgba(0,0,0,0)';
+                            }
+                        }
+                    });
+                    return filtered;
+                }
+
                 if (hydrocarbonsFilterActive) {
                     const rootNodes = ['Petróleo crudo', 'Gas natural', 'Condensados'];
                     const validNodes = traceDownstream(rootNodes, links);
@@ -3436,6 +3504,98 @@
                 // Crear controles de filtro
                 const controlsDiv = document.createElement('div');
                 controlsDiv.className = 'filter-controls';
+                controlsDiv.style.flexDirection = 'column'; // Permitir apilamiento vertical
+
+                // --- NUEVO: Sección de Filtro por Elemento Único ---
+                const specializedFilterDiv = document.createElement('div');
+                specializedFilterDiv.style.width = '100%';
+                specializedFilterDiv.style.marginBottom = '15px';
+                specializedFilterDiv.style.padding = '10px';
+                specializedFilterDiv.style.backgroundColor = 'rgba(255,255,255,0.5)';
+                specializedFilterDiv.style.borderRadius = '8px';
+                specializedFilterDiv.style.border = '1px solid rgba(0,0,0,0.1)';
+
+                const specializedLabel = document.createElement('label');
+                specializedLabel.textContent = 'Filtro por Energético (Traza completa):';
+                specializedLabel.style.display = 'block';
+                specializedLabel.style.marginBottom = '5px';
+                specializedLabel.style.fontWeight = 'bold';
+                specializedLabel.style.fontSize = '0.9em';
+
+                const searchContainer = document.createElement('div');
+                searchContainer.style.display = 'flex';
+                searchContainer.style.gap = '5px';
+
+                const searchInput = document.createElement('input');
+                searchInput.setAttribute('list', 'energy-options');
+                searchInput.id = 'single-element-search';
+                searchInput.placeholder = 'Buscar energético...';
+                searchInput.style.flex = '1';
+                searchInput.style.padding = '6px';
+                searchInput.style.borderRadius = '4px';
+                searchInput.style.border = '1px solid #ccc';
+                if (activeSingleElement) searchInput.value = activeSingleElement;
+
+                const datalist = document.createElement('datalist');
+                datalist.id = 'energy-options';
+
+                // Poblar datalist con todos los energéticos
+                Object.keys(window.sankeyConfig.energeticColors || {}).sort().forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    datalist.appendChild(opt);
+                });
+
+                // Botón limpiar
+                const clearSearchBtn = document.createElement('button');
+                clearSearchBtn.innerHTML = '<i class="fas fa-times"></i>';
+                clearSearchBtn.title = 'Limpiar filtro';
+                clearSearchBtn.style.padding = '6px 10px';
+                clearSearchBtn.style.border = '1px solid #ccc';
+                clearSearchBtn.style.borderRadius = '4px';
+                clearSearchBtn.style.background = '#f0f0f0';
+                clearSearchBtn.style.cursor = 'pointer';
+                clearSearchBtn.onclick = () => {
+                    searchInput.value = '';
+                    singleElementFilterActive = false;
+                    activeSingleElement = null;
+                    updateChart(yearSelector.value);
+                };
+
+                // Evento de cambio en input
+                searchInput.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    const validOptions = window.sankeyConfig.energeticColors || {};
+
+                    if (validOptions[val]) {
+                        singleElementFilterActive = true;
+                        activeSingleElement = val;
+                        // Desactivar filtro hidrocarburos si está activo para evitar conflictos visuales
+                        if (hydrocarbonsFilterActive) {
+                            hydrocarbonsFilterActive = false;
+                            document.getElementById('hydrocarbons-switch').checked = false;
+                        }
+                        updateChart(yearSelector.value);
+                    } else if (val === '') {
+                        singleElementFilterActive = false;
+                        activeSingleElement = null;
+                        updateChart(yearSelector.value);
+                    }
+                });
+
+                searchContainer.appendChild(searchInput);
+                searchContainer.appendChild(datalist);
+                searchContainer.appendChild(clearSearchBtn);
+                specializedFilterDiv.appendChild(specializedLabel);
+                specializedFilterDiv.appendChild(searchContainer);
+
+                controlsDiv.appendChild(specializedFilterDiv);
+                // ----------------------------------------------------
+
+                const buttonsRow = document.createElement('div');
+                buttonsRow.style.display = 'flex';
+                buttonsRow.style.gap = '10px';
+                buttonsRow.style.width = '100%';
 
                 const showAllBtn = document.createElement('button');
                 showAllBtn.className = 'filter-control-btn';
@@ -3455,8 +3615,9 @@
                     updateChart(yearSelector.value);
                 };
 
-                controlsDiv.appendChild(showAllBtn);
-                controlsDiv.appendChild(hideAllBtn);
+                buttonsRow.appendChild(showAllBtn);
+                buttonsRow.appendChild(hideAllBtn);
+                controlsDiv.appendChild(buttonsRow);
 
                 // Crear contenedor de filtros
                 const filtersDiv = document.createElement('div');
