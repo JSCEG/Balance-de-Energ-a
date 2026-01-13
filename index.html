@@ -2607,6 +2607,17 @@
                         </label>
                         <div class="tooltip">Descripciones detalladas</div>
                     </div>
+                    <div class="toggle-container tooltip-container"
+                        style="display: flex; flex-direction: column; align-items: center;">
+                        <label class="toggle-label">
+                            <span class="toggle-text">Hidrocarburos</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="hydrocarbons-switch">
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                        <div class="tooltip">Filtro Sector Hidrocarburos</div>
+                    </div>
                     <button id="zoom-reset-btn" class="btn btn-secondary tooltip-container">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                             viewBox="0 0 16 16">
@@ -3030,6 +3041,7 @@
             let focusMode = focusSwitch.checked;
             let focusedNodeIndex = null;
             let currentLegendOrder = null;
+            let hydrocarbonsFilterActive = false; // Estado del filtro de Hidrocarburos
 
 
             // Verificar que los datos estén cargados
@@ -3099,7 +3111,62 @@
                 });
             }
 
+            // Función para rastrear flujo descendente (aguas abajo)
+            // Función para rastrear flujo descendente (aguas abajo) e incluir padres inmediatos
+            function traceDownstream(rootNodes, links) {
+                const visited = new Set(rootNodes);
+                const queue = [...rootNodes];
+
+                // Paso extra: Buscar nodos padres inmediatos (upstream) de los rootNodes
+                // Esto es para incluir "Producción" u otros orígenes directos
+                links.forEach(l => {
+                    if (rootNodes.includes(l.target)) {
+                        visited.add(l.source);
+                    }
+                });
+
+                while (queue.length > 0) {
+                    const currentNode = queue.shift();
+
+                    // Encontrar todos los enlaces donde el nodo actual es fuente
+                    const outgoingLinks = links.filter(l => l.source === currentNode);
+
+                    outgoingLinks.forEach(link => {
+                        if (!visited.has(link.target)) {
+                            visited.add(link.target);
+                            queue.push(link.target);
+                        }
+                    });
+                }
+                return visited;
+            }
+
             function applyLegendFilter(nodes, links) {
+                if (hydrocarbonsFilterActive) {
+                    const rootNodes = ['Petróleo crudo', 'Gas natural', 'Condensados'];
+                    const validNodes = traceDownstream(rootNodes, links);
+
+                    const filtered = links.filter(lk => {
+                        return validNodes.has(lk.source) && validNodes.has(lk.target);
+                    });
+
+                    nodes.forEach(n => {
+                        if (!n.esEspaciador) {
+                            const active = validNodes.has(n.name);
+                            n.itemStyle = n.itemStyle || {};
+                            n.itemStyle.opacity = active ? 1 : 0.01;
+                            n.label = n.label || {};
+                            n.label.show = !!active;
+                            if (!active) {
+                                n.label.backgroundColor = 'rgba(0,0,0,0)';
+                                n.label.borderWidth = 0;
+                                n.label.color = 'rgba(0,0,0,0)';
+                            }
+                        }
+                    });
+                    return filtered;
+                }
+
                 const filtered = links.filter(lk => {
                     const sc = allNodes.get(lk.source);
                     const tc = allNodes.get(lk.target);
@@ -4521,6 +4588,19 @@
                 }, 100);
             });
 
+
+            // Función auxiliar para generar nombre de archivo consistente
+            function generateExportFileName(extension) {
+                const year = yearSelector.value;
+                let fileName = `Balance_Nacional_Energia_${year}`;
+
+                if (hydrocarbonsFilterActive) {
+                    fileName += '_Hidrocarburos';
+                }
+
+                return `${fileName}.${extension}`;
+            }
+
             document.getElementById('exportar').onclick = function () {
                 let loader;
                 try {
@@ -4686,7 +4766,7 @@
                                 const finalUrl = canvas.toDataURL('image/png');
                                 const a = document.createElement('a');
                                 a.href = finalUrl;
-                                a.download = generateFileName('sankey', 'png');
+                                a.download = generateExportFileName('png');
                                 a.click();
 
                                 // Restaurar renderer original si fue temporal
@@ -4721,7 +4801,7 @@
                             });
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = generateFileName('sankey', 'svg');
+                            a.download = generateExportFileName('svg');
                             a.click();
 
                             // Restaurar renderer original si fue temporal
@@ -4751,7 +4831,7 @@
                     const url = sankeyChart.getDataURL({ type: 'svg', backgroundColor: '#fff' });
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = generateFileName('sankey', 'svg');
+                    a.download = generateExportFileName('svg');
                     a.click();
                 } catch (error) {
                     console.error('Error al exportar SVG:', error);
@@ -4773,7 +4853,7 @@
                     const a = document.createElement('a');
                     const url = URL.createObjectURL(blob);
                     a.href = url;
-                    a.download = generateFileName('datos', 'csv');
+                    a.download = generateExportFileName('csv');
                     a.click();
                     setTimeout(() => URL.revokeObjectURL(url), 100);
                 } catch (error) {
@@ -5162,6 +5242,11 @@
             });
 
             document.getElementById('decal-switch').addEventListener('change', () => {
+                updateChart(yearSelector.value);
+            });
+
+            document.getElementById('hydrocarbons-switch').addEventListener('change', (e) => {
+                hydrocarbonsFilterActive = e.target.checked;
                 updateChart(yearSelector.value);
             });
 
