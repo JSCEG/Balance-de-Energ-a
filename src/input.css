@@ -1,0 +1,234 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Patria';
+  src: url('../tipografias/Patria_Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Patria';
+  src: url('../tipografias/Patria_Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Patria';
+  src: url('../tipografias/Patria_Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Custom Component Layers based on GUIA_ESTILOS_WEB.md and legacy index.html */
+@layer components {
+
+  /* GobMX Components */
+  .btn {
+    @apply px-4 py-2 rounded font-bold transition-all duration-300 inline-flex items-center gap-2;
+  }
+
+  .btn-primary {
+    @apply bg-gobmx-guinda text-white hover:bg-[#7a1b38] shadow-md hover:shadow-lg active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-gobmx-verde text-white hover:bg-opacity-90 shadow-md;
+  }
+
+  .btn-white {
+    @apply bg-white text-gray-700 hover:bg-gray-50 border border-gray-300 shadow-sm active:bg-gray-100;
+  }
+
+  .card {
+    @apply p-6 rounded-xl mb-6 border border-gray-100 shadow-lg bg-white/90 backdrop-blur-sm transition-all duration-300;
+  }
+
+  .card:hover {
+    @apply shadow-xl border-gray-200;
+  }
+
+  .card-important {
+    @apply border-l-[5px] border-l-gobmx-guinda bg-gradient-to-r from-[rgba(155, 34, 71, 0.02)] to-transparent;
+  }
+
+  .card-definition {
+    @apply border-l-[5px] border-l-gobmx-verde bg-gradient-to-r from-[rgba(30, 91, 79, 0.02)] to-transparent;
+  }
+
+  .card-example {
+    @apply border-l-[5px] border-l-gobmx-dorado bg-gradient-to-r from-[rgba(165, 127, 44, 0.02)] to-transparent;
+  }
+
+  /* Legend Item Card */
+  .legend-item-card {
+    @apply flex items-center gap-2 p-2 rounded-lg bg-white border border-gray-100 shadow-sm transition-all duration-200 cursor-pointer select-none;
+  }
+
+  .legend-item-card:hover {
+    @apply bg-gray-50 border-gobmx-guinda/20 shadow-md transform -translate-y-[1px];
+  }
+
+  .legend-item-card[data-has-data="false"] {
+    @apply opacity-50 grayscale hover:grayscale-0 hover:opacity-80;
+  }
+
+  /* Legacy Functional Components ported to Tailwind */
+
+  /* Filters */
+  .filter-item {
+    @apply flex items-center gap-3 p-3 bg-white/80 rounded border-2 border-transparent cursor-pointer transition-all duration-300 hover:bg-white hover:shadow-md relative overflow-hidden;
+  }
+
+  .filter-item.active {
+    @apply bg-white border-gobmx-verde shadow-sm;
+  }
+
+  .filter-color {
+    @apply w-4 h-4 rounded border border-gray-300 shrink-0 transition-all;
+  }
+
+  .filter-item.active .filter-color {
+    @apply ring-2 ring-white ring-offset-2 ring-offset-gobmx-verde;
+  }
+
+  .filters-panel {
+    @apply fixed top-0 right-[-400px] w-[380px] h-screen bg-white shadow-2xl transition-all duration-300 z-50 flex flex-col max-w-full;
+  }
+
+  .filters-panel.open {
+    @apply right-0;
+  }
+
+  .filters-panel-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200 bg-gobmx-guinda text-white;
+  }
+
+  .filters-overlay {
+    @apply fixed inset-0 bg-black/30 backdrop-blur-sm opacity-0 invisible transition-all duration-300 z-40;
+  }
+
+  .filters-overlay.active {
+    @apply opacity-100 visible;
+  }
+
+  /* Chart Wrapper */
+  #chart-wrapper {
+    @apply w-full h-full overflow-auto relative rounded p-2;
+  }
+
+  #sankey {
+    @apply w-full h-full cursor-grab origin-top-left;
+  }
+
+  #chart-container {
+    @apply grow flex flex-col relative h-[90vh] p-2 m-0;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    @apply absolute bottom-full left-1/2 -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-xs font-medium max-w-[280px] opacity-0 invisible transition-all duration-200 z-50 shadow-xl mb-2 pointer-events-none whitespace-nowrap;
+  }
+
+  .tooltip-container:hover .tooltip {
+    @apply opacity-100 visible -translate-y-1;
+  }
+
+  .tooltip::after {
+    content: '';
+    @apply absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-gray-900;
+  }
+
+  /* Preloader */
+  .preloader {
+    @apply fixed inset-0 bg-white/90 flex flex-col justify-center items-center z-[9999] backdrop-blur-sm transition-all duration-300;
+  }
+
+  .preloader.hidden {
+    @apply opacity-0 invisible;
+  }
+
+  .preloader-content {
+    @apply text-center p-8 bg-white rounded-2xl shadow-2xl max-w-[400px] w-[90%] border border-gray-100;
+  }
+
+  .preloader-progress-bar {
+    @apply h-full w-0 bg-gradient-to-r from-gobmx-guinda to-gobmx-verde transition-all duration-300;
+  }
+
+  /* Toggle Switch */
+  .toggle-switch {
+    @apply relative inline-block w-10 h-6;
+  }
+
+  .toggle-switch input {
+    @apply opacity-0 w-0 h-0;
+  }
+
+  .toggle-slider {
+    @apply absolute cursor-pointer inset-0 bg-gray-200 rounded-full transition-all duration-300 border border-gray-300;
+  }
+
+  .toggle-slider:before {
+    content: "";
+    @apply absolute h-4 w-4 left-0.5 bottom-0.5 bg-white rounded-full transition-all duration-300 shadow-sm;
+  }
+
+  .toggle-switch input:checked+.toggle-slider {
+    @apply bg-gobmx-guinda border-gobmx-guinda;
+  }
+
+  .toggle-switch input:focus+.toggle-slider {
+    @apply ring-2 ring-gobmx-guinda/30 ring-offset-1;
+  }
+
+  .toggle-switch input:checked+.toggle-slider:before {
+    @apply translate-x-4;
+  }
+
+  .toggle-label {
+    @apply flex flex-col items-center gap-1 cursor-pointer;
+  }
+
+  .toggle-text {
+    @apply text-xs font-semibold text-gray-600;
+  }
+
+  /* Mini Charts (Sparklines) */
+  .sparkline-container {
+    @apply w-[100px] h-[100px] transition-transform duration-300 cursor-pointer bg-white border border-gray-200 rounded shadow-sm hover:shadow-md relative;
+  }
+
+  /* Modal */
+  .modal {
+    @apply fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto hidden;
+  }
+
+  /* Force display flex when JS sets display: block */
+  .modal[style*="display: block"] {
+    display: flex !important;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-2xl shadow-2xl mx-auto my-10 p-6 relative max-w-[90vw] w-full max-h-[90vh] flex flex-col border border-gray-100;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between mb-4 border-b border-gray-100 pb-4;
+  }
+
+  .modal-header h3 {
+    @apply text-xl font-bold text-gobmx-guinda m-0 font-headings;
+  }
+
+  .modal-body {
+    @apply flex-1 overflow-y-auto py-2;
+  }
+
+  .close {
+    @apply text-gray-400 hover:text-gobmx-guinda text-2xl font-bold cursor-pointer transition-colors p-1 rounded hover:bg-gray-100;
+  }
+}
